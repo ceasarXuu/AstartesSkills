@@ -1,0 +1,4 @@
+version: 1
+display_name: Your Skill Name
+short_description: One-line summary for skill pickers and marketplaces.
+default_prompt: Help me with this skill's intended job.

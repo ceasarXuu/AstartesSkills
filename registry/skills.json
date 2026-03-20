@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "skills": [
+    {
+      "id": "hello-world",
+      "name": "Hello World",
+      "path": "skills/hello-world",
+      "summary": "Minimal example skill used to validate repository structure and installation flow.",
+      "tags": ["example", "starter", "ai-coding"],
+      "installable": true,
+      "markets": ["github", "openai-compatible"]
+    }
+  ]
+}
