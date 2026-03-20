@@ -1,73 +1,38 @@
 # AstartesSkills
 
-AI coding skills library for distribution across multiple skill markets and direct GitHub installation.
+[中文](README.zh-CN.md)
 
-这是一个“多 skills 集合仓库”，不是单个 skill。目标是同时支持：
+Installable AI skills for Codex and compatible agents.
 
-- Skills market 分发
-- GitHub 直接安装
-- 团队内统一维护与版本化
+## What This Is
 
-## What This Repository Is
+`AstartesSkills` is a multi-skill repository. Each skill is packaged in its own folder so you can install only what you need.
 
-This repository packages multiple independent skills under one catalog.
+Use this repository to:
 
-Each skill lives in its own folder and can be:
+- browse available skills
+- install one or more skills from a local clone
+- install skills directly from GitHub
+- use the repository as a distribution source for your own agent setup
 
-- published to a market as a standalone skill
-- installed directly from this GitHub repository
-- validated in CI before release
+This README is the user manual. Internal project rules and maintainer constraints live in `AGENTS.md`.
 
-The repository is designed for AI coding workflows first: concise instructions, reusable references, deterministic scripts, and easy installation.
+## Available Skills
 
-## Goals
+Current installable examples include:
 
-- Keep every skill independently publishable
-- Make repository-level discovery simple
-- Support GitHub-based install without requiring a market
-- Keep future market adapters straightforward
-- Preserve a clean contribution and validation workflow
+- `hello-world`: minimal example skill
+- `ornn-coding-governor`: coding-governance and execution-standards skill
 
-## Repository Layout
+List the latest available skills:
 
-```text
-.
-├── skills/                     # All standalone skills
-│   ├── _templates/             # Reusable templates for new skills
-│   └── hello-world/            # Example skill
-├── registry/                   # Catalog and distribution metadata
-├── scripts/                    # Install, export, list, and validate tooling
-├── docs/
-│   ├── plans/                  # Design and implementation notes
-│   └── runbooks/               # Reusable operational experience
-└── .github/workflows/          # CI validation
+```bash
+./scripts/list-skills.sh
 ```
 
-## Skill Layout
+## Install
 
-Every installable skill should follow this shape:
-
-```text
-skills/<skill-name>/
-├── SKILL.md
-├── agents/
-│   └── openai.yaml
-├── markets/                   # Optional market-specific metadata
-├── references/                # Optional
-├── scripts/                   # Optional
-└── assets/                    # Optional
-```
-
-Notes:
-
-- `SKILL.md` is required
-- `agents/openai.yaml` is strongly recommended for market/UI metadata
-- `markets/` stores exporter-friendly metadata for specific marketplaces
-- keep each skill self-contained so it can be copied out independently
-
-## Installation
-
-### Option 1: Install from local clone
+### Option 1: Install from a local clone
 
 ```bash
 ./scripts/install-skill.sh hello-world
@@ -76,13 +41,19 @@ Notes:
 Install multiple skills:
 
 ```bash
-./scripts/install-skill.sh hello-world another-skill
+./scripts/install-skill.sh hello-world ornn-coding-governor
 ```
 
 Install into a custom directory:
 
 ```bash
 ./scripts/install-skill.sh --target ~/.codex/skills hello-world
+```
+
+Default install target:
+
+```text
+${CODEX_HOME:-$HOME/.codex}/skills
 ```
 
 ### Option 2: Install directly from GitHub
@@ -92,107 +63,46 @@ curl -fsSL https://raw.githubusercontent.com/ceasarXuu/AstartesSkills/main/scrip
   | bash -s -- --repo https://github.com/ceasarXuu/AstartesSkills.git hello-world
 ```
 
-This flow clones the repository into a temporary directory, copies only the requested skills, and leaves the destination ready for use.
+This flow:
 
-### Option 3: Browse available skills first
+- clones the repository into a temporary directory
+- copies only the skills you requested
+- installs them into your target directory
+
+## Use an Installed Skill
+
+After installation, each skill appears as its own directory, for example:
+
+```text
+~/.codex/skills/hello-world
+```
+
+The main instructions for each skill live in that skill's `SKILL.md`. Your agent uses those instructions to determine when and how to apply the skill.
+
+## Repository Layout
+
+```text
+.
+├── skills/                     # installable skills
+├── registry/                   # repository catalog
+├── scripts/                    # install/validate/export tooling
+└── docs/                       # plans and runbooks
+```
+
+## For Maintainers
+
+If you want to maintain or extend this repository instead of only using the skills:
+
+- project rules and constraints: `AGENTS.md`
+- contribution flow: `CONTRIBUTING.md`
+
+## Troubleshooting
+
+Start with:
 
 ```bash
 ./scripts/list-skills.sh
-```
-
-## Registry
-
-The repository-level catalog lives in `registry/skills.json`.
-
-It is the source of truth for:
-
-- skill id and path
-- title and summary
-- tags
-- installability
-- future market publishing metadata
-
-This keeps the repo easy to index, validate, and later sync to external marketplaces.
-
-## Exporting Marketplace Manifests
-
-Export repository-level and market-level artifacts:
-
-```bash
-./scripts/export-marketplace.py
-```
-
-Artifacts are written to `dist/`:
-
-- `dist/catalog.json`: normalized repository catalog
-- `dist/markets/openai-compatible/*.json`: per-skill market manifests
-
-This keeps authoring inside the skill folder while still producing clean machine-readable outputs for distribution pipelines.
-
-## Publishing Strategy
-
-Recommended publishing model:
-
-1. Author and validate a skill in this monorepo
-2. Keep market-facing metadata inside the skill folder
-3. Use `registry/skills.json` for repository-wide discovery
-4. Add market-specific exporters later under `scripts/`
-
-This avoids coupling authoring to any single market while keeping each skill portable.
-
-## Development Workflow
-
-### Add a new skill
-
-1. Copy `skills/_templates/basic-skill`
-2. Rename the folder
-3. Update `SKILL.md`
-4. Update `agents/openai.yaml`
-5. Register the skill in `registry/skills.json`
-6. Add `markets/` metadata if the skill will be published externally
-7. Run validation
-
-```bash
 ./scripts/validate-repo.sh
 ```
 
-Optionally export distribution artifacts:
-
-```bash
-./scripts/export-marketplace.py
-```
-
-### Logging and operational notes
-
-This repository follows a log-driven approach.
-
-- Tooling should emit explicit logs for install and validation steps
-- Repeated operational tasks should be captured in `docs/runbooks/`
-- Failures and fixes should leave behind reusable notes, not tribal knowledge
-
-## Example Skill
-
-`skills/hello-world` is intentionally simple. It demonstrates:
-
-- the minimum valid skill structure
-- market metadata placement
-- catalog registration
-- GitHub install compatibility
-
-## CI
-
-GitHub Actions runs `scripts/validate-repo.sh` on pushes and pull requests.
-
-The validation currently checks:
-
-- every installable skill has `SKILL.md`
-- every installable skill has `agents/openai.yaml`
-- registry entries point to existing skill directories
-- exporter inputs are structurally valid JSON
-
-## Next Steps
-
-- Add more real AI coding skills under `skills/`
-- Add market export scripts per platform
-- Add semantic versioning and release automation
-- Add richer validation for metadata consistency
+If installation fails, check log lines prefixed with `[install]` or `[validate]`.
