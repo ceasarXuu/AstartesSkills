@@ -1,9 +1,9 @@
 ---
-name: custodes-coding-governor
+name: astartes-coding-custodes
 description: Use this skill when iterative AI-assisted coding starts to degrade code quality, architecture consistency, or maintainability. It enforces staged implementation, architecture guardrails, duplication control, strict review, and entropy-reduction refactors.
 ---
 
-# custodes-coding-governor
+# astartes-coding-custodes
 
 ## Purpose
 

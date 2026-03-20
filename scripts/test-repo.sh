@@ -3,7 +3,7 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-skill_id="custodes-coding-governor"
+skill_id="astartes-coding-custodes"
 skill_dir="$repo_root/skills/$skill_id"
 registry_file="$repo_root/registry/skills.json"
 manifest_file="$skill_dir/markets/openai-compatible.json"

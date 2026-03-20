@@ -2,7 +2,7 @@
 
 # Skill 名称
 
-**custodes-coding-governor**
+**astartes-coding-custodes**
 
 副标题可以写成：
 
@@ -27,11 +27,11 @@
 
 ```md
 ---
-name: custodes-coding-governor
+name: astartes-coding-custodes
 description: Use this skill when iterative AI-assisted coding starts to degrade code quality, architecture consistency, or maintainability. It enforces staged implementation, architecture guardrails, duplication control, strict review, and entropy-reduction refactors.
 ---
 
-# custodes-coding-governor
+# astartes-coding-custodes
 
 ## Purpose
 
@@ -298,7 +298,7 @@ Behave like a constrained implementation and review agent that protects system q
 
 ```text
 skills/
-└── custodes-coding-governor/
+└── astartes-coding-custodes/
     ├── SKILL.md
     ├── templates/
     │   ├── task-intake.md
@@ -552,7 +552,7 @@ Skill 应该只输出问题，不要再偷偷补代码。
 
 后面你可以把它拆成三个专职 skill：
 
-### 1. `custodes-coding-governor`
+### 1. `astartes-coding-custodes`
 
 总控，负责判断何时进入治理模式
 
@@ -572,7 +572,7 @@ Skill 应该只输出问题，不要再偷偷补代码。
 
 先别做得太复杂，第一版就这样落：
 
-* 先建一个 `custodes-coding-governor`
+* 先建一个 `astartes-coding-custodes`
 * 放 `SKILL.md`
 * 配 3 个模板
 * 把它设成“当连续改动/质量下降/要求严格 review 时自动触发”
