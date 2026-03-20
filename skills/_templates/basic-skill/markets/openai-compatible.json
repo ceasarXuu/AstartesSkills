@@ -5,7 +5,7 @@
   "description": "One-line marketplace description.",
   "source": {
     "type": "github",
-    "repo": "https://github.com/<owner>/AstartesSkills",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
     "path": "skills/your-skill-name"
   }
 }

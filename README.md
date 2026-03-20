@@ -88,8 +88,8 @@ Install into a custom directory:
 ### Option 2: Install directly from GitHub
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/<owner>/AstartesSkills/main/scripts/install-skill.sh \
-  | bash -s -- --repo https://github.com/<owner>/AstartesSkills.git hello-world
+curl -fsSL https://raw.githubusercontent.com/ceasarXuu/AstartesSkills/main/scripts/install-skill.sh \
+  | bash -s -- --repo https://github.com/ceasarXuu/AstartesSkills.git hello-world
 ```
 
 This flow clones the repository into a temporary directory, copies only the requested skills, and leaves the destination ready for use.

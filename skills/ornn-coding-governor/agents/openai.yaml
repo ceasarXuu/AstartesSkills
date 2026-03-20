@@ -1,0 +1,4 @@
+version: 1
+display_name: Ornn Coding Governor
+short_description: Guardrail skill that slows down iterative AI coding to protect architecture, maintainability, and code quality.
+default_prompt: Review the current coding task with strict architecture and maintainability guardrails before making the minimum safe change.

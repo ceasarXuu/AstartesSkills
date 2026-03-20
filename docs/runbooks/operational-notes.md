@@ -6,3 +6,10 @@
 - Decision: keep each skill self-contained under `skills/`, then add repo-level discovery with `registry/skills.json`
 - Why it worked: market metadata stays near each skill, while install tooling and validation stay centralized
 - Reuse later: future install, packaging, and publishing tooling should continue treating each skill folder as the deployable unit
+
+## 2026-03-21 First Real Skill Onboarding
+
+- Problem: converting a draft document under `docs/tobeSkills/` into the first installable and exportable skill
+- Decision: keep the source idea document in `docs/tobeSkills/`, but distill the actual reusable skill into a concise `SKILL.md` plus `agents/` and `markets/` metadata
+- Why it worked: the long-form ideation doc remains available for iteration, while the shipped skill stays compact enough for real triggering and marketplace use
+- Reuse later: when drafting future skills, write exploratory docs first if needed, then compress them into portable skill packages rather than shipping the drafts directly

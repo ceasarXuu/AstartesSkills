@@ -5,7 +5,7 @@
   "description": "Minimal example skill for repository bootstrap and installation validation.",
   "source": {
     "type": "github",
-    "repo": "https://github.com/<owner>/AstartesSkills",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
     "path": "skills/hello-world"
   }
 }
