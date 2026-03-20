@@ -14,8 +14,10 @@
 2. Rename the directory to the final skill id
 3. Fill in `SKILL.md`
 4. Fill in `agents/openai.yaml`
-5. Add the skill to `registry/skills.json`
-6. Run `./scripts/validate-repo.sh`
+5. Add market metadata under `markets/` if needed
+6. Add the skill to `registry/skills.json`
+7. Run `./scripts/validate-repo.sh`
+8. Run `./scripts/export-marketplace.py`
 
 ## Review Checklist
 
@@ -24,4 +26,5 @@
 - Is market metadata present?
 - Is the skill listed in the registry?
 - Does installation via `scripts/install-skill.sh` work?
+- Does export via `scripts/export-marketplace.py` work?
 - Did the change add useful logs or operational notes if needed?

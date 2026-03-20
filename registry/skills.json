@@ -8,7 +8,19 @@
       "summary": "Minimal example skill used to validate repository structure and installation flow.",
       "tags": ["example", "starter", "ai-coding"],
       "installable": true,
-      "markets": ["github", "openai-compatible"]
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/<owner>/AstartesSkills",
+        "path": "skills/hello-world"
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/hello-world/markets/openai-compatible.json"
+        }
+      }
     }
   ]
 }

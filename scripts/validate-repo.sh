@@ -18,6 +18,17 @@ fail() {
 [[ -d "$skills_dir" ]] || fail "missing skills directory"
 [[ -f "$registry_file" ]] || fail "missing registry/skills.json"
 
+log "checking registry json"
+python3 - <<'PY' "$registry_file" || exit 1
+import json
+import sys
+
+with open(sys.argv[1], "r", encoding="utf-8") as handle:
+    data = json.load(handle)
+
+assert isinstance(data.get("skills"), list)
+PY
+
 log "checking skill folders"
 
 while IFS= read -r skill_dir; do
@@ -37,6 +48,20 @@ while IFS= read -r path; do
   [[ -d "$repo_root/$path" ]] || fail "registry path does not exist: $path"
 done < <(
   sed -n 's/.*"path": "\(skills\/[^"]*\)".*/\1/p' "$registry_file"
+)
+
+log "checking market manifests"
+
+while IFS= read -r manifest; do
+  python3 - <<'PY' "$repo_root/$manifest" || exit 1
+import json
+import sys
+
+with open(sys.argv[1], "r", encoding="utf-8") as handle:
+    json.load(handle)
+PY
+done < <(
+  sed -n 's/.*"manifest": "\(skills\/[^"]*markets\/[^"]*\.json\)".*/\1/p' "$registry_file"
 )
 
 log "repository validation passed"

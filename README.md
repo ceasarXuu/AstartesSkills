@@ -36,7 +36,7 @@ The repository is designed for AI coding workflows first: concise instructions, 
 │   ├── _templates/             # Reusable templates for new skills
 │   └── hello-world/            # Example skill
 ├── registry/                   # Catalog and distribution metadata
-├── scripts/                    # Install, list, and validate tooling
+├── scripts/                    # Install, export, list, and validate tooling
 ├── docs/
 │   ├── plans/                  # Design and implementation notes
 │   └── runbooks/               # Reusable operational experience
@@ -52,6 +52,7 @@ skills/<skill-name>/
 ├── SKILL.md
 ├── agents/
 │   └── openai.yaml
+├── markets/                   # Optional market-specific metadata
 ├── references/                # Optional
 ├── scripts/                   # Optional
 └── assets/                    # Optional
@@ -61,6 +62,7 @@ Notes:
 
 - `SKILL.md` is required
 - `agents/openai.yaml` is strongly recommended for market/UI metadata
+- `markets/` stores exporter-friendly metadata for specific marketplaces
 - keep each skill self-contained so it can be copied out independently
 
 ## Installation
@@ -112,6 +114,21 @@ It is the source of truth for:
 
 This keeps the repo easy to index, validate, and later sync to external marketplaces.
 
+## Exporting Marketplace Manifests
+
+Export repository-level and market-level artifacts:
+
+```bash
+./scripts/export-marketplace.py
+```
+
+Artifacts are written to `dist/`:
+
+- `dist/catalog.json`: normalized repository catalog
+- `dist/markets/openai-compatible/*.json`: per-skill market manifests
+
+This keeps authoring inside the skill folder while still producing clean machine-readable outputs for distribution pipelines.
+
 ## Publishing Strategy
 
 Recommended publishing model:
@@ -132,10 +149,17 @@ This avoids coupling authoring to any single market while keeping each skill por
 3. Update `SKILL.md`
 4. Update `agents/openai.yaml`
 5. Register the skill in `registry/skills.json`
-6. Run validation
+6. Add `markets/` metadata if the skill will be published externally
+7. Run validation
 
 ```bash
 ./scripts/validate-repo.sh
+```
+
+Optionally export distribution artifacts:
+
+```bash
+./scripts/export-marketplace.py
 ```
 
 ### Logging and operational notes
@@ -164,6 +188,7 @@ The validation currently checks:
 - every installable skill has `SKILL.md`
 - every installable skill has `agents/openai.yaml`
 - registry entries point to existing skill directories
+- exporter inputs are structurally valid JSON
 
 ## Next Steps
 
