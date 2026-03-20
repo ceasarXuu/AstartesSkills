@@ -38,14 +38,14 @@ npx skills add https://github.com/ceasarXuu/AstartesSkills --list
 Install one skill from this repository:
 
 ```bash
-npx skills add https://github.com/ceasarXuu/AstartesSkills --skill ornn-coding-governor
+npx skills add https://github.com/ceasarXuu/AstartesSkills --skill custodes-coding-governor
 ```
 
 Install for a specific agent:
 
 ```bash
 npx skills add https://github.com/ceasarXuu/AstartesSkills \
-  --skill ornn-coding-governor \
+  --skill custodes-coding-governor \
   --agent codex
 ```
 
@@ -53,7 +53,7 @@ Install globally without prompts:
 
 ```bash
 npx skills add https://github.com/ceasarXuu/AstartesSkills \
-  --skill ornn-coding-governor \
+  --skill custodes-coding-governor \
   --agent codex \
   --global \
   --yes
@@ -64,20 +64,20 @@ npx skills add https://github.com/ceasarXuu/AstartesSkills \
 Clone locally, then install by copying the skill folder:
 
 ```bash
-./scripts/install-skill.sh ornn-coding-governor
+./scripts/install-skill.sh custodes-coding-governor
 ```
 
 Install to a custom destination:
 
 ```bash
-./scripts/install-skill.sh --target ~/.codex/skills ornn-coding-governor
+./scripts/install-skill.sh --target ~/.codex/skills custodes-coding-governor
 ```
 
 Install directly from GitHub without cloning first:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ceasarXuu/AstartesSkills/main/scripts/install-skill.sh \
-  | bash -s -- --repo https://github.com/ceasarXuu/AstartesSkills.git ornn-coding-governor
+  | bash -s -- --repo https://github.com/ceasarXuu/AstartesSkills.git custodes-coding-governor
 ```
 
 ## skills.sh Compatibility
@@ -94,7 +94,7 @@ Verified repository commands:
 
 ```bash
 npx skills add https://github.com/ceasarXuu/AstartesSkills --list
-npx skills add https://github.com/ceasarXuu/AstartesSkills --skill ornn-coding-governor
+npx skills add https://github.com/ceasarXuu/AstartesSkills --skill custodes-coding-governor
 ```
 
 Reference:
@@ -107,7 +107,7 @@ Reference:
 
 | Skill | Purpose | Install |
 | --- | --- | --- |
-| `ornn-coding-governor` | Prevent iterative quality decay during AI-assisted coding by enforcing analysis, minimal change planning, strict review, and entropy control. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill ornn-coding-governor` |
+| `custodes-coding-governor` | Prevent iterative quality decay during AI-assisted coding by enforcing analysis, minimal change planning, strict review, and entropy control. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill custodes-coding-governor` |
 | `hello-world` | Minimal example skill used to validate structure, install flow, and export flow. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill hello-world` |
 
 ## Repository Layout
@@ -117,7 +117,7 @@ Reference:
 ├── skills/                         # Standalone skills
 │   ├── _templates/                 # Reusable skill templates
 │   ├── hello-world/                # Example skill
-│   └── ornn-coding-governor/       # First real AI coding skill
+│   └── custodes-coding-governor/       # First real AI coding skill
 ├── registry/                       # Repository-level catalog
 ├── scripts/                        # Install, export, test, validate tooling
 ├── docs/
@@ -220,7 +220,7 @@ Checks currently include:
 ./scripts/test-repo.sh
 ```
 
-This verifies that `ornn-coding-governor` is:
+This verifies that `custodes-coding-governor` is:
 
 - present in the repository
 - registered correctly
@@ -261,7 +261,7 @@ Implemented:
 - GitHub direct-install script
 - registry and export scaffolding
 - `skills.sh`-compatible repository layout
-- first real skill: `ornn-coding-governor`
+- first real skill: `custodes-coding-governor`
 
 Planned next:
 

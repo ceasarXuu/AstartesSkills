@@ -22,7 +22,7 @@
 当前可安装示例包括：
 
 - `hello-world`：最小示例 skill
-- `ornn-coding-governor`：面向编码治理与执行规范的 skill
+- `custodes-coding-governor`：面向编码治理与执行规范的 skill
 
 查看最新可安装 skills：
 
@@ -41,7 +41,7 @@
 一次安装多个 skills：
 
 ```bash
-./scripts/install-skill.sh hello-world ornn-coding-governor
+./scripts/install-skill.sh hello-world custodes-coding-governor
 ```
 
 安装到自定义目录：

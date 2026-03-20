@@ -1,11 +1,11 @@
 {
   "version": 1,
   "market": "openai-compatible",
-  "display_name": "Ornn Coding Governor",
+  "display_name": "custodes Coding Governor",
   "description": "Prevents iterative quality decay during AI-assisted coding by enforcing analysis, minimal plans, strict review, and entropy control.",
   "source": {
     "type": "github",
     "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-    "path": "skills/ornn-coding-governor"
+    "path": "skills/custodes-coding-governor"
   }
 }

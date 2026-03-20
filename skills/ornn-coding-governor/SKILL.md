@@ -1,9 +1,9 @@
 ---
-name: ornn-coding-governor
+name: custodes-coding-governor
 description: Use this skill when iterative AI-assisted coding starts to degrade code quality, architecture consistency, or maintainability. It enforces staged implementation, architecture guardrails, duplication control, strict review, and entropy-reduction refactors.
 ---
 
-# ornn-coding-governor
+# custodes-coding-governor
 
 ## Purpose
 
