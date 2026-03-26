@@ -1,4 +1,0 @@
-version: 1
-display_name: Hello World
-short_description: Minimal example skill for repository bootstrap and install validation.
-default_prompt: Show me the smallest valid skill in this library and explain how to install it.
