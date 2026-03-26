@@ -1,0 +1,4 @@
+version: 1
+display_name: Show My Repo
+short_description: Turn a repository into an evidence-backed presentation pack for investors, users, demos, and landing pages.
+default_prompt: Read this repository and produce a credible presentation pack with product value, architecture, highlights, risks, and audience-specific versions.

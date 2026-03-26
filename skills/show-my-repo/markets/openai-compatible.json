@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "market": "openai-compatible",
+  "display_name": "Show My Repo",
+  "description": "Turns a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages.",
+  "source": {
+    "type": "github",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+    "path": "skills/show-my-repo"
+  }
+}

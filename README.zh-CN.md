@@ -23,6 +23,7 @@
 
 - `hello-world`：最小示例 skill
 - `astartes-coding-custodes`：面向编码治理与执行规范的 skill
+- `show-my-repo`：把 repo 提炼成面向投资人、用户、路演和落地页的展示包
 
 查看最新可安装 skills：
 

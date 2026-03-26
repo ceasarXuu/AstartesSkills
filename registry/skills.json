@@ -42,6 +42,27 @@
           "manifest": "skills/hello-world/markets/openai-compatible.json"
         }
       }
+    },
+    {
+      "id": "show-my-repo",
+      "name": "Show My Repo",
+      "path": "skills/show-my-repo",
+      "summary": "Turns a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages.",
+      "tags": ["repo-analysis", "product-packaging", "pitch", "go-to-market", "architecture"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/show-my-repo"
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/show-my-repo/markets/openai-compatible.json"
+        }
+      }
     }
   ]
 }

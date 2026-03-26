@@ -28,3 +28,10 @@
 - Decision: define `CODEX_HOME=/Volumes/XU-1TB-NPM/devtools/codex/home` in `~/.zprofile` for login shells, in `~/.local/bin/env` for interactive/helper shells, and add `~/Library/LaunchAgents/com.xuzhang.codex-env.plist` to run `launchctl setenv CODEX_HOME ...` at login for GUI apps
 - Why it worked: terminal shells, helper scripts, and the Codex desktop process now converge on the same home directory instead of relying on implicit defaults
 - Reuse later: whenever Codex desktop can see files but environment-dependent features behave inconsistently, check both shell exports and `launchctl getenv CODEX_HOME` before debugging skills or automations
+
+## 2026-03-26 Packaging-Heavy Skill Authoring
+
+- Problem: a new skill needed rich packaging logic, but putting all design guidance directly into `SKILL.md` would make triggering noisy and inflate context usage
+- Decision: keep `SKILL.md` limited to trigger conditions, workflow, evidence discipline, and output contract; move scoring logic into `rubrics/`, reusable output shapes into `templates/`, and style calibration into `examples/`
+- Why it worked: the installable skill stays concise enough to trigger cleanly, while still shipping the heavier guidance needed for multi-audience output
+- Reuse later: when a skill needs deep judgment frameworks, split the portable package into `SKILL.md` plus selectively loaded supporting files instead of shipping one oversized instruction file
