@@ -45,7 +45,23 @@ Determine:
 - target user
 - primary use case
 
-### 2. Read the product story from docs
+### 2. Prepare the output folder
+
+Before writing the final answer, create or reuse the repo-root output directory:
+
+- root output directory: `show-my-repo/`
+- run output directory: `show-my-repo/YYYYMMDD_vN/`
+- main output file: `show-my-repo/YYYYMMDD_vN/presentation-pack.md`
+
+Versioning rule:
+
+- `YYYYMMDD` uses the current local date of the run
+- `vN` starts at `v1`
+- if `show-my-repo/YYYYMMDD_v1/` already exists, increment to `v2`, then `v3`, and so on
+
+If the root folder does not exist, create it. The default behavior is to write the pack to disk, not just return it inline.
+
+### 3. Read the product story from docs
 
 Start with the repo's user-facing docs and product notes. Extract:
 
@@ -56,7 +72,7 @@ Start with the repo's user-facing docs and product notes. Extract:
 - deployment shape
 - roadmap or planned scope
 
-### 3. Validate with code and config
+### 4. Validate with code and config
 
 Check whether the product story is supported by:
 
@@ -68,7 +84,7 @@ Check whether the product story is supported by:
 - persistence, auth, realtime, AI, queue, or storage patterns
 - tests, CI, scripts, or demos
 
-### 4. Build the outward-facing architecture summary
+### 5. Build the outward-facing architecture summary
 
 Summarize:
 
@@ -80,7 +96,7 @@ Summarize:
 
 Keep it externally legible. Explain why the design matters before naming technologies.
 
-### 5. Extract highlights, difficulties, and risks
+### 6. Extract highlights, difficulties, and risks
 
 Group findings into:
 
@@ -94,7 +110,7 @@ Group findings into:
 
 Use the evidence rubric before making strong claims.
 
-### 6. Convert into audience-specific packaging
+### 7. Convert into audience-specific packaging
 
 Produce:
 
@@ -110,7 +126,7 @@ Produce:
 
 ## Output Standard
 
-Unless the user asks for a narrower output, include:
+Unless the user asks for a narrower output, write a Markdown document to `show-my-repo/YYYYMMDD_vN/presentation-pack.md` and include:
 
 1. one-line positioning
 2. project intro
@@ -126,6 +142,8 @@ Unless the user asks for a narrower output, include:
 12. 60-second pitch
 13. implemented vs planned
 14. evidence map
+
+If the user also wants an inline answer, provide a short summary and point to the generated file.
 
 ## Claim Language
 
@@ -145,6 +163,8 @@ Load extra files only when needed:
 - `rubrics/evidence-grading-rubric.md` before finalizing any strong claim
 - `templates/` for output scaffolds
 - `examples/` only when the user needs calibration on style or output depth
+
+Use `templates/presentation-pack.md` as the default document spine for the saved artifact.
 
 ## Tone By Audience
 

@@ -35,3 +35,17 @@
 - Decision: keep `SKILL.md` limited to trigger conditions, workflow, evidence discipline, and output contract; move scoring logic into `rubrics/`, reusable output shapes into `templates/`, and style calibration into `examples/`
 - Why it worked: the installable skill stays concise enough to trigger cleanly, while still shipping the heavier guidance needed for multi-audience output
 - Reuse later: when a skill needs deep judgment frameworks, split the portable package into `SKILL.md` plus selectively loaded supporting files instead of shipping one oversized instruction file
+
+## 2026-03-26 Versioned Output For Document-Producing Skills
+
+- Problem: a packaging skill that only returns inline text makes repeated runs hard to compare, archive, and reuse inside the target repo
+- Decision: define a repo-root output contract of `show-my-repo/YYYYMMDD_vN/presentation-pack.md`, creating the root folder when absent and incrementing the version within the same day
+- Why it worked: every run gets a deterministic landing zone, and repeated revisions on the same date remain ordered without overwriting older artifacts
+- Reuse later: when a skill's main value is a reusable document, give it a default write path and versioning convention instead of leaving persistence to ad-hoc operator behavior
+
+## 2026-03-26 Shell Search Patterns With Backticks
+
+- Problem: using backticks directly inside a quoted `rg` pattern under `zsh` triggered command substitution and broke a content assertion command
+- Decision: when searching for literal strings that contain backticks, either use single-quoted shell strings carefully or search for safer substrings that avoid command substitution entirely
+- Why it worked: verification commands stopped depending on fragile shell quoting and became repeatable
+- Reuse later: treat backticks in shell one-liners as hazardous characters during verification, especially when checking Markdown content
