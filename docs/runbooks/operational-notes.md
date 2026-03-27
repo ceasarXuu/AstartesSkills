@@ -59,7 +59,7 @@
 
 ## 2026-03-27 Retiring An Obsolete Skill Cleanly
 
-- Problem: the repository no longer needed `hello-world`, but removing only the folder or only the registry entry would leave validation, docs, and exported artifacts inconsistent
+- Problem: the repository no longer needed one older example skill, but removing only the folder or only the registry entry would leave validation, docs, and exported artifacts inconsistent
 - Decision: retire the skill as a full package removal by updating `registry/skills.json`, README examples, install-script examples, generated summary docs, and stale `dist` artifacts together
 - Why it worked: the repo's real contract spans filesystem, registry, user docs, and generated marketplace output, so removing a skill has to be treated as a multi-surface change
 - Reuse later: when removing a skill, search the whole repo first and clean source, docs, and exported artifacts in one pass before running validation
