@@ -21,7 +21,6 @@
 
 当前可安装示例包括：
 
-- `hello-world`：最小示例 skill
 - `astartes-coding-custodes`：面向编码治理与执行规范的 skill
 - `show-my-repo`：把 repo 提炼成面向投资人、用户、路演和落地页的展示包
 - `summary-my-repo`：生成面向协作者的仓库理解包，覆盖架构、目录职责和核心逻辑
@@ -37,19 +36,19 @@
 ### 方式一：从本地克隆仓库安装
 
 ```bash
-./scripts/install-skill.sh hello-world
+./scripts/install-skill.sh summary-my-repo
 ```
 
 一次安装多个 skills：
 
 ```bash
-./scripts/install-skill.sh hello-world astartes-coding-custodes
+./scripts/install-skill.sh summary-my-repo astartes-coding-custodes
 ```
 
 安装到自定义目录：
 
 ```bash
-./scripts/install-skill.sh --target ~/.codex/skills hello-world
+./scripts/install-skill.sh --target ~/.codex/skills summary-my-repo
 ```
 
 默认安装目录：
@@ -62,7 +61,7 @@ ${CODEX_HOME:-$HOME/.codex}/skills
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ceasarXuu/AstartesSkills/main/scripts/install-skill.sh \
-  | bash -s -- --repo https://github.com/ceasarXuu/AstartesSkills.git hello-world
+  | bash -s -- --repo https://github.com/ceasarXuu/AstartesSkills.git summary-my-repo
 ```
 
 这个流程会：
@@ -76,7 +75,7 @@ curl -fsSL https://raw.githubusercontent.com/ceasarXuu/AstartesSkills/main/scrip
 安装后，每个 skill 会出现在自己的目录下，例如：
 
 ```text
-~/.codex/skills/hello-world
+~/.codex/skills/summary-my-repo
 ```
 
 每个 skill 的核心说明都在该目录下的 `SKILL.md`。代理会根据里面的触发条件和说明决定是否启用这个 skill。

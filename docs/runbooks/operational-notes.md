@@ -57,9 +57,9 @@
 - Why it worked: internal onboarding needs directory responsibilities and control-flow explanation, which are different from investor or user packaging
 - Reuse later: when a repo summary is meant for engineers rather than external audiences, default to a multi-file architecture pack with explicit coverage of source-of-truth files, workflows, invariants, and risks
 
-## 2026-03-27 Registry Drift Breaks Validation Fast
+## 2026-03-27 Retiring An Obsolete Skill Cleanly
 
-- Problem: `registry/skills.json` and the README files still referenced `hello-world`, but the actual `skills/hello-world/` package was missing, so `./scripts/validate-repo.sh` failed immediately
-- Decision: restore the missing minimal skill package instead of weakening validation or deleting the example from docs without understanding the intended repo contract
-- Why it worked: the repo's validation logic is designed to catch filesystem-to-registry drift early, and restoring the package re-aligned registry, docs, and local disk state
-- Reuse later: when validation fails on a missing skill path, treat it as a real packaging contract break and fix the artifact or registry directly instead of bypassing the check
+- Problem: the repository no longer needed `hello-world`, but removing only the folder or only the registry entry would leave validation, docs, and exported artifacts inconsistent
+- Decision: retire the skill as a full package removal by updating `registry/skills.json`, README examples, install-script examples, generated summary docs, and stale `dist` artifacts together
+- Why it worked: the repo's real contract spans filesystem, registry, user docs, and generated marketplace output, so removing a skill has to be treated as a multi-surface change
+- Reuse later: when removing a skill, search the whole repo first and clean source, docs, and exported artifacts in one pass before running validation

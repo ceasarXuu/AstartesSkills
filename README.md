@@ -108,7 +108,6 @@ Reference:
 | Skill | Purpose | Install |
 | --- | --- | --- |
 | `astartes-coding-custodes` | Prevent iterative quality decay during AI-assisted coding by enforcing analysis, minimal change planning, strict review, and entropy control. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill astartes-coding-custodes` |
-| `hello-world` | Minimal example skill used to validate structure, install flow, and export flow. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill hello-world` |
 | `show-my-repo` | Turn a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill show-my-repo` |
 | `summary-my-repo` | Generate an internal repository summary pack with architecture, directory responsibilities, and core logic walkthroughs. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill summary-my-repo` |
 
@@ -118,7 +117,6 @@ Reference:
 .
 ├── skills/                         # Standalone skills
 │   ├── _templates/                 # Reusable skill templates
-│   ├── hello-world/                # Example skill
 │   ├── astartes-coding-custodes/   # AI coding governance skill
 │   ├── show-my-repo/               # Repo packaging and presentation skill
 │   └── summary-my-repo/            # Internal repo summary and onboarding skill

@@ -23,27 +23,6 @@
       }
     },
     {
-      "id": "hello-world",
-      "name": "Hello World",
-      "path": "skills/hello-world",
-      "summary": "Minimal example skill used to validate repository structure and installation flow.",
-      "tags": ["example", "starter", "ai-coding"],
-      "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/hello-world"
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/hello-world/markets/openai-compatible.json"
-        }
-      }
-    },
-    {
       "id": "show-my-repo",
       "name": "Show My Repo",
       "path": "skills/show-my-repo",

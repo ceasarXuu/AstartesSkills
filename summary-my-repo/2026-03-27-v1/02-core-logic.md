@@ -105,10 +105,6 @@ Good example:
 
 - `skills/show-my-repo/` shows how a richer skill can stay compact at the top level while shipping selective supporting material
 
-Minimal example:
-
-- `skills/hello-world/` shows the irreducible package shape
-
 ## Invariants And Coupling Points
 
 ### Tight coupling

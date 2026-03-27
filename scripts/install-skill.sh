@@ -8,10 +8,10 @@ Usage:
   install-skill.sh [--repo <git-url>] [--target <dir>] <skill> [<skill> ...]
 
 Examples:
-  ./scripts/install-skill.sh hello-world
-  ./scripts/install-skill.sh --target ~/.codex/skills hello-world
+  ./scripts/install-skill.sh summary-my-repo
+  ./scripts/install-skill.sh --target ~/.codex/skills summary-my-repo
   curl -fsSL https://raw.githubusercontent.com/<owner>/<repo>/main/scripts/install-skill.sh \
-    | bash -s -- --repo https://github.com/<owner>/<repo>.git hello-world
+    | bash -s -- --repo https://github.com/<owner>/<repo>.git summary-my-repo
 EOF
 }
 

@@ -1,4 +1,0 @@
-version: 1
-display_name: Hello World
-short_description: Minimal installable example skill for validating repository structure and packaging flow.
-default_prompt: Show me the smallest example of how an installable skill package in this repository is structured.

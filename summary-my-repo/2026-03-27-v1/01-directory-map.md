@@ -24,7 +24,6 @@ Important subdirectories:
 - `skills/astartes-coding-custodes/`: a compact governance-oriented skill with only the essential package files
 - `skills/show-my-repo/`: the best current example of a richer skill that ships auxiliary `rubrics/`, `templates/`, and `examples/`
 - `skills/summary-my-repo/`: the internal repo-summary skill added in this run
-- `skills/hello-world/`: the minimal structural example used for repository/package validation
 
 Maintenance implication:
 
