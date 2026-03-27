@@ -63,6 +63,27 @@
           "manifest": "skills/show-my-repo/markets/openai-compatible.json"
         }
       }
+    },
+    {
+      "id": "summary-my-repo",
+      "name": "Summary My Repo",
+      "path": "skills/summary-my-repo",
+      "summary": "Creates an internal repository summary pack with architecture, directory mapping, and core logic walkthroughs for fast collaborator onboarding.",
+      "tags": ["repo-analysis", "architecture", "onboarding", "documentation", "engineering-summary"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/summary-my-repo"
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/summary-my-repo/markets/openai-compatible.json"
+        }
+      }
     }
   ]
 }

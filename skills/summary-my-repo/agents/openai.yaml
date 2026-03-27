@@ -1,0 +1,4 @@
+version: 1
+display_name: summary my repo
+short_description: Create an internal repository summary pack with architecture, directory mapping, and core logic walkthroughs.
+default_prompt: Read this repository and write a markdown summary pack that explains the architecture, directory responsibilities, and the most important code paths.

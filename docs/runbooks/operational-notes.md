@@ -49,3 +49,17 @@
 - Decision: when searching for literal strings that contain backticks, either use single-quoted shell strings carefully or search for safer substrings that avoid command substitution entirely
 - Why it worked: verification commands stopped depending on fragile shell quoting and became repeatable
 - Reuse later: treat backticks in shell one-liners as hazardous characters during verification, especially when checking Markdown content
+
+## 2026-03-27 Internal Repo Summary Skill
+
+- Problem: `show-my-repo` covered outward-facing repo packaging, but maintainers still lacked a reusable skill for internal onboarding and architecture digestion
+- Decision: add `summary-my-repo` as a separate skill that writes a versioned markdown pack under repo-root `summary-my-repo/YYYY-MM-DD-vN/`, split into overview, directory map, and core logic files
+- Why it worked: internal onboarding needs directory responsibilities and control-flow explanation, which are different from investor or user packaging
+- Reuse later: when a repo summary is meant for engineers rather than external audiences, default to a multi-file architecture pack with explicit coverage of source-of-truth files, workflows, invariants, and risks
+
+## 2026-03-27 Registry Drift Breaks Validation Fast
+
+- Problem: `registry/skills.json` and the README files still referenced `hello-world`, but the actual `skills/hello-world/` package was missing, so `./scripts/validate-repo.sh` failed immediately
+- Decision: restore the missing minimal skill package instead of weakening validation or deleting the example from docs without understanding the intended repo contract
+- Why it worked: the repo's validation logic is designed to catch filesystem-to-registry drift early, and restoring the package re-aligned registry, docs, and local disk state
+- Reuse later: when validation fails on a missing skill path, treat it as a real packaging contract break and fix the artifact or registry directly instead of bypassing the check

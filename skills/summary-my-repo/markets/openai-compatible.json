@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "market": "openai-compatible",
+  "display_name": "summary my repo",
+  "description": "Creates an internal repository summary pack with architecture, directory mapping, and core logic walkthroughs.",
+  "source": {
+    "type": "github",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+    "path": "skills/summary-my-repo"
+  }
+}
