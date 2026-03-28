@@ -1,6 +1,6 @@
 ---
 name: summary-my-repo
-description: Use when the user wants an internal repository summary that captures architecture, directory responsibilities, core code paths, and key logic so other engineers can understand the project quickly.
+description: Use when the user wants an internal repository summary that captures architecture, directory responsibilities, core code paths, and code-backed logic evidence so other engineers can understand the project quickly.
 ---
 
 # summary-my-repo
@@ -32,6 +32,10 @@ This skill is for fast project onboarding, architecture digestion, and codebase 
 - Clearly separate `implemented`, `inferred`, `planned`, and `risk`.
 - Prefer a small number of dense, high-signal markdown files over one giant unfocused document.
 - Preserve important logic even when compressing. Omit repetition, not substance.
+- Include necessary core code evidence. Pure prose-only packs are incomplete.
+- Every core workflow claim must be backed by at least one code snippet or config snippet from the repository.
+- For every snippet, include file path and line range.
+- Keep snippets focused. Prefer 8-40 lines per snippet over full-file dumps.
 
 ## Workflow
 
@@ -58,6 +62,7 @@ Default output files:
 - `summary-my-repo/YYYY-MM-DD-vN/00-overview.md`
 - `summary-my-repo/YYYY-MM-DD-vN/01-directory-map.md`
 - `summary-my-repo/YYYY-MM-DD-vN/02-core-logic.md`
+- `summary-my-repo/YYYY-MM-DD-vN/03-code-evidence.md`
 
 Versioning rule:
 
@@ -89,7 +94,16 @@ Write at least these sections across one or more markdown files:
 7. risks, gaps, or confusing areas
 8. recommended reading order
 
-### 5. Emphasize core logic
+### 5. Extract code evidence for core logic
+
+For each core workflow or critical file, capture one or more snippets that prove the behavior:
+
+- shell scripts, language source, config, workflow YAML, or manifest JSON are all valid evidence
+- keep each snippet small enough to read quickly
+- include only code that directly supports the claim
+- avoid copying entire files unless the repo is tiny
+
+### 6. Emphasize core logic with evidence
 
 For the most important files, explain:
 
@@ -98,8 +112,25 @@ For the most important files, explain:
 - main outputs
 - downstream effects
 - why the file is central to understanding the repo
+- which snippet ids in `03-code-evidence.md` prove each claim
 
-When code contains meaningful control flow, summarize the path step by step rather than naming the file only.
+When code contains meaningful control flow, summarize the path step by step and attach the matching snippet ids.
+
+## Code Evidence Format (Required)
+
+For each code evidence entry, include:
+
+1. `Snippet ID`: stable local id such as `S01`
+2. `File`: repository-relative path with line range, for example `scripts/validate-repo.sh:24-47`
+3. `Claim`: one sentence describing what this snippet proves
+4. `Code`: fenced code block copied from the repository
+5. `Interpretation`: short explanation of how the code supports the claim
+
+Evidence density rule:
+
+- non-trivial repositories: at least 3 snippet entries
+- medium or large repositories: usually 5-10 snippet entries
+- if fewer than 3 are included, explain why in `00-overview.md`
 
 ## Output Standard
 
@@ -108,7 +139,15 @@ Unless the user asks for a different shape, write a markdown pack to `summary-my
 - `templates/00-executive-summary.md`
 - `templates/01-directory-map.md`
 - `templates/02-core-logic.md`
+- `templates/03-code-evidence.md`
 
-Read `rubrics/coverage-checklist.md` before finalizing to ensure the pack covers architecture, directories, workflows, invariants, and risks.
+Output intent by file:
+
+- `00-overview.md`: context, architecture snapshot, workflows, risks, and reading order
+- `01-directory-map.md`: annotated tree and ownership boundaries
+- `02-core-logic.md`: logic walkthroughs that reference snippet ids from `03-code-evidence.md`
+- `03-code-evidence.md`: code-first proof layer for the main claims
+
+Read `rubrics/coverage-checklist.md` before finalizing to ensure the pack covers architecture, directories, workflows, invariants, risks, and code evidence.
 
 If the user also wants an inline answer, provide only a short summary and point to the generated files.

@@ -14,4 +14,19 @@ Write to:
 
 ## Rule
 
-For each core file, explain what it does, what it depends on, and what breaks if it changes incorrectly.
+For each core file or workflow block:
+
+- explain what it does, what it depends on, and what breaks if it changes incorrectly
+- reference one or more snippet ids from `03-code-evidence.md` as proof
+
+## Suggested Per-Block Format
+
+### Block Name
+
+- File(s):
+- Role:
+- Inputs:
+- Outputs:
+- Invariants:
+- Evidence snippets: `S01`, `S03`
+- Why this block matters:

@@ -17,3 +17,4 @@ Write to:
 ## Rule
 
 Make this the entry document for a new collaborator. It should be readable without opening any other file first.
+For core behavior claims, reference snippet ids from `03-code-evidence.md` inline.

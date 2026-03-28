@@ -15,3 +15,4 @@ Write to:
 ## Rule
 
 Do not just paste a tree. Pair each node with its responsibility and maintenance implications.
+If a directory responsibility depends on specific code behavior, cite snippet ids from `03-code-evidence.md`.

@@ -63,3 +63,10 @@
 - Decision: retire the skill as a full package removal by updating `registry/skills.json`, README examples, install-script examples, generated summary docs, and stale `dist` artifacts together
 - Why it worked: the repo's real contract spans filesystem, registry, user docs, and generated marketplace output, so removing a skill has to be treated as a multi-surface change
 - Reuse later: when removing a skill, search the whole repo first and clean source, docs, and exported artifacts in one pass before running validation
+
+## 2026-03-28 Summary Skill Needs Code Proof
+
+- Problem: architecture summaries without explicit code snippets are easy to read but hard to verify, and different readers may interpret prose claims differently
+- Decision: add a mandatory `03-code-evidence.md` output file and require snippet ids, file paths, line ranges, and short interpretations for core claims
+- Why it worked: the summary remains readable while key claims become auditable against concrete code
+- Reuse later: for repository-summary skills, treat prose as interpretation and code snippets as proof; require both by contract
