@@ -70,3 +70,10 @@
 - Decision: add a mandatory `03-code-evidence.md` output file and require snippet ids, file paths, line ranges, and short interpretations for core claims
 - Why it worked: the summary remains readable while key claims become auditable against concrete code
 - Reuse later: for repository-summary skills, treat prose as interpretation and code snippets as proof; require both by contract
+
+## 2026-04-21 Frontend Refactoring Skill Needs Migration Framing
+
+- Problem: long-form frontend cleanup advice can easily collapse into generic CSS tips and fail to tell an agent when to isolate, when to rebuild the DOM, and when to delete legacy styles
+- Decision: encode the skill around a fixed sequence of boundary selection, contamination audit, isolation strategy, view rebuild criteria, cutover gating, and deletion order
+- Why it worked: the central rule stays visible: the new UI must leave the legacy style pollution domain instead of fighting inside it
+- Reuse later: for methodology-heavy refactor skills, encode decision boundaries and migration order first; keep tactic lists secondary

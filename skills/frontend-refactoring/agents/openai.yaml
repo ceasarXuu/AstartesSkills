@@ -1,0 +1,4 @@
+version: 1
+display_name: frontend refactoring
+short_description: Refactor polluted legacy frontend surfaces by isolating new UI, rebuilding the view layer when needed, and cutting over safely.
+default_prompt: Analyze this legacy frontend refactor as a migration problem, recommend the right isolation strategy, and define a safe v2 cutover plan that reuses logic without reusing polluted styles.
