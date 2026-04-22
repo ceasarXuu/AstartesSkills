@@ -77,3 +77,10 @@
 - Decision: encode the skill around a fixed sequence of boundary selection, contamination audit, isolation strategy, view rebuild criteria, cutover gating, and deletion order
 - Why it worked: the central rule stays visible: the new UI must leave the legacy style pollution domain instead of fighting inside it
 - Reuse later: for methodology-heavy refactor skills, encode decision boundaries and migration order first; keep tactic lists secondary
+
+## 2026-04-23 Frontend Migration Needs A Style-Agnostic Baseline
+
+- Problem: when a frontend refactor starts from styled output or visual intuition, agents can accidentally break page structure, drop existing functional components, or invent components that were never part of the original page contract
+- Decision: require a pre-migration pass that strips styling concerns away and produces a structure-first inventory of regions, reusable components, functional components, states, and explicit non-existent elements
+- Why it worked: the refactor gains a stable, style-independent baseline, so the migration can modernize presentation without drifting from the original page contract
+- Reuse later: for large UI migrations, extract a style-agnostic structure checklist before touching the new design layer; use that checklist as the acceptance baseline for parity

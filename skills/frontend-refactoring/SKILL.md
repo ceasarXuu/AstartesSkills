@@ -32,8 +32,11 @@ This skill helps isolate new UI, reuse logic without reusing polluted presentati
 - Do not keep new UI inside the same style pollution domain as the legacy system.
 - Do not reuse legacy class names for new UI.
 - Do not keep adding page-specific rules to `global.css`, `index.css`, or equivalent global entry files.
+- Before writing migration code, read the legacy frontend without its styles and build a style-agnostic inventory of page structure and required components.
 - Do not force a radically different design onto a legacy DOM structure when the structure itself is the problem.
 - Reuse business logic when useful, but do not blindly reuse legacy visual components.
+- Do not drop functional components, structural regions, or required states that appear in the legacy UI unless the user explicitly approves that removal.
+- Do not invent new components during refactor unless they are required by the target design or are a clear extraction of existing behavior.
 - Delete old styles only after cutover, regression checks, and dependency confirmation.
 
 ## Core Diagnosis
@@ -77,7 +80,25 @@ Classify the refactor as one of:
 
 Do not start with a whole-site rewrite unless the user explicitly asks for it.
 
-### 2. Audit the legacy contamination
+### 2. Build a style-agnostic structure inventory
+
+Before touching migration code, inspect the legacy frontend as if styles did not exist.
+
+Capture a concrete inventory covering:
+
+- page or route name
+- top-level structural regions and section order
+- required content blocks inside each region
+- all reusable components present on the page
+- all functional components such as forms, filters, tables, tabs, modals, drawers, pagination, uploaders, or charts
+- key states, interactions, and conditional branches
+- explicit omissions: components or regions that do not exist today and must not be invented during refactor without approval
+
+Treat this inventory as the migration baseline.
+
+The refactor should happen against this structure-first checklist, not against visual memory or class names.
+
+### 3. Audit the legacy contamination
 
 Identify:
 
@@ -88,7 +109,7 @@ Identify:
 
 Summarize the likely contamination sources before editing.
 
-### 3. Decide whether to rebuild the view
+### 4. Decide whether to rebuild the view
 
 If the target UI differs substantially from the current layout, prefer:
 
@@ -101,7 +122,9 @@ If the target UI differs substantially from the current layout, prefer:
 
 Default principle: reuse logic, redo the view.
 
-### 4. Build the new isolated surface
+When rebuilding, map each new region or component back to the structure inventory so you can prove nothing required was lost and nothing undefined was added.
+
+### 5. Build the new isolated surface
 
 Preferred migration shape:
 
@@ -118,7 +141,7 @@ Rules:
 - avoid descendant chains deeper than 2 to 3 levels
 - avoid `!important` unless documenting a temporary containment override
 
-### 5. Establish the style system in this order
+### 6. Establish the style system in this order
 
 1. Tokens
 2. Base components
@@ -137,7 +160,7 @@ Token groups usually include:
 
 Do not start by patching pixel-level page details without first defining the token and component system.
 
-### 6. Control cascade and specificity
+### 7. Control cascade and specificity
 
 When using traditional CSS:
 
@@ -147,7 +170,7 @@ When using traditional CSS:
 - use a local reset when the legacy surface is unusually dirty, for example `box-sizing: border-box` inside the new root
 - treat `all: initial` or `all: revert` as last-resort tools because they can break inheritance unexpectedly
 
-### 7. Cut over safely
+### 8. Cut over safely
 
 Require a switch mechanism such as:
 
@@ -170,6 +193,9 @@ Never delete first and hope the new UI covers everything.
 
 Before calling the refactor complete, verify:
 
+- every required region and component from the structure inventory still exists or has an explicit approved replacement
+- no required functional component disappeared during the visual rewrite
+- no out-of-scope component was invented without design justification
 - the new surface is not hit by unintended legacy selectors
 - key interactions still work
 - screenshots or visual regression cover the critical states
@@ -183,17 +209,19 @@ If tooling exists, use screenshot comparison, Storybook visual tests, or CSS cov
 Unless the user asks otherwise, structure the response as:
 
 1. Refactor boundary
-2. Legacy contamination map
-3. Recommended isolation strategy
-4. View rewrite decision
-5. v2 structure and naming plan
-6. Migration and cutover sequence
-7. Verification and deletion gates
+2. Style-agnostic structure inventory
+3. Legacy contamination map
+4. Recommended isolation strategy
+5. View rewrite decision
+6. v2 structure and naming plan
+7. Migration and cutover sequence
+8. Verification and deletion gates
 
 ## Heuristics And Anti-Patterns
 
 Prefer:
 
+- structure-first inventories before any styling work
 - CSS Modules or scoped styles for new work
 - new naming over compatibility naming
 - component classes over deep descendant selectors
@@ -202,6 +230,7 @@ Prefer:
 Avoid:
 
 - keeping old DOM just to save time when layout semantics are wrong
+- refactoring directly from screenshots or styled output without a structure checklist
 - mixing old and new class systems in the same component
 - writing page detail into global style entry files
 - relying on `!important` to win cascade battles

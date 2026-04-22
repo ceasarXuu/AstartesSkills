@@ -2,7 +2,7 @@
   "version": 1,
   "market": "openai-compatible",
   "display_name": "frontend refactoring",
-  "description": "Refactors legacy frontend surfaces by isolating new UI, reusing logic without reusing polluted styles, and migrating safely with cutover discipline.",
+  "description": "Refactors legacy frontend surfaces by inventorying structure first, isolating new UI, reusing logic without reusing polluted styles, and migrating safely with cutover discipline.",
   "source": {
     "type": "github",
     "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
