@@ -13,6 +13,14 @@
         "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
         "path": "skills/astartes-coding-custodes"
       },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-03-21T01:59:39+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Publish the coding governance skill under its final astartes-coding-custodes identity."
+        ]
+      },
       "markets": {
         "github": {
           "install_method": "copy"
@@ -26,13 +34,22 @@
       "id": "frontend-refactoring",
       "name": "frontend refactoring",
       "path": "skills/frontend-refactoring",
-      "summary": "Refactors legacy frontend surfaces by isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems.",
+      "summary": "Refactors legacy frontend surfaces by inventorying structure first, isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems.",
       "tags": ["frontend", "css", "refactor", "ui-architecture", "migration"],
       "installable": true,
       "source": {
         "type": "github",
         "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
         "path": "skills/frontend-refactoring"
+      },
+      "release": {
+        "version": "1.2.1",
+        "published_at": "2026-04-23T00:00:00+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Require structure-first inventorying before frontend migration work.",
+          "Record release metadata for the skill in the repository publishing flow."
+        ]
       },
       "markets": {
         "github": {
@@ -55,6 +72,15 @@
         "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
         "path": "skills/show-my-repo"
       },
+      "release": {
+        "version": "1.1.0",
+        "published_at": "2026-03-26T20:38:26+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Add versioned repo-root output folders for repeated packaging runs.",
+          "Keep the marketplace-ready repo packaging workflow self-contained."
+        ]
+      },
       "markets": {
         "github": {
           "install_method": "copy"
@@ -75,6 +101,15 @@
         "type": "github",
         "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
         "path": "skills/summary-my-repo"
+      },
+      "release": {
+        "version": "1.1.0",
+        "published_at": "2026-03-28T21:01:26+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Require code-evidence snippets for core architectural claims.",
+          "Strengthen internal repo summaries with auditable proof."
+        ]
       },
       "markets": {
         "github": {

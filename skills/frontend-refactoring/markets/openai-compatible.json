@@ -3,6 +3,15 @@
   "market": "openai-compatible",
   "display_name": "frontend refactoring",
   "description": "Refactors legacy frontend surfaces by inventorying structure first, isolating new UI, reusing logic without reusing polluted styles, and migrating safely with cutover discipline.",
+  "release": {
+    "version": "1.2.1",
+    "published_at": "2026-04-23T00:00:00+08:00",
+    "publisher": "ceasarXuu",
+    "changes": [
+      "Require structure-first inventorying before frontend migration work.",
+      "Record release metadata for the skill in the repository publishing flow."
+    ]
+  },
   "source": {
     "type": "github",
     "repo": "https://github.com/ceasarXuu/AstartesSkills.git",

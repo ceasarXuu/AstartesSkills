@@ -14,8 +14,8 @@
 2. Rename the directory to the final skill id
 3. Fill in `SKILL.md`
 4. Fill in `agents/openai.yaml`
-5. Add market metadata under `markets/` if needed
-6. Add the skill to `registry/skills.json`
+5. Add market metadata under `markets/`, including release metadata: `version`, `published_at`, `publisher`, `changes`
+6. Add the skill to `registry/skills.json` and mirror the same release metadata there
 7. Run `./scripts/validate-repo.sh`
 8. Run `./scripts/export-marketplace.py`
 
@@ -24,6 +24,7 @@
 - Is the skill self-contained?
 - Is `SKILL.md` concise and trigger-friendly?
 - Is market metadata present?
+- Is release metadata present and synchronized between manifest and registry?
 - Is the skill listed in the registry?
 - Does installation via `scripts/install-skill.sh` work?
 - Does export via `scripts/export-marketplace.py` work?

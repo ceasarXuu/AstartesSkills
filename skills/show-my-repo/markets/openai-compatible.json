@@ -3,6 +3,15 @@
   "market": "openai-compatible",
   "display_name": "Show My Repo",
   "description": "Turns a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages.",
+  "release": {
+    "version": "1.1.0",
+    "published_at": "2026-03-26T20:38:26+08:00",
+    "publisher": "ceasarXuu",
+    "changes": [
+      "Add versioned repo-root output folders for repeated packaging runs.",
+      "Keep the marketplace-ready repo packaging workflow self-contained."
+    ]
+  },
   "source": {
     "type": "github",
     "repo": "https://github.com/ceasarXuu/AstartesSkills.git",

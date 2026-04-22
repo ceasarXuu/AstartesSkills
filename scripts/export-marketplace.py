@@ -37,6 +37,7 @@ def main() -> int:
             "path": skill["path"],
             "installable": skill.get("installable", True),
             "source": skill.get("source", {}),
+            "release": skill.get("release", {}),
             "markets": list(skill.get("markets", {}).keys()),
         }
         catalog["skills"].append(skill_entry)

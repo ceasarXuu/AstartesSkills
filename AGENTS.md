@@ -86,6 +86,15 @@ skills/<skill-id>/
 - 修正应基于真实成功/失败案例，而不是抽象猜测
 - skill 本身也应像代码一样持续迭代
 
+### Skills 发布记录
+
+- 每次编辑任意 skill，都必须同步记录本次发布元数据
+- 发布元数据至少包含：`version`、`published_at`、`publisher`、`changes`
+- `published_at` 使用本地时区的 ISO 8601 时间字符串
+- `changes` 使用简洁变更列表，概括这次编辑实际带来的修改
+- 发布元数据必须同时更新到该 skill 的市场清单文件和 `registry/skills.json`
+- 若发布元数据未更新，则该次 skill 编辑视为未完成
+
 ## 子代理使用约束
 
 - 鼓励使用 subagents 提升效率，但只允许以下组合
@@ -103,8 +112,8 @@ skills/<skill-id>/
 2. 重命名为最终 `skill id`
 3. 编写 `SKILL.md`
 4. 补齐 `agents/openai.yaml`
-5. 如需市场发布，补充 `markets/` 元数据
-6. 在 `registry/skills.json` 中注册
+5. 如需市场发布，补充 `markets/` 元数据与发布记录
+6. 在 `registry/skills.json` 中注册，并同步发布记录
 7. 运行 `./scripts/validate-repo.sh`
 8. 需要导出时运行 `./scripts/export-marketplace.py`
 
@@ -112,8 +121,9 @@ skills/<skill-id>/
 
 1. 先读该 skill 的 `SKILL.md`、`agents/openai.yaml` 与相关市场元数据
 2. 保持 skill 自包含，避免把运行依赖散落到仓库外
-3. 修改后执行校验
-4. 若本次操作带来新经验或新坑，更新 runbook
+3. 修改后同步更新版本号、发布时间、发布者、变更内容
+4. 执行校验
+5. 若本次操作带来新经验或新坑，更新 runbook
 
 ## 文档分工
 

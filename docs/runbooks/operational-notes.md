@@ -84,3 +84,10 @@
 - Decision: require a pre-migration pass that strips styling concerns away and produces a structure-first inventory of regions, reusable components, functional components, states, and explicit non-existent elements
 - Why it worked: the refactor gains a stable, style-independent baseline, so the migration can modernize presentation without drifting from the original page contract
 - Reuse later: for large UI migrations, extract a style-agnostic structure checklist before touching the new design layer; use that checklist as the acceptance baseline for parity
+
+## 2026-04-23 Skill Release Metadata Must Be Enforced
+
+- Problem: skill edits were being published without an explicit record of version, publish time, publisher, and change summary, which makes later distribution and audit trails ambiguous
+- Decision: require a mirrored `release` object in both each skill manifest and `registry/skills.json`, then enforce it in `./scripts/validate-repo.sh`
+- Why it worked: the publishing contract becomes explicit and exportable instead of relying on memory or commit history
+- Reuse later: when a repo publishes installable units, keep release metadata in machine-readable manifests and validate it before export

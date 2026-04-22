@@ -3,6 +3,15 @@
   "market": "openai-compatible",
   "display_name": "summary my repo",
   "description": "Creates an internal repository summary pack with architecture, directory mapping, and core logic walkthroughs.",
+  "release": {
+    "version": "1.1.0",
+    "published_at": "2026-03-28T21:01:26+08:00",
+    "publisher": "ceasarXuu",
+    "changes": [
+      "Require code-evidence snippets for core architectural claims.",
+      "Strengthen internal repo summaries with auditable proof."
+    ]
+  },
   "source": {
     "type": "github",
     "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
