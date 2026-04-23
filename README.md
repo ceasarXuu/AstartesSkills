@@ -59,15 +59,10 @@ npx skills add https://github.com/ceasarXuu/AstartesSkills \
   --yes
 ```
 
-Install all skills globally for Codex:
+Install this repository with the default CLI flow:
 
 ```bash
-npx -y skills add https://github.com/ceasarXuu/AstartesSkills \
-  --skill '*' \
-  --agent codex \
-  --global \
-  --copy \
-  --yes
+npx skills add https://github.com/ceasarXuu/AstartesSkills
 ```
 
 ### Install with the repository script

@@ -37,18 +37,13 @@
 
 ## 安装
 
-### 方式一：使用 `skills` CLI 一次安装全部 skills
+### 方式一：使用 `skills` CLI 安装本库
 
 ```bash
-npx -y skills add https://github.com/ceasarXuu/AstartesSkills \
-  --skill '*' \
-  --agent codex \
-  --global \
-  --copy \
-  --yes
+npx skills add https://github.com/ceasarXuu/AstartesSkills
 ```
 
-这个命令不需要提前 clone 仓库，会把本库所有 skills 全局安装给 Codex 使用。
+这个命令不需要提前 clone 仓库，会按 `skills` CLI 的默认流程安装本库 skills。
 
 ### 方式二：从本地克隆仓库安装
 
