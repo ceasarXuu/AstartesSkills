@@ -105,3 +105,10 @@
 - Decision: import each child folder as an independent installable skill, keep `threejs-game` as the routing entry, and give every child skill its own manifest plus mirrored registry release metadata
 - Why it worked: the source family remains composable, while repository tooling can list, validate, export, install, and release each specialized skill separately
 - Reuse later: when importing a family package, preserve the source package's skill boundaries instead of flattening it into one oversized skill; only collapse children if the child folders are incomplete or non-installable
+
+## 2026-04-24 Importing A Skill Under A New Managed Id
+
+- Problem: a source skill can arrive with a usable workflow but a source-facing id that does not match the repository naming decision, such as `chain-of-evidence-debug` needing to ship here as `coe-debug`
+- Decision: rename the managed folder path, frontmatter `name`, manifest source path, registry id, and README install command together, while preserving the skill's internal methodology and bundled templates
+- Why it worked: repository discovery stays coherent around the chosen managed id, but the imported skill still preserves its real operating model and supporting files
+- Reuse later: when renaming an imported skill, treat id changes as a full metadata migration across folder path, frontmatter, manifest, registry, and docs rather than only renaming the directory

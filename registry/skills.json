@@ -31,6 +31,36 @@
       }
     },
     {
+      "id": "coe-debug",
+      "name": "COE Debug",
+      "path": "skills/coe-debug",
+      "summary": "Tracks complex debug cases in project-root /coe case files using only 问题, 假设, and 证据 nodes to maintain falsifiable, evidence-backed investigations.",
+      "tags": ["debugging", "evidence", "root-cause-analysis", "incident-response", "markdown"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/coe-debug"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-24T03:04:01+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Chain-of-Evidence debug skill into AstartesSkills under the managed skill id coe-debug.",
+          "Keep the /coe case-file workflow and bundled case template while adding repository release metadata and marketplace manifest support."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/coe-debug/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
       "id": "frontend-refactoring",
       "name": "frontend refactoring",
       "path": "skills/frontend-refactoring",

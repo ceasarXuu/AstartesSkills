@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "market": "openai-compatible",
+  "display_name": "COE Debug",
+  "description": "Tracks complex debug cases in project-root /coe case files using only 问题, 假设, and 证据 nodes to maintain falsifiable, evidence-backed investigations.",
+  "release": {
+    "version": "1.0.0",
+    "published_at": "2026-04-24T03:04:01+08:00",
+    "publisher": "ceasarXuu",
+    "changes": [
+      "Import the Chain-of-Evidence debug skill into AstartesSkills under the managed skill id coe-debug.",
+      "Keep the /coe case-file workflow and bundled case template while adding repository release metadata and marketplace manifest support."
+    ]
+  },
+  "source": {
+    "type": "github",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+    "path": "skills/coe-debug"
+  }
+}

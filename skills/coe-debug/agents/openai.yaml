@@ -1,0 +1,4 @@
+version: 1
+display_name: COE Debug
+short_description: Debug complex bugs with project-root /coe case files that separate problems, hypotheses, and evidence.
+default_prompt: Help me debug this issue using the coe-debug workflow. Create or update the right /coe case file, define falsifiable hypotheses, record evidence, and only mark the issue fixed after validation evidence exists.
