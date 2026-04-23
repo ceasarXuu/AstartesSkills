@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "market": "openai-compatible",
+  "display_name": "Storybook Skills Standard",
+  "description": "Designs and audits Storybook-driven frontend component workflows, story coverage, mocks, docs, interaction tests, accessibility checks, and visual baselines.",
+  "release": {
+    "version": "1.0.0",
+    "published_at": "2026-04-23T22:50:00+08:00",
+    "publisher": "ceasarXuu",
+    "changes": [
+      "Import the Storybook frontend design and component development standard as a managed installable skill.",
+      "Package the long-form standard as a reference and include compact Storybook examples for reuse.",
+      "Normalize the project-level preview example to TSX when decorators use JSX."
+    ]
+  },
+  "source": {
+    "type": "github",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+    "path": "skills/storybook-skills-standard"
+  }
+}

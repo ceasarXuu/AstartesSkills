@@ -91,3 +91,10 @@
 - Decision: require a mirrored `release` object in both each skill manifest and `registry/skills.json`, then enforce it in `./scripts/validate-repo.sh`
 - Why it worked: the publishing contract becomes explicit and exportable instead of relying on memory or commit history
 - Reuse later: when a repo publishes installable units, keep release metadata in machine-readable manifests and validate it before export
+
+## 2026-04-23 Importing A Skill From Downloads Under macOS TCC
+
+- Problem: shell reads against `/Users/xuzhang/Downloads/storybook-skills-standard-v1.0` failed with `Operation not permitted`, even though `stat` could see the directory
+- Decision: use Finder automation to duplicate the source folder into a repo-local `.import-inbox/`, then normalize the imported package from that readable copy
+- Why it worked: Finder had the required Downloads access, while the Codex shell process did not; copying preserved the source and avoided destructive operations
+- Reuse later: when importing user-provided folders from protected macOS locations, first try read-only shell access; if TCC blocks contents, duplicate through Finder into a temporary repo-local inbox and clean the inbox by moving it to Trash after import

@@ -1,0 +1,4 @@
+version: 1
+display_name: Storybook Skills Standard
+short_description: Design and audit Storybook-driven component workflows, story coverage, mocks, docs, and quality gates.
+default_prompt: Help me design or audit Storybook stories for this frontend surface. Build a Story Map, choose story granularity, define mocks and context, and specify docs, play, a11y, and visual quality gates.

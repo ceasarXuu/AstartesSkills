@@ -110,6 +110,7 @@ Reference:
 | `astartes-coding-custodes` | Prevent iterative quality decay during AI-assisted coding by enforcing analysis, minimal change planning, strict review, and entropy control. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill astartes-coding-custodes` |
 | `frontend-refactoring` | Refactor legacy frontend surfaces by isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill frontend-refactoring` |
 | `show-my-repo` | Turn a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill show-my-repo` |
+| `storybook-skills-standard` | Design and audit Storybook-driven component workflows, story coverage, mocks, docs, interaction tests, accessibility checks, and visual baselines. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill storybook-skills-standard` |
 | `summary-my-repo` | Generate an internal repository summary pack with architecture, directory responsibilities, and core logic walkthroughs. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill summary-my-repo` |
 
 ## Repository Layout
@@ -121,6 +122,7 @@ Reference:
 │   ├── astartes-coding-custodes/   # AI coding governance skill
 │   ├── frontend-refactoring/       # Legacy frontend migration skill
 │   ├── show-my-repo/               # Repo packaging and presentation skill
+│   ├── storybook-skills-standard/  # Storybook component workflow governance skill
 │   └── summary-my-repo/            # Internal repo summary and onboarding skill
 ├── registry/                       # Repository-level catalog
 ├── scripts/                        # Install, export, test, validate tooling
