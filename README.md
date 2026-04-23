@@ -59,6 +59,17 @@ npx skills add https://github.com/ceasarXuu/AstartesSkills \
   --yes
 ```
 
+Install all skills globally for Codex:
+
+```bash
+npx -y skills add https://github.com/ceasarXuu/AstartesSkills \
+  --skill '*' \
+  --agent codex \
+  --global \
+  --copy \
+  --yes
+```
+
 ### Install with the repository script
 
 Clone locally, then install by copying the skill folder:

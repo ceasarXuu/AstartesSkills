@@ -37,7 +37,20 @@
 
 ## 安装
 
-### 方式一：从本地克隆仓库安装
+### 方式一：使用 `skills` CLI 一次安装全部 skills
+
+```bash
+npx -y skills add https://github.com/ceasarXuu/AstartesSkills \
+  --skill '*' \
+  --agent codex \
+  --global \
+  --copy \
+  --yes
+```
+
+这个命令不需要提前 clone 仓库，会把本库所有 skills 全局安装给 Codex 使用。
+
+### 方式二：从本地克隆仓库安装
 
 ```bash
 ./scripts/install-skill.sh summary-my-repo
@@ -61,7 +74,7 @@
 ${CODEX_HOME:-$HOME/.codex}/skills
 ```
 
-### 方式二：直接从 GitHub 安装
+### 方式三：直接从 GitHub 安装
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ceasarXuu/AstartesSkills/main/scripts/install-skill.sh \
