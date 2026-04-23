@@ -1,0 +1,4 @@
+version: 1
+display_name: Three.js Game Save Load Network
+short_description: Define save/load, snapshot, replay, and networking boundaries for serializable and synchronized game state.
+default_prompt: Help me define this three.js game state boundary for save/load, snapshots, replay, checkpoints, networking, and separation between logic state and scene graph.

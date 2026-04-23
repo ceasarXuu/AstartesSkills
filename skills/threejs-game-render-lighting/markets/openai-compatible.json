@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "market": "openai-compatible",
+  "display_name": "Three.js Game Render Lighting",
+  "description": "Sets three.js game rendering baselines for color management, PBR, lighting, environment maps, shadows, transparency, and post-processing.",
+  "release": {
+    "version": "1.0.0",
+    "published_at": "2026-04-23T22:54:12+08:00",
+    "publisher": "ceasarXuu",
+    "changes": [
+      "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+      "Register the rendering and lighting skill with OpenAI-compatible metadata and repository release metadata."
+    ]
+  },
+  "source": {
+    "type": "github",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+    "path": "skills/threejs-game-render-lighting"
+  }
+}

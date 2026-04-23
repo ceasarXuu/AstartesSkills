@@ -1,0 +1,4 @@
+version: 1
+display_name: Three.js Game Animation Character
+short_description: Build maintainable character animation systems with state graphs, clip conventions, retargeting, skeletal reuse, and optional IK.
+default_prompt: Help me design or improve this three.js game animation system, including clip organization, state graphs, retargeting, IK needs, and animation-event boundaries.

@@ -112,6 +112,19 @@ Reference:
 | `show-my-repo` | Turn a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill show-my-repo` |
 | `storybook-skills-standard` | Design and audit Storybook-driven component workflows, story coverage, mocks, docs, interaction tests, accessibility checks, and visual baselines. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill storybook-skills-standard` |
 | `summary-my-repo` | Generate an internal repository summary pack with architecture, directory responsibilities, and core logic walkthroughs. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill summary-my-repo` |
+| `threejs-game` | Route three.js game work across runtime, assets, rendering, input, physics, animation, performance, networking, tooling, and XR tracks. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill threejs-game` |
+| `threejs-game-animation-character` | Build maintainable character-animation systems with state graphs, clip conventions, retargeting, skeletal reuse, and optional IK. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill threejs-game-animation-character` |
+| `threejs-game-asset-pipeline` | Define glTF/GLB asset pipelines for compression, validation, naming conventions, prefab assembly, and loader setup. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill threejs-game-asset-pipeline` |
+| `threejs-game-bootstrap-runtime` | Create maintainable three.js game runtime structure with renderer factory, game loop, resize flow, lifecycle hooks, and service boundaries. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill threejs-game-bootstrap-runtime` |
+| `threejs-game-input-camera` | Design device-agnostic input and camera control for keyboard, mouse, pointer lock, gamepad, touch, and mode switching. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill threejs-game-input-camera` |
+| `threejs-game-interaction-ui` | Implement robust world interaction, picking, triggers, HUD coordination, and world-space UI patterns. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill threejs-game-interaction-ui` |
+| `threejs-game-materials-tsl-vfx` | Implement custom materials, TSL, procedural shaders, particle systems, and VFX with explicit WebGL/WebGPU boundaries. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill threejs-game-materials-tsl-vfx` |
+| `threejs-game-performance-profiler` | Set performance budgets and profiling workflows for draw calls, memory, cleanup, streaming, batching, and CPU/GPU bottlenecks. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill threejs-game-performance-profiler` |
+| `threejs-game-physics-collision` | Design collision and physics layers with character movement, collision layers, scene queries, and engine-adapter boundaries. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill threejs-game-physics-collision` |
+| `threejs-game-render-lighting` | Set rendering baselines for color management, PBR, lighting, environment maps, shadows, transparency, and post-processing. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill threejs-game-render-lighting` |
+| `threejs-game-save-load-network` | Define save/load, snapshot, replay, and networking boundaries for serializable and synchronized game state. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill threejs-game-save-load-network` |
+| `threejs-game-tooling-qa-release` | Create repeatable quality workflows with tests, asset validation, visual regression, browser coverage, and release checklists. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill threejs-game-tooling-qa-release` |
+| `threejs-game-xr-platform` | Add WebXR support with controller mapping, interaction design, comfort rules, and XR-specific rendering constraints. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill threejs-game-xr-platform` |
 
 ## Repository Layout
 
@@ -123,7 +136,8 @@ Reference:
 │   ├── frontend-refactoring/       # Legacy frontend migration skill
 │   ├── show-my-repo/               # Repo packaging and presentation skill
 │   ├── storybook-skills-standard/  # Storybook component workflow governance skill
-│   └── summary-my-repo/            # Internal repo summary and onboarding skill
+│   ├── summary-my-repo/            # Internal repo summary and onboarding skill
+│   └── threejs-game*/              # Three.js game development skill family
 ├── registry/                       # Repository-level catalog
 ├── scripts/                        # Install, export, test, validate tooling
 ├── docs/

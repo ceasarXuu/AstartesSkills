@@ -1,0 +1,4 @@
+version: 1
+display_name: Three.js Game
+short_description: Route three.js game work across runtime, assets, rendering, input, physics, animation, performance, networking, and XR tracks.
+default_prompt: Help me plan this three.js game task by choosing the right specialized skill tracks, sequencing the work, and defining validation gates.

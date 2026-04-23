@@ -1,0 +1,4 @@
+version: 1
+display_name: Three.js Game Input Camera
+short_description: Design device-agnostic input and camera control for keyboard, mouse, pointer lock, gamepad, touch, and mode switching.
+default_prompt: Help me design this three.js game input and camera layer, including action mapping, device support, pointer lock, gamepad or touch support, and UI focus rules.

@@ -1,0 +1,4 @@
+version: 1
+display_name: Three.js Game Render Lighting
+short_description: Set rendering baselines for color management, PBR, lighting, environment maps, shadows, transparency, and post-processing.
+default_prompt: Help me define or audit this three.js game rendering baseline, including color management, lighting, PBR, environment maps, shadows, transparency, post-processing, and budgets.

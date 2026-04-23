@@ -26,6 +26,7 @@
 - `show-my-repo`：把 repo 提炼成面向投资人、用户、路演和落地页的展示包
 - `storybook-skills-standard`：面向 Storybook 组件驱动开发、story 覆盖、mock、文档、交互测试、可访问性与视觉基线治理的 skill
 - `summary-my-repo`：生成面向协作者的仓库理解包，覆盖架构、目录职责和核心逻辑
+- `threejs-game` 及 `threejs-game-*`：面向 three.js 游戏开发的 skill family，覆盖运行时、资产、渲染、输入、交互、物理、动画、VFX、性能、存档网络、XR 与 QA 发布
 
 查看最新可安装 skills：
 

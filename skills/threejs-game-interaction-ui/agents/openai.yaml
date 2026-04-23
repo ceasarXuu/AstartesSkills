@@ -1,0 +1,4 @@
+version: 1
+display_name: Three.js Game Interaction UI
+short_description: Implement robust world interaction, picking, triggers, HUD coordination, and world-space UI patterns.
+default_prompt: Help me design or implement this three.js game interaction layer, including picking, triggers, interaction prompts, HUD coordination, and world-space UI.

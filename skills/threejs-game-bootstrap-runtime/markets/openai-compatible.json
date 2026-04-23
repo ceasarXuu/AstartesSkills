@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "market": "openai-compatible",
+  "display_name": "Three.js Game Bootstrap Runtime",
+  "description": "Creates or refactors three.js game runtimes with renderer factories, game loops, resize flows, lifecycle hooks, and service boundaries.",
+  "release": {
+    "version": "1.0.0",
+    "published_at": "2026-04-23T22:54:12+08:00",
+    "publisher": "ceasarXuu",
+    "changes": [
+      "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+      "Register the runtime bootstrap skill with OpenAI-compatible metadata and repository release metadata."
+    ]
+  },
+  "source": {
+    "type": "github",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+    "path": "skills/threejs-game-bootstrap-runtime"
+  }
+}

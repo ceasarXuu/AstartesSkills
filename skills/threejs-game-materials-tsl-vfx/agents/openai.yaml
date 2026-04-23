@@ -1,0 +1,4 @@
+version: 1
+display_name: Three.js Game Materials TSL VFX
+short_description: Implement custom materials, TSL, procedural shaders, particle systems, and VFX with explicit WebGL/WebGPU boundaries.
+default_prompt: Help me design this three.js game material or VFX work, keeping shader, TSL, particle, WebGL, WebGPU, and performance boundaries explicit.

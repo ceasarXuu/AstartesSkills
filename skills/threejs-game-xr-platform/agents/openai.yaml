@@ -1,0 +1,4 @@
+version: 1
+display_name: Three.js Game XR Platform
+short_description: Add WebXR support with controller mapping, interaction design, comfort rules, and XR-specific rendering constraints.
+default_prompt: Help me add or audit WebXR support for this three.js game, including controller mapping, XR interaction design, comfort rules, UI, rendering constraints, and platform limits.

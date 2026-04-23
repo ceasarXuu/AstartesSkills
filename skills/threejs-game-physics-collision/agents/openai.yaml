@@ -1,0 +1,4 @@
+version: 1
+display_name: Three.js Game Physics Collision
+short_description: Design collision and physics layers with character movement, collision layers, scene queries, and engine-adapter boundaries.
+default_prompt: Help me design this three.js game physics and collision layer, including character movement, blocking, triggers, scene queries, layers, and adapter boundaries.

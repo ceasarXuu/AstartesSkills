@@ -92,6 +92,396 @@
       }
     },
     {
+      "id": "threejs-game",
+      "name": "Three.js Game",
+      "path": "skills/threejs-game",
+      "summary": "Routes three.js game-development tasks across runtime, assets, rendering, input, physics, animation, performance, networking, tooling, and XR tracks.",
+      "tags": ["threejs", "game-development", "webgl", "game-architecture", "routing"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:54:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+          "Register the family router skill with OpenAI-compatible metadata and repository release metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "threejs-game-animation-character",
+      "name": "Three.js Game Animation Character",
+      "path": "skills/threejs-game-animation-character",
+      "summary": "Builds maintainable three.js character-animation systems with state graphs, clip conventions, retargeting, skeletal reuse, and optional IK.",
+      "tags": ["threejs", "game-development", "animation", "character", "ik"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game-animation-character"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:54:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+          "Register the animation and character workflow skill with OpenAI-compatible metadata and repository release metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game-animation-character/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "threejs-game-asset-pipeline",
+      "name": "Three.js Game Asset Pipeline",
+      "path": "skills/threejs-game-asset-pipeline",
+      "summary": "Defines and enforces three.js game asset pipelines around glTF/GLB, compression, validation, naming conventions, runtime prefab assembly, and loader setup.",
+      "tags": ["threejs", "game-development", "assets", "gltf", "glb"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game-asset-pipeline"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:54:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+          "Register the asset pipeline skill with OpenAI-compatible metadata and repository release metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game-asset-pipeline/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "threejs-game-bootstrap-runtime",
+      "name": "Three.js Game Bootstrap Runtime",
+      "path": "skills/threejs-game-bootstrap-runtime",
+      "summary": "Creates or refactors three.js game runtimes with renderer factories, game loops, resize flows, lifecycle hooks, and service boundaries.",
+      "tags": ["threejs", "game-development", "runtime", "architecture", "game-loop"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game-bootstrap-runtime"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:54:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+          "Register the runtime bootstrap skill with OpenAI-compatible metadata and repository release metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game-bootstrap-runtime/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "threejs-game-input-camera",
+      "name": "Three.js Game Input Camera",
+      "path": "skills/threejs-game-input-camera",
+      "summary": "Designs device-agnostic input abstraction and camera-control baselines for three.js games across keyboard, mouse, pointer lock, gamepad, touch, and mode switching.",
+      "tags": ["threejs", "game-development", "input", "camera", "controls"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game-input-camera"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:54:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+          "Register the input and camera skill with OpenAI-compatible metadata and repository release metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game-input-camera/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "threejs-game-interaction-ui",
+      "name": "Three.js Game Interaction UI",
+      "path": "skills/threejs-game-interaction-ui",
+      "summary": "Implements world interaction, picking, triggers, HUD coordination, and world-space UI patterns for three.js games.",
+      "tags": ["threejs", "game-development", "interaction", "hud", "ui"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game-interaction-ui"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:54:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+          "Register the interaction and UI skill with OpenAI-compatible metadata and repository release metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game-interaction-ui/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "threejs-game-materials-tsl-vfx",
+      "name": "Three.js Game Materials TSL VFX",
+      "path": "skills/threejs-game-materials-tsl-vfx",
+      "summary": "Implements custom materials, TSL, procedural shaders, particle systems, and advanced visual effects for three.js games while keeping WebGL and WebGPU paths explicit.",
+      "tags": ["threejs", "game-development", "materials", "tsl", "vfx"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game-materials-tsl-vfx"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:54:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+          "Register the materials, TSL, and VFX skill with OpenAI-compatible metadata and repository release metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game-materials-tsl-vfx/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "threejs-game-performance-profiler",
+      "name": "Three.js Game Performance Profiler",
+      "path": "skills/threejs-game-performance-profiler",
+      "summary": "Sets budgets and profiling workflows for three.js games, covering draw calls, memory, lifecycle cleanup, streaming, batching, and CPU/GPU bottlenecks.",
+      "tags": ["threejs", "game-development", "performance", "profiling", "optimization"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game-performance-profiler"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:54:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+          "Register the performance profiling skill with OpenAI-compatible metadata and repository release metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game-performance-profiler/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "threejs-game-physics-collision",
+      "name": "Three.js Game Physics Collision",
+      "path": "skills/threejs-game-physics-collision",
+      "summary": "Designs collision and physics layers for three.js games, including character movement, collision layers, scene queries, and engine-adapter boundaries.",
+      "tags": ["threejs", "game-development", "physics", "collision", "character-controller"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game-physics-collision"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:54:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+          "Register the physics and collision skill with OpenAI-compatible metadata and repository release metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game-physics-collision/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "threejs-game-render-lighting",
+      "name": "Three.js Game Render Lighting",
+      "path": "skills/threejs-game-render-lighting",
+      "summary": "Sets three.js game rendering baselines for color management, PBR, lighting, environment maps, shadows, transparency, and post-processing.",
+      "tags": ["threejs", "game-development", "rendering", "lighting", "pbr"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game-render-lighting"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:54:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+          "Register the rendering and lighting skill with OpenAI-compatible metadata and repository release metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game-render-lighting/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "threejs-game-save-load-network",
+      "name": "Three.js Game Save Load Network",
+      "path": "skills/threejs-game-save-load-network",
+      "summary": "Defines save/load, snapshot, replay, and networking boundaries for three.js games whose state must be serialized, restored, synchronized, or replayed.",
+      "tags": ["threejs", "game-development", "save-load", "networking", "replay"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game-save-load-network"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:54:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+          "Register the save, load, replay, and networking skill with OpenAI-compatible metadata and repository release metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game-save-load-network/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "threejs-game-tooling-qa-release",
+      "name": "Three.js Game Tooling QA Release",
+      "path": "skills/threejs-game-tooling-qa-release",
+      "summary": "Creates repeatable quality workflows for three.js games with tests, asset validation, visual regression, browser coverage, and release checklists.",
+      "tags": ["threejs", "game-development", "qa", "testing", "release"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game-tooling-qa-release"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:54:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+          "Register the tooling, QA, and release skill with OpenAI-compatible metadata and repository release metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game-tooling-qa-release/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "threejs-game-xr-platform",
+      "name": "Three.js Game XR Platform",
+      "path": "skills/threejs-game-xr-platform",
+      "summary": "Adds WebXR support to three.js games with controller mapping, interaction design, comfort rules, and XR-specific rendering constraints.",
+      "tags": ["threejs", "game-development", "webxr", "xr", "vr"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game-xr-platform"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:54:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
+          "Register the XR platform skill with OpenAI-compatible metadata and repository release metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game-xr-platform/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
       "id": "show-my-repo",
       "name": "Show My Repo",
       "path": "skills/show-my-repo",

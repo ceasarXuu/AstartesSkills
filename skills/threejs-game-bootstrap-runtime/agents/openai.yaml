@@ -1,0 +1,4 @@
+version: 1
+display_name: Three.js Game Bootstrap Runtime
+short_description: Create maintainable three.js game runtime structure with renderer factory, loop, resize flow, lifecycle hooks, and service boundaries.
+default_prompt: Help me bootstrap or refactor this three.js game runtime into a maintainable structure with renderer setup, game loop, resize handling, lifecycle hooks, and service boundaries.

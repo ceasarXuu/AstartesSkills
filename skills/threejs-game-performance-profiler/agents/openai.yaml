@@ -1,0 +1,4 @@
+version: 1
+display_name: Three.js Game Performance Profiler
+short_description: Set performance budgets and profiling workflows for draw calls, memory, cleanup, streaming, batching, and CPU/GPU bottlenecks.
+default_prompt: Help me build a systematic performance workflow for this three.js game, including budgets, profiling, draw calls, memory, cleanup, streaming, batching, and bottleneck triage.

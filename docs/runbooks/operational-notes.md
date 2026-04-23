@@ -98,3 +98,10 @@
 - Decision: use Finder automation to duplicate the source folder into a repo-local `.import-inbox/`, then normalize the imported package from that readable copy
 - Why it worked: Finder had the required Downloads access, while the Codex shell process did not; copying preserved the source and avoided destructive operations
 - Reuse later: when importing user-provided folders from protected macOS locations, first try read-only shell access; if TCC blocks contents, duplicate through Finder into a temporary repo-local inbox and clean the inbox by moving it to Trash after import
+
+## 2026-04-23 Importing A Multi-Skill Family
+
+- Problem: `threejs-game-skill-family` was already shaped as `skills/<id>/SKILL.md` folders, but this repository requires every installable unit to also have `agents/openai.yaml`, `markets/openai-compatible.json`, registry release metadata, README discovery, validation, and export coverage
+- Decision: import each child folder as an independent installable skill, keep `threejs-game` as the routing entry, and give every child skill its own manifest plus mirrored registry release metadata
+- Why it worked: the source family remains composable, while repository tooling can list, validate, export, install, and release each specialized skill separately
+- Reuse later: when importing a family package, preserve the source package's skill boundaries instead of flattening it into one oversized skill; only collapse children if the child folders are incomplete or non-installable

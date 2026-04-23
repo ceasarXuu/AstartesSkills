@@ -1,0 +1,4 @@
+version: 1
+display_name: Three.js Game Tooling QA Release
+short_description: Create repeatable quality workflows with tests, asset validation, visual regression, browser coverage, and release checklists.
+default_prompt: Help me design this three.js game QA and release workflow, including tests, asset validation, visual regression, browser coverage, smoke tests, and release gates.

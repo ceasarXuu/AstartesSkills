@@ -1,0 +1,4 @@
+version: 1
+display_name: Three.js Game Asset Pipeline
+short_description: Define glTF/GLB pipelines for compression, validation, naming conventions, prefab assembly, and loader setup.
+default_prompt: Help me define or audit this three.js game asset pipeline, including glTF/GLB conventions, compression, validation, naming, runtime prefabs, and loader setup.
