@@ -22,7 +22,7 @@
 当前可安装示例包括：
 
 - `astartes-coding-custodes`：面向编码治理与执行规范的 skill
-- `coe-debug`：面向复杂排障的 evidence-first skill，把问题、假设、证据持续写入项目根目录 `/coe` 案件文件
+- `coe-debug`：面向复杂排障的 evidence-first skill，把 Problem / Hypothesis / Evidence 持续写入项目根目录 `/coe` 案件文件
 - `frontend-refactoring`：面向老前端重构的 skill，核心是隔离新 UI、重做视图层并安全切流
 - `show-my-repo`：把 repo 提炼成面向投资人、用户、路演和落地页的展示包
 - `storybook-skills-standard`：面向 Storybook 组件驱动开发、story 覆盖、mock、文档、交互测试、可访问性与视觉基线治理的 skill

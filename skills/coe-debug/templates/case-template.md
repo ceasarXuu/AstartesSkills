@@ -1,30 +1,67 @@
-# 问题 P-001：<简短问题标题>
-- 状态: open
-- 创建时间: <YYYY-MM-DD HH:mm>
-- 最后更新: <YYYY-MM-DD HH:mm>
-- 问题目标: <本案要解决的唯一目标>
-- 当前症状:
-  - <观察到的现象>
-- 期望行为:
-  - <系统应该如何表现>
-- 实际行为:
-  - <系统现在如何表现>
-- 影响范围:
-  - <受影响功能、用户、环境、版本>
-- 复现条件:
-  - <复现步骤、输入、前置状态；未知则写“未知”>
-- 环境信息:
-  - <OS、运行时、版本、配置、分支、提交等；未知则写“未知”>
-- 已知事实:
-  - <必须能追溯到证据节点；没有则写“无”>
-- 排除项:
-  - <必须能追溯到证据节点；没有则写“无”>
-- 解决判据:
-  - <什么证据出现后才允许把状态改为 fixed>
-- 当前结论: <不能超过证据支持范围>
-- 关联假设:
-  - <H-xxx；没有则写“无”>
-- 解决依据:
-  - 未满足
-- 关闭原因:
-  - 未关闭
+# Problem P-001: <short problem title>
+- Status: open
+- Created: <YYYY-MM-DD HH:mm>
+- Updated: <YYYY-MM-DD HH:mm>
+- Objective: <the single goal this case must solve>
+- Symptoms:
+  - <observed symptom>
+- Expected behavior:
+  - <what the system should do>
+- Actual behavior:
+  - <what the system does now>
+- Impact:
+  - <affected feature, user, environment, version, or workflow>
+- Reproduction:
+  - <steps, input, preconditions; write "unknown" if unknown>
+- Environment:
+  - <OS, runtime, version, config, branch, commit; write "unknown" if unknown>
+- Known facts:
+  - <facts confirmed by evidence nodes; write "none" if empty>
+- Ruled out:
+  - <directions ruled out by refuted hypotheses; write "none" if empty>
+- Fix criteria:
+  - <evidence required before this problem can become fixed>
+- Current conclusion: <the most defensible case judgment; do not exceed evidence>
+- Related hypotheses:
+  - H-001
+- Resolution basis:
+  - not satisfied
+- Close reason:
+  - not closed
+
+## Hypothesis H-001: <short falsifiable claim title>
+- Status: unverified
+- Parent: P-001
+- Claim: <a concrete judgment that can be confirmed or refuted>
+- Layer: root-cause | sub-cause | fix-validation | regression-window | environment | interaction
+- Factor relation: single | all_of | any_of | part_of | unknown
+- Depends on:
+  - none
+- Rationale:
+  - <reason from the problem report, existing evidence, code structure, or experience; this is reasoning, not evidence>
+- Falsifiable predictions:
+  - If true: <what should be observed>
+  - If false: <what should not be observed, or what opposite result should appear>
+- Verification plan:
+  - <next smallest action; prefer experiments that separate competing hypotheses>
+- Related evidence:
+  - E-001
+- Conclusion: unverified
+- Next step: <continue testing, create child hypothesis, implement fix, wait for input, or stop>
+- Blocker:
+  - none
+- Close reason:
+  - not closed
+
+## Evidence E-001: <short evidence title>
+- Related hypotheses:
+  - H-001
+- Direction: supports | refutes | neutral
+- Type: observation | log | experiment | code-location | config | environment | user-feedback | fix-validation
+- Source: <command, file path, code location, screenshot description, or user feedback source>
+- Raw content:
+  ```text
+  <key output, error text, code snippet, config, or reproduction result; preserve raw wording>
+  ```
+- Interpretation: <how this evidence affects related hypotheses; stay narrower than the raw content>
+- Time: <YYYY-MM-DD HH:mm>

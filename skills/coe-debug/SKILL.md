@@ -1,6 +1,6 @@
 ---
 name: coe-debug
-description: Use this skill when debugging complex, multi-factor, or long-running bugs. It maintains a project-root /coe Markdown case file per bug case using a strict Chain-of-Evidence model with only 问题, 假设, and 证据 nodes.
+description: Use this skill when debugging complex, multi-factor, or long-running bugs. It maintains a project-root /coe Markdown case file per bug case using a strict Chain-of-Evidence model with only Problem, Hypothesis, and Evidence nodes.
 ---
 
 # COE Debug
@@ -9,154 +9,154 @@ Use this skill when debugging a bug that may involve multiple layers, multiple c
 
 The purpose is to treat debugging like a case investigation: maintain a persistent evidence chain, separate hypotheses from facts, and avoid losing state when the conversation or code context becomes long.
 
-## Core model
+## Core Model
 
 Every debug case is represented by one Markdown file under the project root:
 
 ```text
-/coe/YYYY-MM-DD-HH-mm 简短bug描述.md
+/coe/YYYY-MM-DD-HH-mm short-bug-title.md
 ```
 
 Example:
 
 ```text
-/coe/2026-05-01-13-31 terminal 卡顿问题.md
+/coe/2026-05-01-13-31 terminal-startup-lag.md
 ```
 
 Each case file contains exactly three node types:
 
-1. `问题` — the unique root node of the case.
-2. `假设` — a falsifiable explanation of the problem or a sub-cause.
-3. `证据` — an actual observation, experiment result, log, code finding, config fact, or user confirmation used to support or refute a hypothesis.
+1. `Problem` - the unique root node of the case.
+2. `Hypothesis` - a falsifiable explanation of the problem or a sub-cause.
+3. `Evidence` - an actual observation, experiment result, log, code finding, config fact, or user confirmation used to support or refute a hypothesis.
 
-A case file must contain exactly one `问题` node. It may contain zero or more `假设` nodes and zero or more `证据` nodes.
+A case file must contain exactly one `Problem` node. It may contain zero or more `Hypothesis` nodes and zero or more `Evidence` nodes.
 
-No other node type is allowed in case files. Do not create separate sections such as `日志`, `任务`, `行动`, `总结`, `时间线`, `计划`, `结论`, or `备注`. Put that information into fields inside one of the three allowed node types.
+No other node type is allowed in case files. Do not create separate sections such as `Logs`, `Tasks`, `Actions`, `Timeline`, `Plan`, `Summary`, `Conclusion`, or `Notes`. Put that information into fields inside one of the three allowed node types.
 
-## Allowed states
+## Allowed States
 
-### 问题 states
+### Problem States
 
 Only these values are valid:
 
-- `open` — unresolved and still active.
-- `fixed` — solved and validated by evidence.
-- `closed` — no longer being pursued.
+- `open` - unresolved and still active.
+- `fixed` - solved and validated by evidence.
+- `closed` - no longer being pursued.
 
-A `问题` node may be set to `fixed` only when at least one relevant `假设` has state `证实`, and there is validation evidence showing that the bug is actually resolved.
+A `Problem` node may be set to `fixed` only when at least one relevant `Hypothesis` has state `confirmed`, and there is validation evidence showing that the bug is actually resolved.
 
 A code change, config change, or plausible explanation alone is not enough to mark the problem as `fixed`.
 
-### 假设 states
+### Hypothesis States
 
 Only these values are valid:
 
-- `未验证` — proposed but not yet tested.
-- `证实` — supported by concrete evidence and explains the relevant symptom or sub-cause.
-- `证伪` — contradicted by concrete evidence.
-- `block` — cannot currently be tested because required information, access, environment, reproduction, or dependency is missing.
-- `closed` — intentionally no longer pursued, usually because it is superseded, irrelevant, or not worth further investigation.
+- `unverified` - proposed but not yet tested.
+- `confirmed` - supported by concrete evidence and explains the relevant symptom or sub-cause.
+- `refuted` - contradicted by concrete evidence.
+- `blocked` - cannot currently be tested because required information, access, environment, reproduction, or dependency is missing.
+- `closed` - intentionally no longer pursued, usually because it is superseded, irrelevant, or not worth further investigation.
 
 Evidence nodes have no state. They are factual records.
 
-## Case split and merge rule
+## Case Split And Merge Rule
 
 When the user reports multiple bugs at the same time:
 
 - Use one case file if the symptoms are highly correlated: same trigger, same execution path, same regression window, same error surface, same stack trace, same environment, or likely shared root cause.
 - Create separate case files if the symptoms appear independent.
 - If uncertain, start with one case only when there is a concrete suspected relation. Otherwise create separate cases.
-- Do not put multiple unrelated root problems into one case file. One case file means one `问题` node.
+- Do not put multiple unrelated root problems into one case file. One case file means one `Problem` node.
 
-If a later investigation proves that two cases share a root cause, keep both files but cross-reference the other case in a field inside the `问题` node. Do not add a fourth node type.
+If a later investigation proves that two cases share a root cause, keep both files but cross-reference the other case in a field inside the `Problem` node. Do not add a fourth node type.
 
-## Case document format
+## Case Document Format
 
 A valid case document uses this structure exactly:
 
 ```markdown
-# 问题 P-001：<简短问题标题>
-- 状态: open
-- 创建时间: <YYYY-MM-DD HH:mm>
-- 最后更新: <YYYY-MM-DD HH:mm>
-- 问题目标: <本案要解决的唯一目标>
-- 当前症状:
-  - <观察到的现象>
-- 期望行为:
-  - <系统应该如何表现>
-- 实际行为:
-  - <系统现在如何表现>
-- 影响范围:
-  - <受影响功能、用户、环境、版本>
-- 复现条件:
-  - <复现步骤、输入、前置状态；未知则写“未知”>
-- 环境信息:
-  - <OS、运行时、版本、配置、分支、提交等；未知则写“未知”>
-- 已知事实:
-  - <已经被证据确认的事实；必须能追溯到证据节点>
-- 排除项:
-  - <已经被证伪假设排除的方向；必须能追溯到证据节点>
-- 解决判据:
-  - <什么证据出现后才允许把状态改为 fixed>
-- 当前结论: <当前最稳妥的案件判断；不能超过证据支持范围>
-- 关联假设:
+# Problem P-001: <short problem title>
+- Status: open
+- Created: <YYYY-MM-DD HH:mm>
+- Updated: <YYYY-MM-DD HH:mm>
+- Objective: <the single goal this case must solve>
+- Symptoms:
+  - <observed symptom>
+- Expected behavior:
+  - <what the system should do>
+- Actual behavior:
+  - <what the system does now>
+- Impact:
+  - <affected feature, user, environment, version, or workflow>
+- Reproduction:
+  - <steps, input, preconditions; write "unknown" if unknown>
+- Environment:
+  - <OS, runtime, version, config, branch, commit; write "unknown" if unknown>
+- Known facts:
+  - <facts confirmed by evidence nodes; write "none" if empty>
+- Ruled out:
+  - <directions ruled out by refuted hypotheses; write "none" if empty>
+- Fix criteria:
+  - <evidence required before this problem can become fixed>
+- Current conclusion: <the most defensible case judgment; do not exceed evidence>
+- Related hypotheses:
   - H-001
-- 解决依据:
-  - <仅当状态为 fixed 时填写：H-xxx + E-xxx；否则写“未满足”>
-- 关闭原因:
-  - <仅当状态为 closed 时填写；否则写“未关闭”>
+- Resolution basis:
+  - <only when fixed: H-xxx + E-xxx; otherwise write "not satisfied">
+- Close reason:
+  - <only when closed; otherwise write "not closed">
 
-## 假设 H-001：<可验证命题短标题>
-- 状态: 未验证
-- 父节点: P-001
-- 命题: <一个可以被证实或证伪的具体判断>
-- 层级: root-cause | sub-cause | fix-validation | regression-window | environment | interaction
-- 因素关系: single | all_of | any_of | part_of | unknown
-- 依赖假设:
-  - <H-xxx；没有则写“无”>
-- 提出依据:
-  - <来自问题描述、已有证据、代码结构或经验的理由；这是推理，不是证据>
-- 可证伪预测:
-  - 如果成立: <应该观察到什么>
-  - 如果不成立: <应该观察不到什么，或会出现什么相反结果>
-- 验证计划:
-  - <下一步最小验证动作；优先选择能区分多个假设的实验>
-- 关联证据:
-  - <E-xxx；没有则写“无”>
-- 结论: <未验证/证实/证伪/block/closed 的理由>
-- 下一步: <继续验证、派生子假设、实施修复、等待用户信息、或停止>
-- 阻塞原因:
-  - <仅当状态为 block 时填写；否则写“无”>
-- 关闭原因:
-  - <仅当状态为 closed 时填写；否则写“未关闭”>
+## Hypothesis H-001: <short falsifiable claim title>
+- Status: unverified
+- Parent: P-001
+- Claim: <a concrete judgment that can be confirmed or refuted>
+- Layer: root-cause | sub-cause | fix-validation | regression-window | environment | interaction
+- Factor relation: single | all_of | any_of | part_of | unknown
+- Depends on:
+  - <H-xxx; write "none" if empty>
+- Rationale:
+  - <reason from the problem report, existing evidence, code structure, or experience; this is reasoning, not evidence>
+- Falsifiable predictions:
+  - If true: <what should be observed>
+  - If false: <what should not be observed, or what opposite result should appear>
+- Verification plan:
+  - <next smallest action; prefer experiments that separate competing hypotheses>
+- Related evidence:
+  - <E-xxx; write "none" if empty>
+- Conclusion: <why the status is unverified, confirmed, refuted, blocked, or closed>
+- Next step: <continue testing, create child hypothesis, implement fix, wait for input, or stop>
+- Blocker:
+  - <only when blocked; otherwise write "none">
+- Close reason:
+  - <only when closed; otherwise write "not closed">
 
-## 证据 E-001：<证据短标题>
-- 关联假设:
+## Evidence E-001: <short evidence title>
+- Related hypotheses:
   - H-001
-- 方向: 支持 | 反驳 | 中性
-- 类型: 观察 | 日志 | 实验 | 代码定位 | 配置 | 环境 | 用户反馈 | 修复验证
-- 获取方式: <命令、文件路径、代码位置、截图说明、用户反馈来源等>
-- 原始内容:
+- Direction: supports | refutes | neutral
+- Type: observation | log | experiment | code-location | config | environment | user-feedback | fix-validation
+- Source: <command, file path, code location, screenshot description, or user feedback source>
+- Raw content:
   ```text
-  <粘贴关键输出、错误信息、代码片段、配置、复现结果；保持原始性>
+  <key output, error text, code snippet, config, or reproduction result; preserve raw wording>
   ```
-- 判读: <这条证据如何影响关联假设；必须克制，不得超过原始内容>
-- 时间: <YYYY-MM-DD HH:mm>
+- Interpretation: <how this evidence affects related hypotheses; stay narrower than the raw content>
+- Time: <YYYY-MM-DD HH:mm>
 ```
 
-### Heading rule
+## Heading Rule
 
 Inside case documents, headings must match one of these forms only:
 
 ```text
-# 问题 P-001：...
-## 假设 H-001：...
-## 证据 E-001：...
+# Problem P-001: ...
+## Hypothesis H-001: ...
+## Evidence E-001: ...
 ```
 
 No other Markdown heading is valid in a case file.
 
-### ID rule
+## ID Rule
 
 - The problem node is always `P-001`.
 - Hypothesis IDs are `H-001`, `H-002`, `H-003`, and so on.
@@ -166,7 +166,7 @@ No other Markdown heading is valid in a case file.
 
 ## Workflow
 
-### 1. Locate or create the case
+### 1. Locate Or Create The Case
 
 Before debugging, inspect `/coe` in the project root.
 
@@ -176,15 +176,15 @@ Before debugging, inspect `/coe` in the project root.
 
 The case document is the source of truth. Do not rely on conversation memory when a case file exists.
 
-### 2. Normalize the problem
+### 2. Normalize The Problem
 
-Create or update the single `问题` node.
+Create or update the single `Problem` node.
 
-The `问题目标` must be singular. If the user gave a broad complaint, rewrite it as one concrete debug target. Preserve the user's original symptoms under `当前症状`.
+The `Objective` field must be singular. If the user gave a broad complaint, rewrite it as one concrete debug target. Preserve the user's original symptoms under `Symptoms`.
 
 Do not mark the problem as `fixed` at creation time.
 
-### 3. Generate hypotheses
+### 3. Generate Hypotheses
 
 Create hypotheses as falsifiable statements.
 
@@ -195,19 +195,19 @@ A good hypothesis has these properties:
 - It can be tested with a small action.
 - It can be contradicted by evidence.
 
-Bad hypotheses are vague labels such as “可能是环境问题”, “代码有 bug”, or “依赖有问题”. Rewrite them into testable statements.
+Bad hypotheses are vague labels such as "environment issue", "code bug", or "dependency problem". Rewrite them into testable statements.
 
-For multi-layer issues, use `父节点` and `依赖假设` fields instead of creating new node types.
+For multi-layer issues, use `Parent` and `Depends on` fields instead of creating new node types.
 
 Example:
 
 ```text
-H-001: 终端卡顿来自 shell 启动阶段
-H-002: zsh 插件初始化阻塞导致 shell 启动阶段卡顿，父节点 H-001
-H-003: nvm 自动加载导致 zsh 插件初始化阻塞，父节点 H-002
+H-001: terminal lag originates during shell startup
+H-002: zsh plugin initialization blocks shell startup; parent H-001
+H-003: nvm auto-loading causes zsh plugin initialization to block; parent H-002
 ```
 
-### 4. Choose the next evidence target
+### 4. Choose The Next Evidence Target
 
 At any point, choose one active hypothesis as the current investigation target.
 
@@ -220,9 +220,9 @@ Prefer the hypothesis whose test is:
 
 Before repeating a command, experiment, code search, or patch, check whether an equivalent evidence node already exists. Do not repeat the same loop unless something material changed.
 
-### 5. Record evidence before changing conclusions
+### 5. Record Evidence Before Changing Conclusions
 
-After each meaningful observation or experiment, add a `证据` node before changing hypothesis status.
+After each meaningful observation or experiment, add an `Evidence` node before changing hypothesis status.
 
 Evidence must be concrete. It can be:
 
@@ -235,52 +235,52 @@ Evidence must be concrete. It can be:
 - failed reproduction result,
 - user confirmation,
 - timing measurement,
-- dependency/version fact,
+- dependency or version fact,
 - validation result after a fix.
 
-Do not record pure speculation as evidence. Put speculation in `假设.提出依据` or `假设.结论`.
+Do not record pure speculation as evidence. Put speculation in `Hypothesis.Rationale` or `Hypothesis.Conclusion`.
 
-### 6. Update hypothesis status
+### 6. Update Hypothesis Status
 
 A hypothesis may change state only after evidence is recorded.
 
-- Set to `证实` when evidence supports the hypothesis and the hypothesis explains the relevant symptom or sub-cause.
-- Set to `证伪` when evidence contradicts a required prediction.
-- Set to `block` when the next verification step cannot proceed; record `阻塞原因` and the exact unblock condition.
-- Set to `closed` when it is intentionally abandoned, superseded, or irrelevant; record `关闭原因`.
+- Set to `confirmed` when evidence supports the hypothesis and the hypothesis explains the relevant symptom or sub-cause.
+- Set to `refuted` when evidence contradicts a required prediction.
+- Set to `blocked` when the next verification step cannot proceed; record `Blocker` and the exact unblock condition.
+- Set to `closed` when it is intentionally abandoned, superseded, or irrelevant; record `Close reason`.
 
 Do not treat absence of evidence as disproof unless the hypothesis explicitly predicted that evidence should appear under the tested conditions.
 
-### 7. Apply fixes only after enough evidence
+### 7. Apply Fixes Only After Enough Evidence
 
 Prefer targeted fixes attached to confirmed or strongly supported hypotheses.
 
 If a patch is exploratory, record that as evidence or as a hypothesis validation step. Do not present an exploratory patch as a confirmed fix until validation evidence exists.
 
-### 8. Mark the problem fixed only after validation
+### 8. Mark The Problem Fixed Only After Validation
 
-The `问题` status may become `fixed` only when all are true:
+The `Problem` status may become `fixed` only when all are true:
 
-1. At least one relevant hypothesis is `证实`.
+1. At least one relevant hypothesis is `confirmed`.
 2. The implemented change or discovered correction is tied to that hypothesis.
-3. A `证据` node of type `修复验证` shows the original symptom no longer occurs under the stated reproduction conditions.
-4. The `问题.解决依据` field lists the confirming hypothesis and validation evidence.
+3. An `Evidence` node of type `fix-validation` shows the original symptom no longer occurs under the stated reproduction conditions.
+4. The `Resolution basis` field lists the confirming hypothesis and validation evidence.
 
 If the validation only covers part of the symptom, do not mark the problem `fixed`. Add a new hypothesis for the remaining symptom or split the case if it is independent.
 
-### 9. Close without fixing only when appropriate
+### 9. Close Without Fixing Only When Appropriate
 
-Set the `问题` status to `closed` only when the case is intentionally stopped, for example:
+Set the `Problem` status to `closed` only when the case is intentionally stopped, for example:
 
 - user no longer wants to pursue it,
 - bug is out of scope,
 - required information cannot be obtained,
 - reproduction is impossible and no productive path remains,
-- the issue is accepted as known limitation.
+- the issue is accepted as a known limitation.
 
-Record the reason in `问题.关闭原因`.
+Record the reason in `Close reason`.
 
-## Response behavior while using this skill
+## Response Behavior While Using This Skill
 
 When interacting with the user during a debugging case:
 
@@ -295,62 +295,29 @@ When interacting with the user during a debugging case:
 
 Do not dump the entire case file unless the user asks.
 
-## Loop prevention rules
+## Loop Prevention Rules
 
 To avoid circular debugging:
 
 - Never rerun the same check without explaining what changed.
-- Never create a new hypothesis that is semantically identical to an existing active, disproven, or closed hypothesis.
-- Never mark a hypothesis `证实` because it is plausible; require evidence.
+- Never create a new hypothesis that is semantically identical to an existing active, refuted, or closed hypothesis.
+- Never mark a hypothesis `confirmed` because it is plausible; require evidence.
 - Never mark a problem `fixed` because a patch was applied; require validation evidence.
 - When stuck, inspect the case file and choose between:
   - adding a discriminating hypothesis,
   - splitting the case,
-  - marking a hypothesis `block`,
+  - marking a hypothesis `blocked`,
   - closing a dead branch.
 
-## Case document maintenance rules
+## Case Document Maintenance Rules
 
 - The case file is append-friendly and evidence-preserving.
 - Do not delete evidence nodes. If an earlier interpretation was wrong, add a new evidence node or update the hypothesis conclusion to explain the correction.
-- Do not delete hypotheses. Mark them `证伪`, `closed`, or `block` as appropriate.
-- Keep `问题.已知事实`, `问题.排除项`, `问题.当前结论`, and `问题.最后更新` synchronized after meaningful evidence.
+- Do not delete hypotheses. Mark them `refuted`, `closed`, or `blocked` as appropriate.
+- Keep `Problem.Known facts`, `Problem.Ruled out`, `Problem.Current conclusion`, and `Problem.Updated` synchronized after meaningful evidence.
 - Keep raw evidence short but sufficient. Include exact file paths, line numbers, commands, and key outputs where possible.
 - Use absolute or project-relative file paths consistently.
 
-## Minimal case template
+## Minimal Case Template
 
-Use the file in `templates/case-template.md` or copy this skeleton into a new case file.
-
-```markdown
-# 问题 P-001：<简短问题标题>
-- 状态: open
-- 创建时间: <YYYY-MM-DD HH:mm>
-- 最后更新: <YYYY-MM-DD HH:mm>
-- 问题目标: <本案要解决的唯一目标>
-- 当前症状:
-  - <观察到的现象>
-- 期望行为:
-  - <系统应该如何表现>
-- 实际行为:
-  - <系统现在如何表现>
-- 影响范围:
-  - <受影响功能、用户、环境、版本>
-- 复现条件:
-  - <复现步骤、输入、前置状态；未知则写“未知”>
-- 环境信息:
-  - <OS、运行时、版本、配置、分支、提交等；未知则写“未知”>
-- 已知事实:
-  - <必须能追溯到证据节点；没有则写“无”>
-- 排除项:
-  - <必须能追溯到证据节点；没有则写“无”>
-- 解决判据:
-  - <什么证据出现后才允许把状态改为 fixed>
-- 当前结论: <不能超过证据支持范围>
-- 关联假设:
-  - <H-xxx；没有则写“无”>
-- 解决依据:
-  - 未满足
-- 关闭原因:
-  - 未关闭
-```
+Use the file in `templates/case-template.md` or copy the skeleton from the Case Document Format section into a new case file.
