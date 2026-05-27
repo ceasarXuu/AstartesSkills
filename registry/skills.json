@@ -513,6 +513,38 @@
       }
     },
     {
+      "id": "subagent-vs-review",
+      "name": "Subagent VS Review",
+      "path": "skills/subagent-vs-review",
+      "summary": "Runs independent adversarial review rounds with fresh internal subagents, neutral review navigation packets, formal /vs_review/ reports, dynamic reviewer selection, and mandatory main-agent response closure.",
+      "tags": ["subagent", "review", "vibe-coding", "quality", "agent-workflow"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/subagent-vs-review"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-05-27T15:21:14+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Publish the subagent-vs-review skill for fresh internal subagent adversarial review rounds.",
+          "Define formal /vs_review/ report requirements with review input, reviewer outputs, main-agent response, and closure status.",
+          "Add dynamic reviewer selection and blocking-finding re-review rules.",
+          "Require reviewer launch records and trace sources so fresh session and no-context-inheritance claims are auditable."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/subagent-vs-review/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
       "id": "show-my-repo",
       "name": "Show My Repo",
       "path": "skills/show-my-repo",

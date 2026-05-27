@@ -1,0 +1,4 @@
+version: 1
+display_name: Subagent VS Review
+short_description: Runs fresh no-context-inheritance internal subagent adversarial reviews with formal /vs_review/ reports and mandatory finding triage.
+default_prompt: Use fresh internal subagents without inherited main-agent context to adversarially review this task, write the /vs_review/ report, and respond to every finding before closure.
