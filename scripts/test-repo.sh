@@ -36,4 +36,9 @@ log "exporting marketplace artifacts"
 log "checking exported artifact"
 [[ -f "$exported_manifest" ]] || fail "missing exported manifest: $exported_manifest"
 
+if [[ "$skill_id" == "subagent-vs-review" ]]; then
+  log "checking subagent-vs-review effectiveness benchmark asset sanity"
+  "$repo_root/scripts/vs-review-effectiveness-sanity.sh" >/dev/null
+fi
+
 log "repository smoke test passed for $skill_id"

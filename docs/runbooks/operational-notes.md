@@ -112,3 +112,10 @@
 - Decision: rename the managed folder path, frontmatter `name`, manifest source path, registry id, and README install command together, while preserving the skill's internal methodology and bundled templates
 - Why it worked: repository discovery stays coherent around the chosen managed id, but the imported skill still preserves its real operating model and supporting files
 - Reuse later: when renaming an imported skill, treat id changes as a full metadata migration across folder path, frontmatter, manifest, registry, and docs rather than only renaming the directory
+
+## 2026-05-29 Isolated Subagent Review Benchmarks
+
+- Problem: a benchmark can look isolated while still copying oracle answers into the reviewer-visible runtime tree, and internal subagent thread limits can block follow-up reviews if completed reviewers are left open
+- Decision: copy only reviewer-facing fixtures/templates into ignored `tmp/` runtime roots, keep oracles in tracked source only, generate a main-context canary that is not sent to reviewers, scan runtime artifacts for leakage, and close only completed reviewers when a fresh closure review needs a slot
+- Why it worked: oracle contamination became structurally impossible in the runtime copy, path traversal was rejected, and closure reviews could continue without touching stuck or unknown agent sessions
+- Reuse later: for any subagent benchmark, separate source oracle from runtime fixture, record launch metadata in a temp report, scan for canary leakage, and treat `test-repo` checks as asset sanity unless a runtime subagent report is present
