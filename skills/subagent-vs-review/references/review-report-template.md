@@ -51,6 +51,14 @@ multiple rounds for the same task.
 - Do not modify files.
 - Cite evidence paths and line numbers when possible.
 
+### Reviewer Timeout Policy
+
+| Complexity | Initial Wait | Extension | Max Attempts Per Role | Blocking Closure Behavior |
+|---|---:|---:|---:|---|
+| simple / normal / complex / high-risk | <duration> | <none or bounded extension> | 2 | cannot pass if review is unavailable |
+
+This section is required for current reports.
+
 ### Reviewer Selection
 
 | Reviewer | Reason Selected | Risk Area |
@@ -61,11 +69,23 @@ multiple rounds for the same task.
 
 | Reviewer | Internal Mechanism | Session / Job ID | Trace Source | Context Forked | Input Packet | Context Explicitly Excluded | Read-only |
 |---|---|---|---|---|---|---|---|
-| <reviewer> | <subagent tool/runtime> | <id or equivalent trace handle> | <tool call, notification, transcript, or unavailable> | no | Round 1 Review Input | main-agent history, reasoning, drafts, conclusions, full diff unless needed | yes |
+| <reviewer-role> | <subagent tool/runtime> | <id or equivalent trace handle> | <tool call, notification, transcript, or unavailable> | fork_context=false | Round 1 Review Input | main-agent history, reasoning, drafts, conclusions, full diff unless needed | yes |
+
+### Reviewer Timeout Records
+
+| Reviewer Output Key | Reviewer Role | Attempt | Session / Job ID | Waited | Status | Reason | Action |
+|---|---|---:|---|---:|---|---|---|
+| <reviewer-output-key> | <reviewer-role from launch row> | 1 | <id from launch row> | <duration> | completed / completed_after_extension / timed_out / lost / superseded / degraded / blocked_due_to_review_unavailable / late_result | <reason> | completed / extended / replacement spawned / user decision required |
+
+### User Decision After Failed Review
+
+- Required if primary and replacement attempts both fail.
+- Decision: retry / narrow scope / change reviewer type / accept risk / blocked
+- User-visible reason: <why the review did not complete>
 
 ### Reviewer Outputs
 
-#### <reviewer-name>
+#### <reviewer-output-key>
 
 ##### Summary
 <Short summary.>
@@ -87,13 +107,16 @@ multiple rounds for the same task.
   - Proof needed: <evidence that would close or downgrade the risk>
 
 ##### Required Fixes
-- <fix, or "none">
+- <fix tied to a triaged finding, or "none">
 
 ##### Missing Tests
-- <test gap, or "none">
+- <test gap tied to a triaged finding, or "none">
 
 ##### Missing Logs / Observability
-- <observability gap, or "none">
+- <observability gap tied to a triaged finding, or "none">
+
+Use `none` or flush-left single-line `- ` items in these three buckets.
+Concrete bullet items must also appear in the main-agent response table.
 
 ##### Evidence
 - `<path>:<line>` - <evidence>
@@ -116,6 +139,7 @@ multiple rounds for the same task.
   - <Reviewer Launch Records row or n/a>
 - Rejected findings backed by evidence: yes / no / n/a
 - Deferred findings documented: yes / no / n/a
+- Blocked reason: <reason or n/a>
 - Allowed to proceed: yes / no
 
 ## Final Conclusion

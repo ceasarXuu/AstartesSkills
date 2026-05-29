@@ -525,15 +525,17 @@
         "path": "skills/subagent-vs-review"
       },
       "release": {
-        "version": "1.1.0",
-        "published_at": "2026-05-28T03:16:40+08:00",
+        "version": "1.2.0",
+        "published_at": "2026-05-30T00:54:37+08:00",
         "publisher": "ceasarXuu",
         "changes": [
           "Publish the subagent-vs-review skill for fresh internal subagent adversarial review rounds.",
           "Define formal /vs_review/ report requirements with review input, reviewer outputs, main-agent response, and closure status.",
           "Add dynamic reviewer selection and blocking-finding re-review rules.",
           "Require reviewer launch records and trace sources so fresh session and no-context-inheritance claims are auditable.",
-          "Embed adversarial review as artifact-focused falsification of assumptions, happy paths, failure scenarios, and evidence gaps throughout the workflow."
+          "Embed adversarial review as artifact-focused falsification of assumptions, happy paths, failure scenarios, and evidence gaps throughout the workflow.",
+          "Add concise staged timeout handling for primary and replacement fresh reviewers, including degraded user-decision flow.",
+          "Harden report validation for timeout records, blocked outcomes, and one-to-one reviewer finding triage."
         ]
       },
       "markets": {

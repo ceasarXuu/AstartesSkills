@@ -39,6 +39,8 @@ log "checking exported artifact"
 if [[ "$skill_id" == "subagent-vs-review" ]]; then
   log "checking subagent-vs-review effectiveness benchmark asset sanity"
   "$repo_root/scripts/vs-review-effectiveness-sanity.sh" >/dev/null
+  log "checking subagent-vs-review timeout validator fixtures"
+  "$repo_root/scripts/vs-review-timeout-validator-fixtures.sh" >/dev/null
 fi
 
 log "repository smoke test passed for $skill_id"

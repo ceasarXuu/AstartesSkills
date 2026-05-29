@@ -57,6 +57,9 @@ still holds under misuse, failure, ambiguity, and change.
     not the authoring agent or user.
 13. Reviewers must focus on high-impact failure modes. Do not inflate style
     preferences or subjective disagreement into blocking findings.
+14. Reviewer timeout, loss, or unavailability is not a pass and not "no
+    findings". If the primary and replacement attempts both fail, tell the user
+    the review did not complete, explain why, and ask whether to try again.
 
 ## Workflow
 
@@ -157,6 +160,41 @@ Spawn each reviewer as a fresh internal subagent session. Do not fork the main
 agent context. Pass only the review navigation packet and the required report
 output contract.
 
+Set a timeout policy before spawning reviewers:
+
+- `simple`: 3-5 minutes for one small file, short doc, or narrow question
+- `normal`: 8-12 minutes for ordinary multi-file work or normal design review
+- `complex`: 15-25 minutes for architecture, security, payment, state machine,
+  release, migration, or multi-module review
+- `high-risk`: 20-30 minutes for accepted blocking closure, production-impact,
+  data, security, or operational review
+
+Each reviewer role gets at most two automatic fresh-session attempts:
+
+1. Primary reviewer.
+2. Replacement reviewer if the primary times out, is lost, or becomes stuck.
+
+After the primary timeout, allow either one bounded extension or direct
+replacement:
+
+- Extend once only when the reviewer appears alive and the task was likely
+  underestimated. Keep the extension at roughly 50%-100% of the initial wait.
+- Replace immediately when the session is lost, `not_found`, visibly stuck, or
+  the runtime is blocking progress.
+- Do not keep waiting on `close_agent` or equivalent cleanup if it blocks the
+  main task. Close only completed reviewers when needed to free capacity.
+
+If the replacement also times out or is unavailable:
+
+- record the role as `degraded` or `blocked_due_to_review_unavailable`
+- do not mark the reviewer as completed
+- do not write `none` or `no findings` for that reviewer
+- tell the user the review did not successfully complete, include the reason,
+  and ask whether to try again, narrow the scope, change reviewer type, or
+  explicitly accept the risk
+- for accepted blocking closure reviews, do not mark the task `passed` unless
+  the user explicitly accepts the risk
+
 For each reviewer, record a launch record in the report:
 
 - reviewer role
@@ -168,6 +206,12 @@ For each reviewer, record a launch record in the report:
 - what input packet was sent
 - what context was explicitly excluded
 - whether the reviewer had read-only instructions
+
+For each reviewer attempt, record a timeout record. Use the same reviewer role
+as the launch row. Only `completed`, `completed_after_extension`, and
+`late_result` attempts may have reviewer output blocks. Timeout, loss,
+superseded, degraded, and unavailable attempts must not be represented as
+`none` findings.
 
 Reviewer output must include:
 
@@ -200,10 +244,24 @@ If a reviewer reports no blocking issues, record that explicitly.
 If a reviewer was spawned for a blocking re-review, link the reviewer output to
 the earlier finding and the launch record for that closure round.
 
+If a timed-out reviewer later returns, append it as a late result and triage any
+findings. Late results must not erase the replacement review or rewrite the
+timeout history.
+
+Timeout record actions must use one of: `completed`, `extended`,
+`replacement spawned`, or `user decision required`. Use
+`completed_after_extension` when a first attempt timed out, received its single
+bounded extension, and then completed.
+
 ### 7. Main Agent Response
 
 The main agent must triage every finding. Use
 `references/finding-triage-rubric.md`.
+
+Reviewer findings should appear in `Blocking Findings` or `Non-blocking Risks`.
+If `Required Fixes`, `Missing Tests`, or `Missing Logs / Observability`
+contains a concrete actionable item, write it as a flush-left single-line
+`- ` bullet and triage that item too.
 
 For each finding:
 
