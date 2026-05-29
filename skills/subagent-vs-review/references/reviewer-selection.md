@@ -7,37 +7,43 @@ Choose reviewers based on the object under review and the risk profile. Use
 
 `product-logic-adversary`
 : Challenges user goals, product closure, ambiguous requirements, edge cases,
-  interaction logic, and whether the proposed work solves the real problem.
+  interaction logic, hidden constraints, and whether the proposed work solves
+  the real problem rather than only the stated happy path.
 
 `architecture-adversary`
 : Challenges module boundaries, abstraction level, dependency direction,
   long-term maintainability, duplication, migration path, and short-term patch
-  pressure.
+  pressure. Acts like a future maintainer extending the system under change.
 
 `implementation-adversary`
 : Challenges correctness, state flow, error handling, concurrency, data
-  consistency, compatibility, and hidden edge cases in code.
+  consistency, compatibility, invalid inputs, partial success, retries, and
+  hidden edge cases in code.
 
 `test-validity-adversary`
 : Challenges self-deceptive tests, tests that only verify implementation
-  details, missing black-box checks, regression gaps, and weak assertions.
+  details, missing black-box checks, missing failure-path checks, regression
+  gaps, and weak assertions.
 
 `observability-adversary`
 : Challenges whether logs, errors, metrics, traces, artifacts, and runbooks
-  are enough to diagnose failures after the main agent is gone.
+  are enough to diagnose failures after the main agent is gone. Acts like the
+  incident responder reading logs during an outage.
 
 `security-adversary`
 : Challenges auth, permissions, privacy, injection, secrets, supply chain,
-  untrusted input, data leakage, and trust boundaries.
+  untrusted input, data leakage, and trust boundaries. Acts like a hostile user
+  trying to bypass assumptions.
 
 `release-ops-adversary`
 : Challenges deployment, migration, packaging, upload, rollback, environment
-  setup, operational sequencing, and recovery instructions.
+  setup, operational sequencing, partial rollout, and recovery instructions.
 
 `documentation-skill-adversary`
 : Challenges docs, skills, prompts, and agent workflows for ambiguity,
   overfitting to the current context, missing trigger rules, missing validation,
-  and inability to execute from a fresh session.
+  and inability to execute from a fresh session. Acts like a future fresh agent
+  trying to follow the artifact without hidden context.
 
 ## Selection Rules
 
@@ -50,6 +56,9 @@ Choose reviewers based on the object under review and the risk profile. Use
   have a specific risk focus.
 - If the task is not code, do not force an implementation reviewer. Select the
   roles that fit the review target.
+- Each selected reviewer must use an adversarial lens: try to falsify at least
+  one assumption, happy path, failure path, security boundary, maintenance claim,
+  validation claim, or operational claim.
 
 ## Common Combinations
 

@@ -121,9 +121,49 @@ report = Path(sys.argv[1])
 repo_root = Path(sys.argv[2])
 relpath = report.relative_to(repo_root)
 text = report.read_text(encoding="utf-8")
+date_match = re.match(r"(\d{4}-\d{2}-\d{2})", report.name)
+requires_adversarial_contract = (
+    "Report schema: adversarial-v1" in text
+    or bool(date_match and date_match.group(1) >= "2026-05-28")
+)
 
 def fail(message: str) -> None:
     raise AssertionError(f"review report {relpath} {message}")
+
+def section_body(source: str, level: str, heading: str) -> str:
+    match = re.search(rf"(?m)^{re.escape(level)} {re.escape(heading)}\n(?P<body>.*?)(?=^#{{2,5}} |\Z)", source, re.S)
+    return match.group("body").strip() if match else ""
+
+def is_thin(body: str) -> bool:
+    normalized = re.sub(r"[\s`*_|<>-]+", " ", body).strip().lower()
+    return len(normalized) < 12 or normalized in {
+        "none",
+        "n a",
+        "todo",
+        "pending",
+        "to be recorded",
+        "will be recorded",
+    }
+
+def is_none_bucket(body: str) -> bool:
+    lines = [line.strip().lower() for line in body.splitlines() if line.strip()]
+    return bool(lines) and all(re.fullmatch(r"-?\s*(none|n/a|not applicable)\.?", line) for line in lines)
+
+def finding_items(body: str) -> list[str]:
+    if is_none_bucket(body):
+        return []
+    chunks = []
+    current = []
+    for line in body.splitlines():
+        if line.startswith("- ") and not re.match(r"^-\s*(none|n/a|not applicable)\b", line.strip(), re.I):
+            if current:
+                chunks.append("\n".join(current).strip())
+            current = [line]
+        elif current:
+            current.append(line)
+    if current:
+        chunks.append("\n".join(current).strip())
+    return [chunk for chunk in chunks if chunk]
 
 if not text.strip():
     fail("is empty")
@@ -147,6 +187,9 @@ if "status: open" in header:
 
 if text.count("## Final Conclusion") != 1:
     fail("must contain exactly one final conclusion")
+final_conclusion = text.split("## Final Conclusion", 1)[1].strip()
+if is_thin(final_conclusion) or re.search(r"\b(pending|to be recorded|will be recorded)\b", final_conclusion, re.I):
+    fail("final conclusion is not closed")
 
 round_matches = list(re.finditer(r"(?m)^## Round (\d+):", text))
 rounds = []
@@ -158,11 +201,17 @@ for position, match in enumerate(round_matches):
     rounds.append((int(match.group(1)), text[start:end]))
 if not rounds:
     fail("has no review rounds")
+round_numbers = {number for number, _ in rounds}
 
 for index, round_text in rounds:
     for section in required[:-1]:
         if section not in round_text:
             fail(f"round {index} missing section: {section}")
+    if requires_adversarial_contract:
+        for heading in ("Assumptions To Attack", "Adversarial Lenses"):
+            body = section_body(round_text, "####", heading)
+            if is_thin(body):
+                fail(f"round {index} has thin {heading}")
 
     launch_section = round_text.split("### Reviewer Launch Records", 1)[1].split("### Reviewer Outputs", 1)[0]
     if "Session / Job ID" not in launch_section or "Trace Source" not in launch_section or "Context Forked" not in launch_section:
@@ -182,7 +231,7 @@ for index, round_text in rounds:
         launched_reviewers.append(cells[0])
         if not cells[2] or cells[2].lower() in {"pending", "to be recorded after spawn"}:
             fail(f"round {index} launch row missing session id")
-        if not cells[3] or "tool call" not in cells[3].lower():
+        if is_thin(cells[3]):
             fail(f"round {index} launch row missing trace source")
         if "fork_context=false" not in cells[4].lower():
             fail(f"round {index} launch row does not prove context isolation")
@@ -214,8 +263,29 @@ for index, round_text in rounds:
                 fail(f"round {index} reviewer {match.group(1).strip()} missing {heading}")
         for bucket in required_buckets:
             bucket_match = re.search(rf"##### {re.escape(bucket)}\n(?P<body>.*?)(?=\n##### |\Z)", block, re.S)
-            if not bucket_match or len(bucket_match.group("body").strip()) < 12:
+            if not bucket_match:
+                fail(f"round {index} reviewer {match.group(1).strip()} missing {bucket} body")
+            bucket_body = bucket_match.group("body").strip()
+            if is_thin(bucket_body) and not is_none_bucket(bucket_body):
                 fail(f"round {index} reviewer {match.group(1).strip()} has thin {bucket}")
+        if requires_adversarial_contract:
+            reviewer_name = match.group(1).strip()
+            for bucket in ("Blocking Findings", "Non-blocking Risks"):
+                bucket_match = re.search(rf"##### {re.escape(bucket)}\n(?P<body>.*?)(?=\n##### |\Z)", block, re.S)
+                if not bucket_match:
+                    continue
+                for item in finding_items(bucket_match.group("body")):
+                    for label in ("Broken assumption:", "Failure scenario:", "Trigger condition:", "Impact:", "Proof needed:"):
+                        if label not in item:
+                            fail(f"round {index} reviewer {reviewer_name} missing {label} in {bucket} item")
+                    for label in ("Broken assumption:", "Failure scenario:", "Trigger condition:", "Impact:", "Proof needed:"):
+                        label_body = item.split(label, 1)[1].split("\n  - ", 1)[0].strip()
+                        if is_thin(label_body):
+                            fail(f"round {index} reviewer {reviewer_name} has thin {label} in {bucket} item")
+            if not finding_items(section_body(block, "#####", "Blocking Findings")) and not finding_items(section_body(block, "#####", "Non-blocking Risks")):
+                for label in ("Broken assumption:", "Failure scenario:", "Trigger condition:", "Impact:", "Proof needed:"):
+                    if label in block:
+                        fail(f"round {index} reviewer {reviewer_name} has adversarial labels outside a concrete finding")
 
     response = round_text.split("### Main Agent Response", 1)[1].split("### Closure Status", 1)[0]
     response_lines = [
@@ -227,15 +297,23 @@ for index, round_text in rounds:
         cells = [cell.strip() for cell in line.strip("|").split("|")]
         if len(cells) >= 7:
             response_rows.append(cells)
-    if not any(row[2] in {"blocking", "major", "minor"} and row[3] in {"accept", "reject", "defer"} for row in response_rows):
+    parsed_rows = []
+    for row in response_rows:
+        if len(row) >= 8 and row[3] in {"blocking", "major", "minor"} and row[4] in {"accept", "reject", "defer"}:
+            parsed_rows.append({"severity": row[3], "decision": row[4], "followup": row[7], "counterexample": row[2]})
+        elif row[2] in {"blocking", "major", "minor"} and row[3] in {"accept", "reject", "defer"}:
+            parsed_rows.append({"severity": row[2], "decision": row[3], "followup": row[6], "counterexample": ""})
+    if not parsed_rows:
         fail(f"round {index} has no populated main-agent response row")
     accepted_blocking_rows = [
-        row for row in response_rows
-        if len(row) >= 7 and row[2] == "blocking" and row[3] == "accept"
+        row for row in parsed_rows
+        if row["severity"] == "blocking" and row["decision"] == "accept"
     ]
     for row in accepted_blocking_rows:
-        if not re.search(r"Round \d+", row[6]):
+        if not re.search(r"Round \d+", row["followup"]):
             fail(f"round {index} accepted blocking row lacks follow-up round reference")
+        if "#### Assumptions To Attack" in round_text and len(row.get("counterexample", "").strip()) < 12:
+            fail(f"round {index} accepted blocking row lacks counterexample context")
 
     closure = round_text.split("### Closure Status", 1)[1].split("\n## ", 1)[0]
     lower_closure = closure.lower()
@@ -255,11 +333,11 @@ for index, round_text in rounds:
             fail(f"round {index} closure is not closed; found '{forbidden}'")
     if "Allowed to proceed: yes" not in closure:
         fail(f"round {index} is not allowed to proceed")
-    if "Blocking re-review completed: yes" not in closure:
-        fail(f"round {index} missing completed blocking re-review")
-    if "Blocking re-review passed: yes" not in closure:
-        fail(f"round {index} missing passed blocking re-review")
     if accepted_blocking_rows:
+        if "Blocking re-review completed: yes" not in closure:
+            fail(f"round {index} missing completed blocking re-review")
+        if "Blocking re-review passed: yes" not in closure:
+            fail(f"round {index} missing passed blocking re-review")
         if not re.search(r"Blocking re-review round links:\n(?:  - Round \d+: .+\n)+", closure):
             fail(f"round {index} accepted blocking findings lack concrete follow-up round links")
         if not re.search(r"Blocking re-review launch records:\n(?:  - Round \d+ Reviewer Launch Records: .+\n)+", closure):
@@ -270,12 +348,28 @@ for index, round_text in rounds:
             fail(f"round {index} has fewer follow-up round links than accepted blocking findings")
         if len(concrete_launch_links) < len(accepted_blocking_rows):
             fail(f"round {index} has fewer launch-record links than accepted blocking findings")
-
-if re.search(r"\|\s*[^|\n]+\s*\|\s*[^|\n]+\s*\|\s*blocking\s*\|\s*accept\s*\|", text):
-    if not re.search(r"Blocking re-review round links:\n(?:  - Round \d+: .+\n)+", text):
-        fail("accepted blocking findings lack follow-up round links")
-    if not re.search(r"Blocking re-review launch records:\n(?:  - Round \d+ Reviewer Launch Records: .+\n)+", text):
-        fail("accepted blocking findings lack launch-record links")
+        referenced_rounds = [
+            int(match.group(1))
+            for link in concrete_round_links
+            for match in [re.search(r"Round (\d+)", link)]
+            if match
+        ]
+        referenced_launch_rounds = [
+            int(match.group(1))
+            for link in concrete_launch_links
+            for match in [re.search(r"Round (\d+)", link)]
+            if match
+        ]
+        for referenced in referenced_rounds + referenced_launch_rounds:
+            if referenced not in round_numbers:
+                fail(f"round {index} references missing follow-up round {referenced}")
+            if referenced <= index:
+                fail(f"round {index} follow-up round {referenced} is not after the finding round")
+    else:
+        if not re.search(r"Blocking re-review completed: (yes|n/a)", closure, re.I):
+            fail(f"round {index} missing no-blocking re-review completion status")
+        if not re.search(r"Blocking re-review passed: (yes|n/a)", closure, re.I):
+            fail(f"round {index} missing no-blocking re-review pass status")
 PY
   done < <(find "$repo_root/vs_review" -type f -name '*.md' | sort)
 fi

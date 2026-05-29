@@ -3,12 +3,18 @@
 The main agent must respond to every reviewer finding. Use one of three
 decisions: `accept`, `reject`, or `defer`.
 
+Adversarial findings are counterexamples against the artifact, not criticism of
+the author. Triage must handle the counterexample: prove it impossible, fix it,
+or explicitly accept/defer the risk.
+
 ## Severity
 
 `blocking`
 : The task cannot honestly be considered complete. The issue breaks the product
   goal, invalidates the design, creates unacceptable architecture, security,
   data, release, or operational risk, or leaves critical validation missing.
+  A reproducible failure scenario, broken assumption, or untested high-impact
+  failure path can be blocking even when the happy path works.
 
 `major`
 : The issue is likely to cause regressions, maintenance cost, poor diagnostics,
@@ -23,12 +29,14 @@ decisions: `accept`, `reject`, or `defer`.
 
 `accept`
 : The finding is valid. The main agent must change the plan, code, tests, logs,
-  docs, report, or runbook. Record the action taken and evidence.
+  docs, report, or runbook. Record the broken assumption, action taken, and
+  evidence.
 
 `reject`
 : The finding is not valid for this task. The main agent must cite concrete
   evidence: code location, test result, log, runtime behavior, product
-  constraint, or explicit user instruction.
+  constraint, or explicit user instruction. A rejection must defeat the failure
+  scenario, not merely restate the main agent's intent.
 
 `defer`
 : The finding is valid but outside the current scope. The main agent must state

@@ -8,6 +8,7 @@ multiple rounds for the same task.
 
 - Created: <ISO 8601 local time>
 - Updated: <ISO 8601 local time>
+- Report schema: adversarial-v1
 - Task: <user or product goal>
 - Report path: `vs_review/YYYY-MM-DD-<topic>-review.md`
 - Review mode: fresh internal subagents
@@ -33,6 +34,12 @@ multiple rounds for the same task.
 
 #### Risk Focus
 - <assumption, boundary, or failure mode to challenge>
+
+#### Assumptions To Attack
+- <input, state, dependency, permission, timing, user behavior, or invariant>
+
+#### Adversarial Lenses
+- <requirements | state | input | concurrency | failure | data | security | maintenance | testing | observability>
 
 #### Verification Status
 - <tests, smoke checks, logs, runtime validation, or known gaps>
@@ -65,9 +72,19 @@ multiple rounds for the same task.
 
 ##### Blocking Findings
 - <finding, or "none">
+  - Broken assumption: <assumption being falsified>
+  - Failure scenario: <how the artifact fails>
+  - Trigger condition: <input, state, timing, permission, or misuse case>
+  - Impact: <user, data, security, maintenance, or operational blast radius>
+  - Proof needed: <test, log, runtime check, or product decision>
 
 ##### Non-blocking Risks
 - <risk, or "none">
+  - Broken assumption: <assumption being challenged>
+  - Failure scenario: <how the artifact may fail>
+  - Trigger condition: <condition that exposes the risk>
+  - Impact: <likely effect>
+  - Proof needed: <evidence that would close or downgrade the risk>
 
 ##### Required Fixes
 - <fix, or "none">
@@ -83,9 +100,9 @@ multiple rounds for the same task.
 
 ### Main Agent Response
 
-| Reviewer | Finding | Severity | Decision | Evidence / Reason | Action Taken | Follow-up |
-|---|---|---|---|---|---|---|
-| <reviewer> | <finding> | blocking | accept / reject / defer | <evidence> | <action> | <follow-up> |
+| Reviewer | Finding | Broken Assumption / Failure Scenario | Severity | Decision | Evidence / Reason | Action Taken | Follow-up |
+|---|---|---|---|---|---|---|---|
+| <reviewer> | <finding> | <counterexample being handled or rejected> | blocking | accept / reject / defer | <evidence> | <action> | <follow-up> |
 
 ### Closure Status
 
@@ -112,6 +129,8 @@ by explicit user risk acceptance.>
 - Record the review input before or at the time reviewers are spawned.
 - Record reviewer launch records before adding reviewer outputs.
 - Append reviewer outputs without rewriting them into a softer summary.
+- Preserve the adversarial framing: findings should target assumptions,
+  counterexamples, failure paths, and evidence gaps, not the author.
 - Add main-agent response only after reading the reviewer outputs.
 - If a new round is needed, append `## Round 2`, `## Round 3`, and so on.
 - Each accepted blocking finding must link to a follow-up round and launch

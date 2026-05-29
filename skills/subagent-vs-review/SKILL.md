@@ -1,6 +1,6 @@
 ---
 name: subagent-vs-review
-description: Use when a task needs independent adversarial review during vibe coding, design work, implementation, testing, release planning, documentation, skill creation, or agent workflow design. It uses fresh internal subagents, minimal review navigation packets, formal /vs_review/ reports, dynamic reviewer selection, and mandatory main-agent response closure.
+description: Use when a task needs independent adversarial review during vibe coding, design work, implementation, testing, release planning, documentation, skill creation, or agent workflow design. It uses fresh internal subagents to attack artifact assumptions, happy paths, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.
 ---
 
 # subagent-vs-review
@@ -23,6 +23,12 @@ The goal is not to ask another agent to confirm the main agent's view. The goal
 is to create a fresh, isolated reviewer session that receives only a neutral
 review navigation packet, inspects the target directly, and records findings in
 a formal project report.
+
+Adversarial review means the reviewer cooperates with the authoring agent while
+opposing the artifact's assumptions, happy paths, hidden risks, and failure
+claims. The reviewer should temporarily act like a bug, attacker, incident
+responder, confused user, and future maintainer to test whether the target
+still holds under misuse, failure, ambiguity, and change.
 
 ## Hard Rules
 
@@ -47,6 +53,10 @@ a formal project report.
    the risk.
 11. If fresh internal subagents are unavailable, say the review path is
     unavailable or degraded. Do not pretend independent review happened.
+12. The adversarial stance targets the artifact, assumptions, and failure paths,
+    not the authoring agent or user.
+13. Reviewers must focus on high-impact failure modes. Do not inflate style
+    preferences or subjective disagreement into blocking findings.
 
 ## Workflow
 
@@ -62,6 +72,20 @@ Classify what is being reviewed:
 - security, privacy, data, or permission risk
 - release, migration, deployment, packaging, or operations flow
 - documentation, skill, prompt, or agent workflow
+
+Identify what the reviewer must try to disprove:
+
+- misunderstood requirements or missing implicit constraints
+- assumptions that may be false in real inputs, real state, or real users
+- happy-path-only behavior
+- invalid, empty, duplicated, unordered, hostile, or extreme inputs
+- impossible-but-observable states
+- concurrency, retry, idempotency, timeout, partial-success, rollback, cache, or
+  transaction failures
+- dirty, lost, duplicated, inconsistent, or leaked data
+- permission, injection, secret, privacy, or trust-boundary failures
+- future maintenance and extension costs
+- tests or logs that prove only the main agent's narrative, not the real system
 
 Decide whether the review should happen before work, after work, or both:
 
@@ -99,6 +123,11 @@ Include:
 - change introduction: a neutral description of the direction or modification
 - risk focus: assumptions, boundaries, failure modes, and user constraints to
   challenge
+- assumptions to attack: inputs, states, permissions, dependencies, timing,
+  ownership, invariants, or user behaviors the implementation relies on
+- adversarial lenses: choose the most relevant lenses from requirements, state,
+  input, concurrency, failure, data, security, maintenance, testing, and
+  observability
 - verification status: tests, smoke checks, logs, runtime validation, or known
   unverified areas
 - reviewer instructions: fresh session, read targets directly, do not modify
@@ -112,6 +141,7 @@ Do not include:
 - arguments written to convince reviewers
 - full diffs by default
 - large code excerpts unless the reviewer cannot access the repository
+- reviewer instructions that ask for confirmation instead of falsification
 
 ### 4. Select Reviewers Dynamically
 
@@ -149,6 +179,15 @@ Reviewer output must include:
 - missing logs or observability
 - evidence paths and line numbers where possible
 
+For each blocking or major finding, reviewers must state the counterexample
+inline with that finding:
+
+- broken assumption
+- failure scenario
+- trigger condition or misuse case
+- likely impact or blast radius
+- proof needed, such as a test, log, runtime check, or product decision
+
 Reviewers must be read-only. They must not edit files.
 
 ### 6. Record Reviewer Outputs
@@ -176,7 +215,8 @@ For each finding:
   be tracked
 
 Do not batch-dismiss findings. Do not write "handled" without evidence or an
-action.
+action. Do not treat adversarial findings as personal criticism; treat them as
+attempted counterexamples against the artifact.
 
 ### 8. Blocking Closure
 
