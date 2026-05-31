@@ -35,11 +35,14 @@ multiple rounds for the same task.
 #### Risk Focus
 - <assumption, boundary, or failure mode to challenge>
 
+#### User-Perspective Review Focus
+- <usability, ease-of-use, ease-of-understanding, onboarding, wording, feedback, recovery path, or realistic user behavior to challenge>
+
 #### Assumptions To Attack
 - <input, state, dependency, permission, timing, user behavior, or invariant>
 
 #### Adversarial Lenses
-- <requirements | state | input | concurrency | failure | data | security | maintenance | testing | observability>
+- <requirements | state | input | concurrency | failure | data | security | usability | ease-of-use | comprehension | maintenance | testing | observability>
 
 #### Verification Status
 - <tests, smoke checks, logs, runtime validation, or known gaps>
@@ -105,6 +108,14 @@ This section is required for current reports.
   - Trigger condition: <condition that exposes the risk>
   - Impact: <likely effect>
   - Proof needed: <evidence that would close or downgrade the risk>
+
+##### User-Perspective Checks
+- Usability: <pass, risk, or finding already listed above> - Evidence or link: <path:line or finding id>
+- Ease of use: <pass, risk, or finding already listed above> - Evidence or link: <path:line or finding id>
+- Ease of understanding: <pass, risk, or finding already listed above> - Evidence or link: <path:line or finding id>
+
+Actionable user-perspective issues must also appear under `Blocking Findings`
+or `Non-blocking Risks` so they receive main-agent triage.
 
 ##### Required Fixes
 - <fix tied to a triaged finding, or "none">

@@ -1,6 +1,6 @@
 ---
 name: subagent-vs-review
-description: Use when a task needs independent adversarial review during vibe coding, design work, implementation, testing, release planning, documentation, skill creation, or agent workflow design. It uses fresh internal subagents to attack artifact assumptions, happy paths, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.
+description: Use when a task needs independent adversarial review during vibe coding, design work, implementation, testing, release planning, documentation, skill creation, or agent workflow design. It uses fresh internal subagents to attack artifact assumptions, happy paths, user-perspective usability, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.
 ---
 
 # subagent-vs-review
@@ -29,6 +29,12 @@ opposing the artifact's assumptions, happy paths, hidden risks, and failure
 claims. The reviewer should temporarily act like a bug, attacker, incident
 responder, confused user, and future maintainer to test whether the target
 still holds under misuse, failure, ambiguity, and change.
+
+For user-facing artifacts, the review must explicitly challenge usability, ease
+of use, and ease of understanding. A technically correct solution is not closed
+when a realistic user cannot understand what to do, complete the intended flow,
+recover from mistakes, or map the artifact's wording and controls to the real
+goal.
 
 ## Hard Rules
 
@@ -68,6 +74,7 @@ still holds under misuse, failure, ambiguity, and change.
 Classify what is being reviewed:
 
 - product design or requirement logic
+- user experience, usability, onboarding, or comprehension logic
 - architecture plan
 - code implementation
 - test strategy or validation results
@@ -79,6 +86,8 @@ Classify what is being reviewed:
 Identify what the reviewer must try to disprove:
 
 - misunderstood requirements or missing implicit constraints
+- user-visible flows, instructions, labels, states, or defaults that are hard to
+  use, hard to understand, or easy to misread
 - assumptions that may be false in real inputs, real state, or real users
 - happy-path-only behavior
 - invalid, empty, duplicated, unordered, hostile, or extreme inputs
@@ -126,11 +135,13 @@ Include:
 - change introduction: a neutral description of the direction or modification
 - risk focus: assumptions, boundaries, failure modes, and user constraints to
   challenge
+- user-perspective focus: usability, ease of use, ease of understanding,
+  onboarding, wording, feedback, recovery paths, and realistic user behaviors
 - assumptions to attack: inputs, states, permissions, dependencies, timing,
   ownership, invariants, or user behaviors the implementation relies on
 - adversarial lenses: choose the most relevant lenses from requirements, state,
-  input, concurrency, failure, data, security, maintenance, testing, and
-  observability
+  input, concurrency, failure, data, security, usability, comprehension,
+  maintenance, testing, and observability
 - verification status: tests, smoke checks, logs, runtime validation, or known
   unverified areas
 - reviewer instructions: fresh session, read targets directly, do not modify
@@ -218,6 +229,7 @@ Reviewer output must include:
 - summary
 - blocking findings
 - non-blocking risks
+- user-perspective checks for usability, ease of use, and ease of understanding
 - required fixes
 - missing tests
 - missing logs or observability

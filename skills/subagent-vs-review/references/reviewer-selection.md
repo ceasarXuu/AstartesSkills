@@ -10,6 +10,12 @@ Choose reviewers based on the object under review and the risk profile. Use
   interaction logic, hidden constraints, and whether the proposed work solves
   the real problem rather than only the stated happy path.
 
+`user-experience-adversary`
+: Challenges usability, ease of use, ease of understanding, onboarding, labels,
+  defaults, feedback, recovery paths, and whether a realistic user can complete
+  the intended flow without hidden context. Acts like a confused but reasonable
+  user trying to map the artifact to a real goal.
+
 `architecture-adversary`
 : Challenges module boundaries, abstraction level, dependency direction,
   long-term maintainability, duplication, migration path, and short-term patch
@@ -56,21 +62,27 @@ Choose reviewers based on the object under review and the risk profile. Use
   have a specific risk focus.
 - If the task is not code, do not force an implementation reviewer. Select the
   roles that fit the review target.
+- Select `user-experience-adversary` whenever the target changes a user-facing
+  workflow, UI, documentation path, skill usage path, prompt behavior, or
+  operator procedure where usability or comprehension can make the work fail.
 - Each selected reviewer must use an adversarial lens: try to falsify at least
   one assumption, happy path, failure path, security boundary, maintenance claim,
-  validation claim, or operational claim.
+  user-comprehension claim, validation claim, or operational claim.
 
 ## Common Combinations
 
 Product or design review:
 
 - `product-logic-adversary`
+- `user-experience-adversary` when the user flow, wording, defaults, or
+  onboarding path can affect success
 - `architecture-adversary` when the design creates system commitments
 - `documentation-skill-adversary` when the artifact must guide future agents
 
 Skill, prompt, or agent workflow review:
 
 - `documentation-skill-adversary`
+- `user-experience-adversary`
 - `product-logic-adversary`
 - `test-validity-adversary` when validation or anti-self-deception matters
 

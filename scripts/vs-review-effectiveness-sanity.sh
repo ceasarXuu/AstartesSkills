@@ -15,6 +15,38 @@ fail() {
   exit 1
 }
 
+require_pattern() {
+  local file="$1"
+  local pattern="$2"
+  local message="$3"
+  grep -Eq "$pattern" "$file" || fail "$message"
+}
+
+has_section_pattern() {
+  local file="$1"
+  local start_pattern="$2"
+  local end_pattern="$3"
+  local required_pattern="$4"
+  awk \
+    -v start_pattern="$start_pattern" \
+    -v end_pattern="$end_pattern" \
+    -v required_pattern="$required_pattern" '
+      $0 ~ start_pattern {inside=1}
+      inside && $0 ~ required_pattern {found=1}
+      inside && $0 ~ end_pattern && $0 !~ start_pattern {inside=0}
+      END {exit found ? 0 : 1}
+    ' "$file"
+}
+
+require_section_pattern() {
+  local file="$1"
+  local start_pattern="$2"
+  local end_pattern="$3"
+  local required_pattern="$4"
+  local message="$5"
+  has_section_pattern "$file" "$start_pattern" "$end_pattern" "$required_pattern" || fail "$message"
+}
+
 required_files=(
   "$bench_dir/README.md"
   "$bench_dir/fixtures/code/subscription.ts"
@@ -67,6 +99,37 @@ grep -q 'outside the named target locations' "$bench_dir/templates/review-packet
 grep -q 'Do not edit files' "$bench_dir/templates/review-packet.md" || fail "review packet must be read-only"
 grep -q 'Temporary test project root' "$bench_dir/templates/review-packet.md" || fail "review packet must use temp root"
 grep -q 'Target locations' "$bench_dir/templates/review-packet.md" || fail "review packet must use target locations"
+
+log "checking explicit user-perspective review contract"
+skill_file="$repo_root/skills/subagent-vs-review/SKILL.md"
+selection_file="$repo_root/skills/subagent-vs-review/references/reviewer-selection.md"
+template_file="$repo_root/skills/subagent-vs-review/references/review-report-template.md"
+manifest_file="$repo_root/skills/subagent-vs-review/agents/openai.yaml"
+
+require_pattern "$skill_file" 'usability, ease of use, and ease of understanding' "skill must explicitly require user-perspective usability review"
+require_pattern "$skill_file" 'user-perspective focus: usability, ease of use, ease of understanding' "review packet must include explicit user-perspective focus"
+require_pattern "$manifest_file" 'ease of use, ease of understanding' "agent manifest must expose ease-of-use and comprehension in discovery metadata"
+require_section_pattern "$selection_file" '^`user-experience-adversary`$' '^`[^`]+`$' 'usability, ease of use, ease of understanding' "reviewer pool must define user-experience-adversary around explicit usability/comprehension concerns"
+require_section_pattern "$selection_file" '^## Selection Rules$' '^## ' 'Select `user-experience-adversary` whenever.*user-facing' "selection rules must bind user-experience-adversary to user-facing targets"
+require_section_pattern "$selection_file" '^## Selection Rules$' '^## ' 'documentation path, skill usage path, prompt behavior, or[[:space:]]*$' "selection rules must name docs, skill usage, prompts, and operator procedures"
+require_section_pattern "$selection_file" '^## Selection Rules$' '^## ' 'operator procedure where usability or comprehension can make the work fail\.' "selection rules must protect the operator procedure usability/comprehension clause"
+require_section_pattern "$selection_file" '^Skill, prompt, or agent workflow review:$' '^Code implementation review:$' '`user-experience-adversary`' "skill/prompt/workflow reviews must include user-experience-adversary"
+require_pattern "$template_file" '^#### User-Perspective Review Focus$' "report template must include user-perspective focus"
+require_pattern "$template_file" 'usability \| ease-of-use \| comprehension' "report template must expose usability/comprehension lenses"
+require_section_pattern "$template_file" '^##### User-Perspective Checks$' '^##### ' 'Evidence or link:' "user-perspective checks must require evidence or finding links"
+require_section_pattern "$template_file" '^##### User-Perspective Checks$' '^##### ' 'Evidence or link: <path:line or finding id>' "user-perspective pass entries must require line-level evidence or finding links"
+require_section_pattern "$template_file" '^##### User-Perspective Checks$' '^##### ' 'Actionable user-perspective issues must also appear under `Blocking Findings`[[:space:]]*$' "template must route actionable user-perspective issues into blocking/non-blocking triage"
+
+contract_negative_dir="$repo_root/tmp/vs-review-effectiveness/contract-negative-$$"
+mkdir -p "$contract_negative_dir"
+sed '/operator procedure where usability or comprehension can make the work fail[.]/d' "$selection_file" > "$contract_negative_dir/reviewer-selection-missing-operator.md"
+if has_section_pattern "$contract_negative_dir/reviewer-selection-missing-operator.md" '^## Selection Rules$' '^## ' 'operator procedure where usability or comprehension can make the work fail\.'; then
+  fail "negative contract fixture still passed after removing operator procedure clause"
+fi
+sed 's/path:line or finding id/target location or finding id/g' "$template_file" > "$contract_negative_dir/review-report-template-weak-evidence.md"
+if has_section_pattern "$contract_negative_dir/review-report-template-weak-evidence.md" '^##### User-Perspective Checks$' '^##### ' 'Evidence or link: <path:line or finding id>'; then
+  fail "negative contract fixture still passed after weakening user-perspective evidence"
+fi
 
 log "checking runtime bootstrap guards"
 if "$repo_root/scripts/vs-review-effectiveness-bootstrap.sh" '../escape' >/dev/null 2>&1; then
