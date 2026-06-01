@@ -1,0 +1,4 @@
+version: 1
+display_name: Clear PRD
+short_description: Clarify product requirements through guided multi-round PRD questioning.
+default_prompt: Use $clear-prd to clarify this product request through multi-round product-logic questions, then write a Draft or Ready PRD based on unresolved decisions.

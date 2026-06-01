@@ -114,6 +114,7 @@ Reference:
 | Skill | Purpose | Install |
 | --- | --- | --- |
 | `astartes-coding-custodes` | Prevent iterative quality decay during AI-assisted coding by enforcing analysis, minimal change planning, strict review, and entropy control. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill astartes-coding-custodes` |
+| `clear-prd` | Clarify product requirements through guided multi-round questions focused on product logic, user experience, interaction design, rules, edge cases, and acceptance criteria, then write a Draft or Ready PRD. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill clear-prd` |
 | `coe-debug` | Track complex debug cases in project-root `/coe` files with strict problem, hypothesis, and evidence nodes. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill coe-debug` |
 | `frontend-refactoring` | Refactor legacy frontend surfaces by isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill frontend-refactoring` |
 | `show-my-repo` | Turn a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill show-my-repo` |
@@ -140,6 +141,7 @@ Reference:
 ├── skills/                         # Standalone skills
 │   ├── _templates/                 # Reusable skill templates
 │   ├── astartes-coding-custodes/   # AI coding governance skill
+│   ├── clear-prd/                  # Product-first PRD clarification skill
 │   ├── frontend-refactoring/       # Legacy frontend migration skill
 │   ├── show-my-repo/               # Repo packaging and presentation skill
 │   ├── storybook-skills-standard/  # Storybook component workflow governance skill
@@ -219,11 +221,11 @@ The point of this layer is to keep authoring simple while still supporting futur
 4. Fill `agents/openai.yaml`
 5. Fill `markets/openai-compatible.json` if the skill should be distributed externally
 6. Register the skill in `registry/skills.json`
-7. Validate and export
+7. Validate, run the skill-specific smoke test, and export
 
 ```bash
 ./scripts/validate-repo.sh
-./scripts/test-repo.sh
+./scripts/test-repo.sh <skill-id>
 ./scripts/export-marketplace.py
 ```
 
@@ -241,13 +243,18 @@ Checks currently include:
 - registry paths exist
 - declared market manifests are valid JSON
 
-### Smoke test the first real skill
+### Smoke test a skill package
 
 ```bash
 ./scripts/test-repo.sh
+./scripts/test-repo.sh clear-prd
 ```
 
-This verifies that `astartes-coding-custodes` is:
+Without arguments, this verifies the default `astartes-coding-custodes` package.
+With a skill id, it verifies that package and runs any skill-specific checks.
+For example, `clear-prd` also runs its clarification-contract sanity check.
+
+The smoke test verifies that the selected skill is:
 
 - present in the repository
 - registered correctly

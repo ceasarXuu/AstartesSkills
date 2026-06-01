@@ -119,3 +119,10 @@
 - Decision: copy only reviewer-facing fixtures/templates into ignored `tmp/` runtime roots, keep oracles in tracked source only, generate a main-context canary that is not sent to reviewers, scan runtime artifacts for leakage, and close only completed reviewers when a fresh closure review needs a slot
 - Why it worked: oracle contamination became structurally impossible in the runtime copy, path traversal was rejected, and closure reviews could continue without touching stuck or unknown agent sessions
 - Reuse later: for any subagent benchmark, separate source oracle from runtime fixture, record launch metadata in a temp report, scan for canary leakage, and treat `test-repo` checks as asset sanity unless a runtime subagent report is present
+
+## 2026-06-02 Product-First Skill Packaging
+
+- Problem: a new requirements-clarification skill could pass generic package validation while losing its real product contract, such as top-down questioning, A/B/C options, recommended choices, dependency-aware rounds, partial-answer handling, requester review, and PRD output.
+- Decision: add the skill package, mirrored release metadata, README discovery, an interaction fixture, and a dedicated `scripts/clear-prd-sanity.sh` check wired into `./scripts/test-repo.sh clear-prd`.
+- Why it worked: the generic repository gates still validate packaging and export, while the skill-specific smoke check protects the behavior that makes the skill useful, including Draft versus Ready output.
+- Reuse later: when adding a methodology skill, encode its core method as structural assertions plus small behavior fixtures instead of relying only on prose review.

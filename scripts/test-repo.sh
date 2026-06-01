@@ -43,4 +43,9 @@ if [[ "$skill_id" == "subagent-vs-review" ]]; then
   "$repo_root/scripts/vs-review-timeout-validator-fixtures.sh" >/dev/null
 fi
 
+if [[ "$skill_id" == "clear-prd" ]]; then
+  log "checking clear-prd clarification contract"
+  "$repo_root/scripts/clear-prd-sanity.sh" >/dev/null
+fi
+
 log "repository smoke test passed for $skill_id"
