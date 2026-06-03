@@ -123,6 +123,37 @@
       }
     },
     {
+      "id": "multi-path-debug",
+      "name": "Multi-Path Debug",
+      "path": "skills/multi-path-debug",
+      "summary": "Confirms bug root causes before repair by combining targeted intake, independent internal and user-approved external research paths, evidence-weighted synthesis, and explicit user confirmation before implementation.",
+      "tags": ["debugging", "root-cause-analysis", "multi-agent", "evidence", "bug-triage"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/multi-path-debug"
+      },
+      "release": {
+        "version": "1.0.1",
+        "published_at": "2026-06-03T20:46:00+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Strengthen the external-agent authorization gate in the default prompt.",
+          "Split low-confidence investigation output from repair-ready confirmation so hypotheses do not trigger fix approval.",
+          "Add interaction fixtures for external-agent denial, low-confidence continuation, repair confirmation, and independent synthesis behavior."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/multi-path-debug/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
       "id": "storybook-skills-standard",
       "name": "Storybook Skills Standard",
       "path": "skills/storybook-skills-standard",

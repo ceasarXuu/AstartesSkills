@@ -38,14 +38,19 @@ log "checking exported artifact"
 
 if [[ "$skill_id" == "subagent-vs-review" ]]; then
   log "checking subagent-vs-review effectiveness benchmark asset sanity"
-  "$repo_root/scripts/vs-review-effectiveness-sanity.sh" >/dev/null
+  "$repo_root/scripts/vs-review-effectiveness-sanity.sh"
   log "checking subagent-vs-review timeout validator fixtures"
-  "$repo_root/scripts/vs-review-timeout-validator-fixtures.sh" >/dev/null
+  "$repo_root/scripts/vs-review-timeout-validator-fixtures.sh"
 fi
 
 if [[ "$skill_id" == "clear-prd" ]]; then
   log "checking clear-prd clarification contract"
-  "$repo_root/scripts/clear-prd-sanity.sh" >/dev/null
+  "$repo_root/scripts/clear-prd-sanity.sh"
+fi
+
+if [[ "$skill_id" == "multi-path-debug" ]]; then
+  log "checking multi-path-debug root-cause contract"
+  "$repo_root/scripts/multi-path-debug-sanity.sh"
 fi
 
 log "repository smoke test passed for $skill_id"

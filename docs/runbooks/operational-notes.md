@@ -126,3 +126,9 @@
 - Decision: add the skill package, mirrored release metadata, README discovery, an interaction fixture, and a dedicated `scripts/clear-prd-sanity.sh` check wired into `./scripts/test-repo.sh clear-prd`.
 - Why it worked: the generic repository gates still validate packaging and export, while the skill-specific smoke check protects the behavior that makes the skill useful, including Draft versus Ready output.
 - Reuse later: when adding a methodology skill, encode its core method as structural assertions plus small behavior fixtures instead of relying only on prose review.
+# 2026-06-03: Packaging a root-cause-first debug skill
+
+- When creating a new AstartesSkills package, update the skill folder, `agents/openai.yaml`, market manifest, `registry/skills.json`, README discovery entries, and `scripts/test-repo.sh` in the same change.
+- Add a skill-specific sanity script when the workflow has a non-obvious contract. For `multi-path-debug`, the script checks ordering, prompt gates, and interaction fixtures that preserve the root-cause-before-repair gate, external-agent authorization, low-confidence continuation, and evidence-weighted synthesis.
+- External debug advisors should be documented as discoverable and user-approved paths, not mandatory dependencies. This keeps the skill usable when Claude, Gemini, Opencode, or similar local agents are unavailable.
+- Repo validation should compare skill folders and registry entries in both directions. A skill directory that is not registered is packaging drift, not a valid hidden package.

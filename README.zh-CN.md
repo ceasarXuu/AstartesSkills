@@ -25,6 +25,7 @@
 - `clear-prd`：面向产品需求澄清的 skill，通过多轮产品逻辑、用户体验、交互、规则与验收问题形成 Draft 或 Ready PRD
 - `coe-debug`：面向复杂排障的 evidence-first skill，把 Problem / Hypothesis / Evidence 持续写入项目根目录 `/coe` 案件文件
 - `frontend-refactoring`：面向老前端重构的 skill，核心是隔离新 UI、重做视图层并安全切流
+- `multi-path-debug`：面向 bug 根因确认的 skill，通过轻量追问、多路径独立研究、证据加权汇总和用户确认，把根因确认与修复实施拆开
 - `show-my-repo`：把 repo 提炼成面向投资人、用户、路演和落地页的展示包
 - `storybook-skills-standard`：面向 Storybook 组件驱动开发、story 覆盖、mock、文档、交互测试、可访问性与视觉基线治理的 skill
 - `summary-my-repo`：生成面向协作者的仓库理解包，覆盖架构、目录职责和核心逻辑

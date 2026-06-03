@@ -72,6 +72,9 @@ while IFS= read -r skill_dir; do
   [[ -f "$skill_dir/agents/openai.yaml" ]] || fail "$skill_name is missing agents/openai.yaml"
 done < <(find "$skills_dir" -mindepth 1 -maxdepth 1 -type d | sort)
 
+log "checking skill registry coverage"
+"$repo_root/scripts/validate-skill-registry-coverage.py" "$registry_file" "$repo_root"
+
 log "checking registry paths"
 while IFS= read -r path; do
   [[ -d "$repo_root/$path" ]] || fail "registry path does not exist: $path"
