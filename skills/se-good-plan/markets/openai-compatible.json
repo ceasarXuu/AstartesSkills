@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "market": "openai-compatible",
+  "display_name": "SE Good Plan",
+  "description": "Writes and reviews phased, executable, verifiable, reviewable, rollback-aware software engineering plans for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work.",
+  "release": {
+    "version": "1.0.0",
+    "published_at": "2026-06-04T20:23:07+08:00",
+    "publisher": "ceasarXuu",
+    "changes": [
+      "Publish the initial se-good-plan skill for software engineering plan writing and review.",
+      "Add complexity-based Lightweight, Standard, and Full plan depth selection with forced Full Plan escalation rules.",
+      "Add phase gate, rollback, data migration, security, observability, and context-honesty requirements with task-specific reference patterns.",
+      "Add source-contract traceability, metadata/status and dependency templates, proportional phase-count guidance, and stronger validation fixtures."
+    ]
+  },
+  "source": {
+    "type": "github",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+    "path": "skills/se-good-plan"
+  }
+}

@@ -1,0 +1,316 @@
+# SE Good Plan Patterns
+
+Read this reference when `se-good-plan` needs task-specific phase models,
+required sections, or templates. Keep output proportional to task risk.
+
+## Task-Specific Requirements
+
+### Feature Development
+
+Must cover user path, API and data model changes, permission boundaries,
+acceptance criteria, compatibility, regression testing, and release strategy.
+
+Recommended phases:
+
+1. Requirements and current-state confirmation
+2. Technical design
+3. Interface and foundation work
+4. Feature implementation
+5. Integration testing and acceptance
+6. Canary release and monitoring
+
+### Bug Fix
+
+Must cover reproduction path, root cause, impact scope, fix design, regression
+tests, prevention, release, and rollback.
+
+Required questions:
+
+- Why did it happen?
+- Which users, data, and paths were affected?
+- How will the fix be proven?
+- What prevents the same class of bug from returning?
+
+Recommended sections:
+
+- Reproduction
+- Root Cause Analysis
+- Impact Scope
+- Fix Strategy
+- Regression Tests
+- Prevention Measures
+- Release And Rollback
+
+### Refactor
+
+Must preserve external behavior unless behavior changes are explicit goals.
+Must cover compatibility, incremental replacement, test coverage, old-logic
+cleanup, and rollback.
+
+Recommended phases:
+
+1. Current-state inventory and test baseline
+2. Target structure design
+3. Compatibility or abstraction layer
+4. Module-by-module migration
+5. Regression validation
+6. Default-path switch
+7. Old implementation cleanup
+
+Required rules:
+
+- Each migration step must be independently verifiable.
+- Old logic removal must happen after the new path is stable.
+- Behavior changes must be separated from structural changes.
+
+### Data Migration
+
+Must cover data volume, data quality, migration, idempotency,
+retry/resume behavior, dual-write or dual-read if needed, validation, rollback,
+and compensation.
+
+Recommended phases:
+
+1. Data current-state analysis
+2. Migration design
+3. Migration and validation script development
+4. Small-scale rehearsal
+5. Batched migration
+6. Consistency validation
+7. Cutover and old-data cleanup
+
+Required rules:
+
+- State whether migration is reversible.
+- State what happens after partial failure.
+- State whether scripts can be safely re-run.
+- State how source and target data are compared.
+
+### Architecture Migration
+
+Must cover compatibility layer, dependency systems, traffic switching,
+degradation path, data consistency, and progressive rollout.
+
+Recommended phases:
+
+1. Current architecture and dependency inventory
+2. Target architecture design
+3. Compatibility and migration infrastructure
+4. Dual-write or dual-read validation
+5. Small-traffic canary
+6. Phased traffic migration
+7. Full cutover
+8. Old system decommission
+
+### Performance Optimization
+
+Must start with a baseline and a bottleneck hypothesis. Include load testing,
+comparison, regression risk, and production observation.
+
+Required metrics when relevant:
+
+- p50, p95, and p99 latency
+- QPS or throughput
+- error rate
+- CPU, memory, and IO
+- database slow queries
+- cache hit rate
+
+Recommended phases:
+
+1. Baseline collection
+2. Bottleneck analysis
+3. Optimization design
+4. Individual optimization implementation
+5. Load test and comparison
+6. Canary release and monitoring
+
+### Security Change
+
+Must cover threat model, permission boundaries, sensitive data, audit logging,
+abuse cases, security tests, and emergency rollback.
+
+Required inclusions:
+
+- Threat Model
+- Permission Matrix
+- Sensitive Data Handling
+- Abuse Cases
+- Security Tests
+- Audit Logging And Alerts
+- Security Review
+
+### DevOps / CI/CD
+
+Must cover environment separation, build flow, test flow, release permissions,
+failure recovery, artifact management, and secret management.
+
+Recommended phases:
+
+1. Current pipeline inventory
+2. Target process design
+3. Base configuration and environment preparation
+4. Pipeline implementation
+5. Failure-mode and regression validation
+6. Rollout and documentation
+
+## Reusable Tables
+
+### Metadata Block
+
+```markdown
+- Created:
+- Updated:
+- Version:
+- Status: Draft | Reviewing | Approved | In Progress | Blocked | Completed | Deprecated
+- Owner / Responsible:
+- Related Systems:
+- Related Links:
+- Risk Level:
+- Plan Type: Lightweight | Standard | Full
+```
+
+Do not invent owner, deadline, staffing, release date, or launch window values.
+If they are not provided, write `Unknown` or list a verification step.
+
+### Dependency Table
+
+```markdown
+| Dependency | Type | Current Status | Blocking Risk | Handling Plan |
+|---|---|---|---|---|
+| ... | system / person / data / environment / third-party | Ready / Pending / Unknown | ... | ... |
+```
+
+Dependency types include upstream services, downstream services, data sources,
+third-party APIs, feature flag platforms, CI/CD systems, test environments,
+monitoring platforms, security review, product confirmation, design artifacts,
+and client releases.
+
+### Risk Table
+
+```markdown
+| Risk | Probability | Impact | Trigger Signal | Mitigation | Fallback |
+|---|---:|---:|---|---|---|
+| ... | Low / Medium / High | Low / Medium / High | ... | ... | ... |
+```
+
+Common risks:
+
+- data corruption
+- data inconsistency
+- API incompatibility
+- client parsing failure
+- performance regression
+- increased error rate
+- rollback unavailable
+- feature flag failure
+- permission bypass
+- sensitive data exposure
+- dependency outage
+- staging cannot model production traffic
+- canary sample too small
+- old logic removed too early
+- documentation diverges from implementation
+
+### Testing And Validation Table
+
+```markdown
+| Test Type | Scope | Execution Method | Passing Standard |
+|---|---|---|---|
+| Unit | ... | ... | ... |
+| Integration | ... | ... | ... |
+| Regression | ... | ... | ... |
+| Performance | ... | ... | ... |
+| Security | ... | ... | ... |
+```
+
+Possible test types:
+
+- unit tests
+- integration tests
+- E2E tests
+- regression tests
+- contract tests
+- compatibility tests
+- data consistency tests
+- performance tests
+- stress tests
+- security tests
+- canary validation
+- manual acceptance
+
+### Release, Rollback, And Fallback
+
+```markdown
+## Release, Rollback, And Fallback Strategy
+
+### Release Strategy
+- Release method:
+- Canary scope:
+- Expansion criteria:
+- Pause criteria:
+- Owner:
+- Release window:
+
+### Rollback Strategy
+- Rollbackable changes:
+- Non-directly rollbackable changes:
+- Rollback triggers:
+- Rollback steps:
+- Rollback validation:
+- Owner:
+
+### Fallback / Degradation Strategy
+- Degradable capability:
+- Trigger:
+- User-visible impact:
+- System behavior while degraded:
+- Recovery steps:
+
+### Data Compensation Strategy
+- Compensation required:
+- Script or procedure:
+- Validation:
+- Failure handling:
+```
+
+### Observability And Success Metrics
+
+```markdown
+| Metric | Current Baseline | Target | Alert Threshold | Observation Window |
+|---|---:|---:|---:|---|
+| Error rate | ... | ... | ... | ... |
+| p95 latency | ... | ... | ... | ... |
+| Success rate | ... | ... | ... | ... |
+| QPS | ... | ... | ... | ... |
+| Resource usage | ... | ... | ... | ... |
+```
+
+Cover logs, metrics, traces, dashboards, alerts, user behavior, business
+metrics, and data consistency metrics when relevant.
+
+## Wording Guardrails
+
+Replace vague wording with evidence:
+
+| Vague phrase | Require |
+| --- | --- |
+| optimize | metric, baseline, target, measurement method |
+| improve | target delta and validation method |
+| complete tests | exact paths, test types, and passing standard |
+| support | scenario, inputs, outputs, and acceptance criteria |
+| handle errors | named errors and expected system behavior |
+| ensure stability | health metrics and observation window |
+| launch soon | release gate, canary plan, and pause criteria |
+
+## Anti-Patterns
+
+Do not output:
+
+- a task list without problem, risk, validation, or rollback
+- a roadmap without executable tasks and gates
+- a technical solution without proof strategy
+- production changes with only "tests pass" as a release gate
+- data migration without idempotency, validation, and compensation
+- security work without permission boundaries and audit strategy
+- project-specific facts that were not provided or verified

@@ -118,6 +118,7 @@ Reference:
 | `coe-debug` | Track complex debug cases in project-root `/coe` files with strict problem, hypothesis, and evidence nodes. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill coe-debug` |
 | `frontend-refactoring` | Refactor legacy frontend surfaces by isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill frontend-refactoring` |
 | `multi-path-debug` | Confirm bug root causes before repair through targeted intake, independent research paths, evidence-weighted synthesis, and user confirmation before fixes. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill multi-path-debug` |
+| `se-good-plan` | Write and review phased, executable, verifiable, reviewable, rollback-aware software engineering plans for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill se-good-plan` |
 | `show-my-repo` | Turn a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill show-my-repo` |
 | `storybook-skills-standard` | Design and audit Storybook-driven component workflows, story coverage, mocks, docs, interaction tests, accessibility checks, and visual baselines. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill storybook-skills-standard` |
 | `summary-my-repo` | Generate an internal repository summary pack with architecture, directory responsibilities, and core logic walkthroughs. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill summary-my-repo` |
@@ -145,6 +146,7 @@ Reference:
 │   ├── clear-prd/                  # Product-first PRD clarification skill
 │   ├── frontend-refactoring/       # Legacy frontend migration skill
 │   ├── multi-path-debug/           # Root-cause-first multi-path debug skill
+│   ├── se-good-plan/               # Software engineering plan writing and review skill
 │   ├── show-my-repo/               # Repo packaging and presentation skill
 │   ├── storybook-skills-standard/  # Storybook component workflow governance skill
 │   ├── summary-my-repo/            # Internal repo summary and onboarding skill
@@ -253,12 +255,17 @@ Checks currently include:
 ./scripts/test-repo.sh
 ./scripts/test-repo.sh clear-prd
 ./scripts/test-repo.sh multi-path-debug
+./scripts/test-repo.sh se-good-plan
 ```
 
 Without arguments, this verifies the default `astartes-coding-custodes` package.
 With a skill id, it verifies that package and runs any skill-specific checks.
 For example, `clear-prd` also runs its clarification-contract sanity check, and
 `multi-path-debug` runs its root-cause-before-repair contract sanity check.
+`se-good-plan` runs its engineering-plan contract sanity check.
+That check covers the checked-in source contract, trigger coverage, Standard and
+Full plan section inventories, metadata/status and dependency templates,
+release metadata formatting, and regression fixtures for required plan fields.
 
 The smoke test verifies that the selected skill is:
 

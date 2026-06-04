@@ -27,6 +27,7 @@ PY
 log "checking release metadata"
 python3 - <<'PY' "$registry_file" "$repo_root" || exit 1
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -46,12 +47,10 @@ for skill in registry.get("skills", []):
     assert isinstance(release["publisher"], str) and release["publisher"].strip(), f"invalid registry publisher for {skill_id}"
     assert isinstance(release["changes"], list) and release["changes"], f"invalid registry changes list for {skill_id}"
     assert all(isinstance(item, str) and item.strip() for item in release["changes"]), f"invalid registry change entry for {skill_id}"
+    assert re.fullmatch(r"\d+\.\d+\.\d+", release["version"]), f"registry release version must be semver x.y.z for {skill_id}: {release['version']}"
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}", release["published_at"]), f"registry published_at must be ISO 8601 local time with timezone for {skill_id}: {release['published_at']}"
 
-    manifest_relpath = (
-        skill.get("markets", {})
-        .get("openai-compatible", {})
-        .get("manifest")
-    )
+    manifest_relpath = skill.get("markets", {}).get("openai-compatible", {}).get("manifest")
     if not manifest_relpath:
         continue
     manifest_path = repo_root / manifest_relpath
@@ -59,6 +58,8 @@ for skill in registry.get("skills", []):
         manifest = json.load(handle)
     manifest_release = manifest.get("release")
     assert isinstance(manifest_release, dict), f"missing manifest release metadata for {skill_id}"
+    assert re.fullmatch(r"\d+\.\d+\.\d+", manifest_release.get("version", "")), f"manifest release version must be semver x.y.z for {skill_id}: {manifest_release.get('version')}"
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}", manifest_release.get("published_at", "")), f"manifest published_at must be ISO 8601 local time with timezone for {skill_id}: {manifest_release.get('published_at')}"
     assert manifest_release == release, f"release metadata mismatch between registry and manifest for {skill_id}"
 PY
 
@@ -74,6 +75,12 @@ done < <(find "$skills_dir" -mindepth 1 -maxdepth 1 -type d | sort)
 
 log "checking skill registry coverage"
 "$repo_root/scripts/validate-skill-registry-coverage.py" "$registry_file" "$repo_root"
+
+log "checking skill-specific sanity scripts"
+for sanity_script in "$repo_root/scripts/clear-prd-sanity.sh" "$repo_root/scripts/multi-path-debug-sanity.sh" "$repo_root/scripts/se-good-plan-sanity.sh"; do
+  [[ -x "$sanity_script" ]] || fail "missing executable sanity script: ${sanity_script#$repo_root/}"
+  "$sanity_script"
+done
 
 log "checking registry paths"
 while IFS= read -r path; do
