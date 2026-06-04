@@ -114,6 +114,7 @@ Reference:
 | Skill | Purpose | Install |
 | --- | --- | --- |
 | `astartes-coding-custodes` | Prevent iterative quality decay during AI-assisted coding by enforcing analysis, minimal change planning, strict review, and entropy control. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill astartes-coding-custodes` |
+| `bug-killer` | Debug medium and large bugs with `/coe` case tracking, independent research paths, and a diagnostic evidence gate before repair design. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill bug-killer` |
 | `clear-prd` | Clarify product requirements through guided multi-round questions focused on product logic, user experience, interaction design, rules, edge cases, and acceptance criteria, then write a Draft or Ready PRD. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill clear-prd` |
 | `coe-debug` | Track complex debug cases in project-root `/coe` files with strict problem, hypothesis, and evidence nodes. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill coe-debug` |
 | `frontend-refactoring` | Refactor legacy frontend surfaces by isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill frontend-refactoring` |
@@ -253,6 +254,7 @@ Checks currently include:
 
 ```bash
 ./scripts/test-repo.sh
+./scripts/test-repo.sh bug-killer
 ./scripts/test-repo.sh clear-prd
 ./scripts/test-repo.sh multi-path-debug
 ./scripts/test-repo.sh se-good-plan
@@ -260,8 +262,9 @@ Checks currently include:
 
 Without arguments, this verifies the default `astartes-coding-custodes` package.
 With a skill id, it verifies that package and runs any skill-specific checks.
-For example, `clear-prd` also runs its clarification-contract sanity check, and
-`multi-path-debug` runs its root-cause-before-repair contract sanity check.
+For example, `bug-killer` runs its heavy-debug activation and evidence-gate
+contract sanity check, `clear-prd` runs its clarification-contract sanity check,
+and `multi-path-debug` runs its root-cause-before-repair contract sanity check.
 `se-good-plan` runs its engineering-plan contract sanity check.
 That check covers the checked-in source contract, trigger coverage, Standard and
 Full plan section inventories, metadata/status and dependency templates,

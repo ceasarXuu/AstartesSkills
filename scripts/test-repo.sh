@@ -53,6 +53,11 @@ if [[ "$skill_id" == "multi-path-debug" ]]; then
   "$repo_root/scripts/multi-path-debug-sanity.sh"
 fi
 
+if [[ "$skill_id" == "bug-killer" ]]; then
+  log "checking bug-killer evidence-gated debug contract"
+  "$repo_root/scripts/bug-killer-sanity.sh"
+fi
+
 if [[ "$skill_id" == "se-good-plan" ]]; then
   log "checking se-good-plan engineering plan contract"
   "$repo_root/scripts/se-good-plan-sanity.sh"

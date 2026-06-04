@@ -22,6 +22,7 @@
 当前可安装示例包括：
 
 - `astartes-coding-custodes`：面向编码治理与执行规范的 skill
+- `bug-killer`：面向中大型 bug 的重型统一 debug 方法论，融合 `/coe` 案件账本、多路径独立调查和修复设计前的诊断证据门禁；小 bug 默认不启用
 - `clear-prd`：面向产品需求澄清的 skill，通过多轮产品逻辑、用户体验、交互、规则与验收问题形成 Draft 或 Ready PRD
 - `coe-debug`：面向复杂排障的 evidence-first skill，把 Problem / Hypothesis / Evidence 持续写入项目根目录 `/coe` 案件文件
 - `frontend-refactoring`：面向老前端重构的 skill，核心是隔离新 UI、重做视图层并安全切流

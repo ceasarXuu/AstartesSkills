@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "market": "openai-compatible",
+  "display_name": "Bug Killer",
+  "description": "Debugs medium and large bugs with persistent /coe case tracking, independent multi-path root-cause investigation, and a diagnostic evidence gate before repair design.",
+  "release": {
+    "version": "1.0.0",
+    "published_at": "2026-06-05T03:57:54+08:00",
+    "publisher": "ceasarXuu",
+    "changes": [
+      "Publish the initial bug-killer skill as a new unified debugging methodology instead of patching existing debug skills.",
+      "Fuse /coe case tracking, multi-path investigation, and a diagnostic evidence gate before repair design.",
+      "Add an activation gate so the heavy workflow is reserved for medium and large bugs, repeated failed fixes, broad impact, or explicit user requests.",
+      "Require evidence to link back to predeclared predictions or diagnostic evidence-plan clauses and keep research packets schema-safe inside /coe cases.",
+      "Add case template, interaction fixtures, marketplace metadata, and validation coverage for evidence-gated repair behavior."
+    ]
+  },
+  "source": {
+    "type": "github",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+    "path": "skills/bug-killer"
+  }
+}
