@@ -1,7 +1,7 @@
 # Reviewer Selection
 
-Choose reviewers based on the object under review and the risk profile. Use
-1-3 reviewers per round.
+Choose one reviewer based on the object under review and the highest-value risk
+profile. Use exactly 1 reviewer per round.
 
 ## Reviewer Pool
 
@@ -53,15 +53,13 @@ Choose reviewers based on the object under review and the risk profile. Use
 
 ## Selection Rules
 
-- Low-risk single-document review: use 1 reviewer.
-- Medium-risk design, skill, workflow, or single-module code review: use 2
-  reviewers.
-- High-risk architecture, data, permissions, migration, release, or multi-module
-  change: use 3 reviewers.
-- Do not select reviewers just to be comprehensive. Each selected reviewer must
-  have a specific risk focus.
+- Every review round uses exactly 1 reviewer.
+- Select the reviewer with the strongest fit for the highest-value risk in the
+  current target.
+- Do not add reviewers just to be comprehensive. The selected reviewer must have
+  a specific risk focus.
 - If the task is not code, do not force an implementation reviewer. Select the
-  roles that fit the review target.
+  role that fits the review target.
 - Select `user-experience-adversary` whenever the target changes a user-facing
   workflow, UI, documentation path, skill usage path, prompt behavior, or
   operator procedure where usability or comprehension can make the work fail.
@@ -73,34 +71,49 @@ Choose reviewers based on the object under review and the risk profile. Use
 
 Product or design review:
 
-- `product-logic-adversary`
-- `user-experience-adversary` when the user flow, wording, defaults, or
-  onboarding path can affect success
-- `architecture-adversary` when the design creates system commitments
-- `documentation-skill-adversary` when the artifact must guide future agents
+- Prefer `product-logic-adversary`.
+- Use `user-experience-adversary` when the user flow, wording, defaults, or
+  onboarding path can affect success.
+- Use `architecture-adversary` when the design creates system commitments.
+- Use `documentation-skill-adversary` when the artifact must guide future agents.
 
 Skill, prompt, or agent workflow review:
 
-- `documentation-skill-adversary`
-- `user-experience-adversary`
-- `product-logic-adversary`
-- `test-validity-adversary` when validation or anti-self-deception matters
+- Prefer `documentation-skill-adversary`.
+- Use `user-experience-adversary` when usability or comprehension can make the
+  workflow fail.
+- Use `product-logic-adversary` when requirement fit or product closure is the
+  highest risk.
+- Use `test-validity-adversary` when validation or anti-self-deception matters
+  most.
+
+Tie-break examples:
+
+- Documentation artifact with usability risk: choose `user-experience-adversary`
+  when a real user's ability to understand or complete the workflow is the
+  highest risk; choose `documentation-skill-adversary` when hidden context,
+  missing triggers, or fresh-session executability is the highest risk.
+- Skill workflow with validation risk: choose `test-validity-adversary` when the
+  main concern is self-deceptive validation; choose `documentation-skill-adversary`
+  when the main concern is whether a fresh agent can execute the workflow at all.
 
 Code implementation review:
 
-- `implementation-adversary`
-- `architecture-adversary` when boundaries or long-term design are touched
-- `test-validity-adversary` when validation quality is a risk
+- Prefer `implementation-adversary`.
+- Use `architecture-adversary` when boundaries or long-term design are the
+  highest risk.
+- Use `test-validity-adversary` when validation quality is the highest risk.
 
 Release or operations review:
 
-- `release-ops-adversary`
-- `observability-adversary`
-- `security-adversary` when data, secrets, credentials, or permissions are in
-  scope
+- Prefer `release-ops-adversary`.
+- Use `observability-adversary` when diagnosis after failure is the highest risk.
+- Use `security-adversary` when data, secrets, credentials, or permissions are
+  the highest risk.
 
 Security-sensitive review:
 
-- `security-adversary`
-- `implementation-adversary`
-- `observability-adversary`
+- Prefer `security-adversary`.
+- Use `implementation-adversary` when correctness and failure handling are the
+  highest risk.
+- Use `observability-adversary` when post-incident diagnosis is the highest risk.

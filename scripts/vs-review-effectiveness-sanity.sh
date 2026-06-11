@@ -47,6 +47,44 @@ require_section_pattern() {
   has_section_pattern "$file" "$start_pattern" "$end_pattern" "$required_pattern" || fail "$message"
 }
 
+has_multi_reviewer_guidance() {
+  local file="$1"
+  awk '
+    {
+      line=tolower($0)
+      if (line ~ /do not launch a panel by default/ || line ~ /prior multi-reviewer rounds/) {
+        next
+      }
+      if (line ~ /(1-3|one to three).*(reviewer|round)/) {
+        print $0
+        found=1
+      }
+      if (line ~ /(use|choose|select|launch|spawn|add).*(two|three|2|3|multiple).*(reviewers|reviewer roles)/) {
+        print $0
+        found=1
+      }
+      if (line ~ /(use|choose|select|launch|spawn|add|bring in).*(second|another|extra|pair of|both|co-reviewer).*(reviewer|reviewers|panel)/) {
+        print $0
+        found=1
+      }
+      if (line ~ /(multi-reviewer panel|reviewer panel|launch a panel|panel for high-risk)/) {
+        print $0
+        found=1
+      }
+    }
+    END {exit found ? 0 : 1}
+  ' "$file"
+}
+
+reject_multi_reviewer_guidance() {
+  local file="$1"
+  local message="$2"
+  if has_multi_reviewer_guidance "$file"; then
+    fail "$message"
+  fi
+  return 0
+}
+
 required_files=(
   "$bench_dir/README.md"
   "$bench_dir/fixtures/code/subscription.ts"
@@ -109,6 +147,10 @@ manifest_file="$repo_root/skills/subagent-vs-review/agents/openai.yaml"
 require_pattern "$skill_file" 'usability, ease of use, and ease of understanding' "skill must explicitly require user-perspective usability review"
 require_pattern "$skill_file" 'user-perspective focus: usability, ease of use, ease of understanding' "review packet must include explicit user-perspective focus"
 require_pattern "$manifest_file" 'ease of use, ease of understanding' "agent manifest must expose ease-of-use and comprehension in discovery metadata"
+require_pattern "$skill_file" 'Choose exactly 1 reviewer role per review round' "skill must require exactly one reviewer role per round"
+require_pattern "$selection_file" 'Use exactly 1 reviewer per round' "reviewer selection must require exactly one reviewer per round"
+reject_multi_reviewer_guidance "$skill_file" "skill must not restore contradictory multi-reviewer-per-round guidance"
+reject_multi_reviewer_guidance "$selection_file" "reviewer selection must not restore contradictory multi-reviewer-per-round guidance"
 require_section_pattern "$selection_file" '^`user-experience-adversary`$' '^`[^`]+`$' 'usability, ease of use, ease of understanding' "reviewer pool must define user-experience-adversary around explicit usability/comprehension concerns"
 require_section_pattern "$selection_file" '^## Selection Rules$' '^## ' 'Select `user-experience-adversary` whenever.*user-facing' "selection rules must bind user-experience-adversary to user-facing targets"
 require_section_pattern "$selection_file" '^## Selection Rules$' '^## ' 'documentation path, skill usage path, prompt behavior, or[[:space:]]*$' "selection rules must name docs, skill usage, prompts, and operator procedures"
@@ -129,6 +171,31 @@ fi
 sed 's/path:line or finding id/target location or finding id/g' "$template_file" > "$contract_negative_dir/review-report-template-weak-evidence.md"
 if has_section_pattern "$contract_negative_dir/review-report-template-weak-evidence.md" '^##### User-Perspective Checks$' '^##### ' 'Evidence or link: <path:line or finding id>'; then
   fail "negative contract fixture still passed after weakening user-perspective evidence"
+fi
+cp "$selection_file" "$contract_negative_dir/reviewer-selection-two-reviewers.md"
+printf '\n- Use two reviewers for high-risk closure.\n' >> "$contract_negative_dir/reviewer-selection-two-reviewers.md"
+if ! has_multi_reviewer_guidance "$contract_negative_dir/reviewer-selection-two-reviewers.md"; then
+  fail "negative contract fixture still passed after adding spelled-out two-reviewer guidance"
+fi
+cp "$skill_file" "$contract_negative_dir/skill-multi-reviewer-panel.md"
+printf '\nLaunch a multi-reviewer panel for high-risk reviews.\n' >> "$contract_negative_dir/skill-multi-reviewer-panel.md"
+if ! has_multi_reviewer_guidance "$contract_negative_dir/skill-multi-reviewer-panel.md"; then
+  fail "negative contract fixture still passed after adding multi-reviewer panel guidance"
+fi
+cp "$selection_file" "$contract_negative_dir/reviewer-selection-do-not-two-reviewers.md"
+printf '\n- Do not stop at one reviewer for closure; use two reviewers for high-risk findings.\n' >> "$contract_negative_dir/reviewer-selection-do-not-two-reviewers.md"
+if ! has_multi_reviewer_guidance "$contract_negative_dir/reviewer-selection-do-not-two-reviewers.md"; then
+  fail "negative contract fixture still passed after adding do-not two-reviewer guidance"
+fi
+cp "$selection_file" "$contract_negative_dir/reviewer-selection-second-reviewer.md"
+printf '\n- Add a second reviewer for closure work.\n' >> "$contract_negative_dir/reviewer-selection-second-reviewer.md"
+if ! has_multi_reviewer_guidance "$contract_negative_dir/reviewer-selection-second-reviewer.md"; then
+  fail "negative contract fixture still passed after adding second-reviewer guidance"
+fi
+cp "$selection_file" "$contract_negative_dir/reviewer-selection-synonyms.md"
+printf '\n- Use a pair of reviewers when both reviewers can cover different angles.\n- Add a co-reviewer panel for high-risk work.\n- Add another reviewer for high-risk work.\n- Bring in an extra reviewer for closure work.\n' >> "$contract_negative_dir/reviewer-selection-synonyms.md"
+if ! has_multi_reviewer_guidance "$contract_negative_dir/reviewer-selection-synonyms.md"; then
+  fail "negative contract fixture still passed after adding reviewer-count synonym guidance"
 fi
 
 log "checking runtime bootstrap guards"

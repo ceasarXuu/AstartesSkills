@@ -24,7 +24,14 @@ write_minimal_repo() {
     "$fixture_dir/vs_review"
 
   cp "$repo_root/scripts/validate-repo.sh" "$fixture_dir/scripts/validate-repo.sh"
+  cp "$repo_root/scripts/validate-skill-registry-coverage.py" "$fixture_dir/scripts/validate-skill-registry-coverage.py"
   chmod +x "$fixture_dir/scripts/validate-repo.sh"
+  chmod +x "$fixture_dir/scripts/validate-skill-registry-coverage.py"
+
+  for sanity_script in bug-killer-sanity.sh clear-prd-sanity.sh multi-path-debug-sanity.sh se-good-plan-sanity.sh; do
+    printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' 'exit 0' > "$fixture_dir/scripts/$sanity_script"
+    chmod +x "$fixture_dir/scripts/$sanity_script"
+  done
 
   cat > "$fixture_dir/skills/subagent-vs-review/SKILL.md" <<'EOF'
 # subagent-vs-review

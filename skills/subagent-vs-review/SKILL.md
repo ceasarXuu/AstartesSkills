@@ -159,8 +159,9 @@ Do not include:
 
 ### 4. Select Reviewers Dynamically
 
-Choose 1-3 reviewer roles based on the target and risk. Do not always use the
-same fixed set.
+Choose exactly 1 reviewer role per review round based on the target and risk.
+Do not launch a panel by default; prior multi-reviewer rounds often produced
+similar findings, so one focused fresh reviewer is the normal review unit.
 
 Read `references/reviewer-selection.md` for reviewer options and selection
 rules.
