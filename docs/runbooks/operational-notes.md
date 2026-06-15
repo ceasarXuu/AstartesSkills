@@ -126,6 +126,13 @@
 - Decision: add the skill package, mirrored release metadata, README discovery, an interaction fixture, and a dedicated `scripts/clear-prd-sanity.sh` check wired into `./scripts/test-repo.sh clear-prd`.
 - Why it worked: the generic repository gates still validate packaging and export, while the skill-specific smoke check protects the behavior that makes the skill useful, including Draft versus Ready output.
 - Reuse later: when adding a methodology skill, encode its core method as structural assertions plus small behavior fixtures instead of relying only on prose review.
+
+## 2026-06-16 Importing An Installed Global Skill
+
+- Problem: a skill already installed under `~/.agents/skills/` needed to become a managed AstartesSkills package without losing its bundled references or scripts.
+- Decision: copy the whole source skill directory into `skills/<id>/`, add `markets/openai-compatible.json`, mirror release metadata in `registry/skills.json`, then run repository validation plus a lightweight script smoke check.
+- Why it worked: the source package stayed self-contained while the repository-level registry, marketplace manifest, and validation coverage made it installable through the normal distribution flow.
+- Reuse later: when smoke-checking Python helper scripts with `py_compile`, either disable bytecode writes or move generated `__pycache__` into ignored recoverable backup storage before committing.
 # 2026-06-03: Packaging a root-cause-first debug skill
 
 - When creating a new AstartesSkills package, update the skill folder, `agents/openai.yaml`, market manifest, `registry/skills.json`, README discovery entries, and `scripts/test-repo.sh` in the same change.

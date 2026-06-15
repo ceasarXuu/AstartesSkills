@@ -117,6 +117,7 @@ Reference:
 | `bug-killer` | Debug medium and large bugs with `/coe` case tracking, independent research paths, and a diagnostic evidence gate before repair design. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill bug-killer` |
 | `clear-prd` | Clarify product requirements through guided multi-round questions focused on product logic, user experience, interaction design, rules, edge cases, and acceptance criteria, then write a Draft or Ready PRD. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill clear-prd` |
 | `coe-debug` | Track complex debug cases in project-root `/coe` files with strict problem, hypothesis, and evidence nodes. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill coe-debug` |
+| `docs-manager` | Design, reorganize, audit, and maintain repository documentation systems with versioned PRDs, technical designs, engineering plans, link management, archive policy, and validation tooling. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill docs-manager` |
 | `frontend-refactoring` | Refactor legacy frontend surfaces by isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill frontend-refactoring` |
 | `multi-path-debug` | Confirm bug root causes before repair through targeted intake, independent research paths, evidence-weighted synthesis, and user confirmation before fixes. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill multi-path-debug` |
 | `se-good-plan` | Write and review phased, executable, verifiable, reviewable, rollback-aware software engineering plans for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill se-good-plan` |
@@ -145,6 +146,7 @@ Reference:
 │   ├── _templates/                 # Reusable skill templates
 │   ├── astartes-coding-custodes/   # AI coding governance skill
 │   ├── clear-prd/                  # Product-first PRD clarification skill
+│   ├── docs-manager/               # Versioned documentation governance skill
 │   ├── frontend-refactoring/       # Legacy frontend migration skill
 │   ├── multi-path-debug/           # Root-cause-first multi-path debug skill
 │   ├── se-good-plan/               # Software engineering plan writing and review skill

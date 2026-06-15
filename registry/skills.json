@@ -126,6 +126,36 @@
       }
     },
     {
+      "id": "docs-manager",
+      "name": "Docs Manager",
+      "path": "skills/docs-manager",
+      "summary": "Designs, reorganizes, audits, and maintains repository documentation systems with versioned PRDs, technical designs, engineering plans, link management, archive policy, and validation tooling.",
+      "tags": ["documentation", "docs-governance", "prd", "technical-design", "validation"],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/docs-manager"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-06-16T05:54:01+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the docs-manager skill from the global skill directory into AstartesSkills as a managed installable skill.",
+          "Package version document templates and the docs governance validation script with OpenAI-compatible marketplace metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/docs-manager/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
       "id": "frontend-refactoring",
       "name": "frontend refactoring",
       "path": "skills/frontend-refactoring",

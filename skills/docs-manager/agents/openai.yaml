@@ -1,0 +1,4 @@
+interface:
+  display_name: "Docs Manager"
+  short_description: "Versioned docs governance and templates"
+  default_prompt: "Use $docs-manager to organize this repo's docs into versioned PRD, technical design, and engineering plan documents."
