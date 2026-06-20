@@ -2,16 +2,16 @@
   "version": 1,
   "market": "openai-compatible",
   "display_name": "SE Good Plan",
-  "description": "Writes and reviews phased, executable, verifiable, reviewable, rollback-aware software engineering plans for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work.",
+  "description": "Writes and reviews phased, executable, verifiable, reviewable, rollback-aware software engineering plans with plan-to-code completeness evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work.",
   "release": {
-    "version": "1.0.0",
-    "published_at": "2026-06-04T20:23:07+08:00",
+    "version": "1.1.0",
+    "published_at": "2026-06-21T00:31:04+08:00",
     "publisher": "ceasarXuu",
     "changes": [
-      "Publish the initial se-good-plan skill for software engineering plan writing and review.",
-      "Add complexity-based Lightweight, Standard, and Full plan depth selection with forced Full Plan escalation rules.",
-      "Add phase gate, rollback, data migration, security, observability, and context-honesty requirements with task-specific reference patterns.",
-      "Add source-contract traceability, metadata/status and dependency templates, proportional phase-count guidance, and stronger validation fixtures."
+      "Add plan-to-code implementation completeness evidence to Standard and Full plan contracts.",
+      "Define landed, partial, stub-only, mock-only, planned, and deferred implementation statuses.",
+      "Require production code path, integration entry, test evidence, runtime/log evidence, and mock/stub exposure in code-bearing plans.",
+      "Update sanity checks and exemplar coverage for implementation completeness."
     ]
   },
   "source": {

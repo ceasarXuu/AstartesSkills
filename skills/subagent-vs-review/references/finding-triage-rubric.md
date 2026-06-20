@@ -12,7 +12,9 @@ or explicitly accept/defer the risk.
 `blocking`
 : The task cannot honestly be considered complete. The issue breaks the product
   goal, invalidates the design, creates unacceptable architecture, security,
-  data, release, or operational risk, or leaves critical validation missing.
+  data, release, or operational risk, leaves critical validation missing, or
+  counts protocol-only, scaffold-only, mock-only, fake-data-only, demo-only, or
+  test-only wiring as completed implementation.
   A reproducible failure scenario, broken assumption, or untested high-impact
   failure path can be blocking even when the happy path works.
 

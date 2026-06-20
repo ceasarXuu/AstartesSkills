@@ -92,6 +92,7 @@ def require_plan_contract(skill_text: str, patterns_text: str, source_text: str)
         "## Full Plan Required Additions",
         "## Metadata Contract",
         "## Dependency Contract",
+        "## Implementation Completeness Contract",
         "## Phase Contract",
     ]:
         require(source_text, needle, "source contract traceability")
@@ -131,13 +132,14 @@ def require_plan_contract(skill_text: str, patterns_text: str, source_text: str)
             "8. Plan Summary",
             "9. Overall Technical Design",
             "10. Phased Execution Plan",
-            "11. Risks, Dependencies, And Mitigations",
-            "12. Testing And Validation Strategy",
-            "13. Release, Rollback, And Fallback Strategy",
-            "14. Observability And Success Metrics",
-            "15. Open Questions",
-            "16. Change Log",
-            "17. Plan Quality Checklist",
+            "11. Implementation Completeness Matrix",
+            "12. Risks, Dependencies, And Mitigations",
+            "13. Testing And Validation Strategy",
+            "14. Release, Rollback, And Fallback Strategy",
+            "15. Observability And Success Metrics",
+            "16. Open Questions",
+            "17. Change Log",
+            "18. Plan Quality Checklist",
         ],
         "Standard Plan section inventory",
     )
@@ -182,6 +184,14 @@ def require_plan_contract(skill_text: str, patterns_text: str, source_text: str)
     ]:
         require(skill_text + "\n" + patterns_text, needle, "dependency contract")
 
+    for needle in [
+        "| Plan Item | Expected Behavior | Production Code Path | Integration Entry | Test Evidence | Runtime / Log Evidence | Mock / Stub Exposure | Status |",
+        "planned / landed / partial / stub-only / mock-only / deferred",
+        "Only `landed` means complete",
+        "protocols, interfaces, schemas, entry points, scaffolding, mock or fake data, demo scripts, and test-only wiring",
+    ]:
+        require(skill_text + "\n" + patterns_text + "\n" + source_text, needle, "implementation completeness contract")
+
 
 def require_fixture(path: Path, expected: list[str], forbidden: list[str]) -> None:
     text = read(path)
@@ -215,8 +225,10 @@ def require_exemplar_shape(path: Path) -> None:
         "## Overall Technical Design",
         "## Alternatives And Tradeoffs",
         "## Phased Execution Plan",
+        "## Implementation Completeness Matrix",
         "### Phase 0: Discovery",
         "#### Entry Criteria Checks",
+        "#### Implementation Completeness Evidence",
         "#### Testing And Validation",
         "#### Gate To Next Phase",
         "## Phase Gate Overview",
@@ -266,6 +278,7 @@ for needle in [
     "Production-impacting work must include release, rollback",
     "Data changes must include migration, idempotency",
     "Security-sensitive work must include permission boundaries",
+    "Implementation plans must include plan-to-code completeness evidence",
     "references/plan-patterns.md",
 ]:
     require(skill, needle, "SKILL.md")
@@ -310,6 +323,7 @@ for needle in [
     "#### Entry Criteria",
     "#### Entry Criteria Checks",
     "#### Implementation Tasks",
+    "#### Implementation Completeness Evidence",
     "#### Testing And Validation",
     "#### Exit Criteria",
     "#### Review Plan",
@@ -333,6 +347,7 @@ for heading in [
     "### Observability And Success Metrics",
     "### Metadata Block",
     "### Dependency Table",
+    "### Implementation Completeness Matrix",
     "## Wording Guardrails",
     "## Anti-Patterns",
 ]:
@@ -343,6 +358,7 @@ for needle in [
     "p50, p95, and p99 latency",
     "Threat Model",
     "rollback unavailable",
+    "implementation plans that treat protocols, scaffolds, mocks",
     "project-specific facts that were not provided or verified",
     "Do not invent owner, deadline, staffing, release date, or launch window values.",
 ]:
@@ -352,6 +368,8 @@ require(agent, "display_name: SE Good Plan", "agents/openai.yaml")
 require(agent, "Use $se-good-plan", "agents/openai.yaml")
 require(agent, "Lightweight, Standard, or Full", "agents/openai.yaml")
 for needle in ["performance optimization", "security change", "DevOps / CI/CD", "do not invent schedules or staffing"]:
+    require(agent, needle, "agents/openai.yaml")
+for needle in ["plan-to-code completeness evidence", "production implementation", "mocks, fake data, demo scripts"]:
     require(agent, needle, "agents/openai.yaml")
 
 release = manifest.get("release")
@@ -367,6 +385,10 @@ if "rollback-aware" not in manifest.get("description", ""):
     fail("manifest description must mention rollback-aware plans")
 if "rollback-aware" not in registry_skill.get("summary", ""):
     fail("registry summary must mention rollback-aware plans")
+if "plan-to-code completeness" not in manifest.get("description", ""):
+    fail("manifest description must mention plan-to-code completeness")
+if "plan-to-code completeness" not in registry_skill.get("summary", ""):
+    fail("registry summary must mention plan-to-code completeness")
 
 require(readme, "`se-good-plan`", "README skill table")
 require(readme, "./scripts/test-repo.sh se-good-plan", "README testing docs")
@@ -455,42 +477,20 @@ require_fixture(
 )
 require_exemplar_shape(exemplars_dir / "full-plan-shape.md")
 
-expect_failure(
-    "Standard Plan inventory loses Metadata",
-    lambda: require_plan_contract(skill.replace("1. Metadata", "1. Meta"), patterns, source_contract),
-)
-expect_failure(
-    "Standard Plan inventory loses Plan Summary",
-    lambda: require_plan_contract(skill.replace("8. Plan Summary", "8. Summary"), patterns, source_contract),
-)
-expect_failure(
-    "Full Plan loses Alternatives And Tradeoffs",
-    lambda: require_plan_contract(skill.replace("Alternatives And Tradeoffs", "Tradeoff Notes"), patterns, source_contract),
-)
-expect_failure(
-    "Full Plan loses Decision Log",
-    lambda: require_plan_contract(skill.replace("Decision Log", "Decision Notes"), patterns, source_contract),
-)
-expect_failure(
-    "Metadata status enum disappears",
-    lambda: require_plan_contract(
-        skill.replace("Draft | Reviewing | Approved | In Progress | Blocked | Completed | Deprecated", "Draft | Done"),
-        patterns.replace("Draft | Reviewing | Approved | In Progress | Blocked | Completed | Deprecated", "Draft | Done"),
-        source_contract,
-    ),
-)
-expect_failure(
-    "Context honesty permits invented schedules",
-    lambda: require_plan_contract(skill.replace("Do not invent schedules, staffing, resource commitments, deadlines, launch", "Do not invent project schedules only when explicitly forbidden, launch"), patterns, source_contract),
-)
-expect_failure(
-    "Release version rejects non-semver fixture",
-    lambda: require_semver("1.0", "negative fixture release version"),
-)
-expect_failure(
-    "Release timestamp rejects missing timezone fixture",
-    lambda: require_local_iso8601("2026-06-04T20:23:07", "negative fixture published_at"),
-)
+negative_checks = [
+    ("Standard Plan inventory loses Metadata", lambda: require_plan_contract(skill.replace("1. Metadata", "1. Meta"), patterns, source_contract)),
+    ("Standard Plan inventory loses Plan Summary", lambda: require_plan_contract(skill.replace("8. Plan Summary", "8. Summary"), patterns, source_contract)),
+    ("Full Plan loses Alternatives And Tradeoffs", lambda: require_plan_contract(skill.replace("Alternatives And Tradeoffs", "Tradeoff Notes"), patterns, source_contract)),
+    ("Full Plan loses Decision Log", lambda: require_plan_contract(skill.replace("Decision Log", "Decision Notes"), patterns, source_contract)),
+    ("Standard Plan loses Implementation Completeness Matrix", lambda: require_plan_contract(skill.replace("11. Implementation Completeness Matrix", "11. Implementation Notes"), patterns, source_contract)),
+    ("Implementation completeness status loses stub-only", lambda: require_plan_contract(skill.replace("planned / landed / partial / stub-only / mock-only / deferred", "planned / landed / deferred"), patterns.replace("planned / landed / partial / stub-only / mock-only / deferred", "planned / landed / deferred"), source_contract.replace("`planned`, `partial`, `stub-only`, and", "`planned`, `partial`, and"))),
+    ("Metadata status enum disappears", lambda: require_plan_contract(skill.replace("Draft | Reviewing | Approved | In Progress | Blocked | Completed | Deprecated", "Draft | Done"), patterns.replace("Draft | Reviewing | Approved | In Progress | Blocked | Completed | Deprecated", "Draft | Done"), source_contract)),
+    ("Context honesty permits invented schedules", lambda: require_plan_contract(skill.replace("Do not invent schedules, staffing, resource commitments, deadlines, launch", "Do not invent project schedules only when explicitly forbidden, launch"), patterns, source_contract)),
+    ("Release version rejects non-semver fixture", lambda: require_semver("1.0", "negative fixture release version")),
+    ("Release timestamp rejects missing timezone fixture", lambda: require_local_iso8601("2026-06-04T20:23:07", "negative fixture published_at")),
+]
+for description, check in negative_checks:
+    expect_failure(description, check)
 
 print("[se-good-plan-sanity] se-good-plan sanity passed")
 PY

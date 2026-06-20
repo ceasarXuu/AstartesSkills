@@ -7,6 +7,7 @@ Do not include this file in reviewer navigation packets.
 - Blocking: no idempotency key or duplicate request protection, so repeated renewal can charge twice.
 - Blocking: `requestedPlan.priceCents` is trusted from caller input instead of server-owned plan data.
 - Blocking: charge can succeed and `savePayment` can fail, leaving paid-but-unrecorded state.
+- Blocking: billing profile loading is represented by fixture data and is not wired into the renewal production path.
 - Major: test coverage only checks happy path.
 
 ## design/remote-terminal-reconnect.md
@@ -23,4 +24,3 @@ Do not include this file in reviewer navigation packets.
 - Blocking: no main-agent finding triage with accept/reject/defer.
 - Blocking: no additional review after accepted blocking findings.
 - Major: output format does not require broken assumption, failure scenario, trigger, impact, or proof needed.
-

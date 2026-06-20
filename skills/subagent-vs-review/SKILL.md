@@ -1,6 +1,6 @@
 ---
 name: subagent-vs-review
-description: Use when a task needs independent adversarial review during vibe coding, design work, implementation, testing, release planning, documentation, skill creation, or agent workflow design. It uses fresh internal subagents to attack artifact assumptions, happy paths, user-perspective usability, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.
+description: Use when a task needs independent adversarial review during vibe coding, design work, implementation, testing, release planning, documentation, skill creation, or agent workflow design. It uses fresh internal subagents to attack artifact assumptions, happy paths, implementation completeness, user-perspective usability, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.
 ---
 
 # subagent-vs-review
@@ -88,6 +88,9 @@ Identify what the reviewer must try to disprove:
 - misunderstood requirements or missing implicit constraints
 - user-visible flows, instructions, labels, states, or defaults that are hard to
   use, hard to understand, or easy to misread
+- plan-to-code completeness gaps where work stops at protocols, interfaces,
+  schemas, entry points, scaffolding, mock or fake data, demo scripts, or
+  test-only wiring instead of production-path implementation
 - assumptions that may be false in real inputs, real state, or real users
 - happy-path-only behavior
 - invalid, empty, duplicated, unordered, hostile, or extreme inputs
@@ -137,6 +140,9 @@ Include:
   challenge
 - user-perspective focus: usability, ease of use, ease of understanding,
   onboarding, wording, feedback, recovery paths, and realistic user behaviors
+- implementation-completeness focus: planned items, expected behaviors,
+  production code paths, integration entries, test evidence, runtime or log
+  evidence, mock or stub exposure, and known unlanded work
 - assumptions to attack: inputs, states, permissions, dependencies, timing,
   ownership, invariants, or user behaviors the implementation relies on
 - adversarial lenses: choose the most relevant lenses from requirements, state,
@@ -231,6 +237,9 @@ Reviewer output must include:
 - blocking findings
 - non-blocking risks
 - user-perspective checks for usability, ease of use, and ease of understanding
+- implementation completeness checks for plan-item coverage, production code
+  paths, integration entries, test evidence, runtime or log evidence, and mock
+  or stub exposure
 - required fixes
 - missing tests
 - missing logs or observability
@@ -244,6 +253,8 @@ inline with that finding:
 - trigger condition or misuse case
 - likely impact or blast radius
 - proof needed, such as a test, log, runtime check, or product decision
+- plan item and production path affected, when the finding challenges
+  implementation completeness
 
 Reviewers must be read-only. They must not edit files.
 
@@ -327,5 +338,8 @@ Before claiming the review is complete:
 - Does every finding have an `accept`, `reject`, or `defer` response?
 - Are rejected findings backed by evidence?
 - Are deferred findings justified and tracked?
+- If the review targets implemented plan work, does the report include
+  implementation completeness checks for production paths, integration entries,
+  tests, runtime/log evidence, and mock/stub exposure?
 - Did accepted blocking findings receive an additional fresh review linked to a
   closure round and launch record?

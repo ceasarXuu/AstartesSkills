@@ -26,6 +26,13 @@ profile. Use exactly 1 reviewer per round.
   consistency, compatibility, invalid inputs, partial success, retries, and
   hidden edge cases in code.
 
+`implementation-completeness-adversary`
+: Challenges whether planned code actually landed in production paths. Compares
+  plans, claimed changes, target files, entry points, tests, logs, and runtime
+  evidence to detect protocol-only, interface-only, schema-only, entry-only,
+  scaffold-only, mock-only, fake-data-only, demo-script-only, or test-only
+  wiring that is being counted as completed implementation.
+
 `test-validity-adversary`
 : Challenges self-deceptive tests, tests that only verify implementation
   details, missing black-box checks, missing failure-path checks, regression
@@ -65,7 +72,12 @@ profile. Use exactly 1 reviewer per round.
   operator procedure where usability or comprehension can make the work fail.
 - Each selected reviewer must use an adversarial lens: try to falsify at least
   one assumption, happy path, failure path, security boundary, maintenance claim,
-  user-comprehension claim, validation claim, or operational claim.
+  user-comprehension claim, implementation-completeness claim, validation claim,
+  or operational claim.
+- Select `implementation-completeness-adversary` whenever the target claims a
+  plan, phase, or implementation is done and the highest risk is incomplete
+  code landing, scaffold-only work, mock-only behavior, or missing production
+  integration.
 
 ## Common Combinations
 
@@ -100,6 +112,10 @@ Tie-break examples:
 Code implementation review:
 
 - Prefer `implementation-adversary`.
+- Use `implementation-completeness-adversary` when the key question is whether
+  every planned item is fully wired into production code paths rather than only
+  protocols, scaffolding, entry points, mocks, fake data, demo scripts, or
+  test-only wiring.
 - Use `architecture-adversary` when boundaries or long-term design are the
   highest risk.
 - Use `test-validity-adversary` when validation quality is the highest risk.

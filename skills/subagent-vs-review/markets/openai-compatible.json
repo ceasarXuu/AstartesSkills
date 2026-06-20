@@ -2,15 +2,16 @@
   "version": 1,
   "market": "openai-compatible",
   "display_name": "Subagent VS Review",
-  "description": "Runs independent adversarial review rounds with fresh internal subagents that attack artifact assumptions, happy paths, usability, ease of use, ease of understanding, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.",
+  "description": "Runs independent adversarial review rounds with fresh internal subagents that attack artifact assumptions, happy paths, implementation completeness, usability, ease of use, ease of understanding, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.",
   "release": {
-    "version": "1.4.0",
-    "published_at": "2026-06-12T04:21:20+08:00",
+    "version": "1.5.0",
+    "published_at": "2026-06-21T00:31:04+08:00",
     "publisher": "ceasarXuu",
     "changes": [
-      "Change review selection from 1-3 reviewers per round to exactly one focused reviewer per round.",
-      "Replace risk-tier reviewer-count rules with highest-value reviewer selection guidance.",
-      "Add smoke checks that reject restoring multi-reviewer-per-round selection rules."
+      "Add implementation-completeness adversarial review coverage for plan-to-code landing gaps.",
+      "Require review packets and reports to track production code paths, integration entries, test evidence, runtime/log evidence, and mock/stub exposure.",
+      "Treat protocol-only, scaffold-only, mock-only, fake-data-only, demo-only, and test-only wiring as incomplete unless production-path evidence proves otherwise.",
+      "Update effectiveness fixtures and sanity checks for implementation completeness review."
     ]
   },
   "source": {

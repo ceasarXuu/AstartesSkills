@@ -14,7 +14,8 @@ Target locations:
 - <tmp-root>/<fixture-path-2 if applicable>
 
 Objective: adversarially review this isolated fixture. Attack artifact
-assumptions, happy paths, failure modes, and evidence gaps.
+assumptions, happy paths, implementation completeness, failure modes, and
+evidence gaps.
 
 Do not edit files.
 Do not read oracle files.
@@ -33,6 +34,7 @@ Record launch metadata in the temp runtime report:
 - read-only status
 
 Risk focus: <case-specific risks>
+Implementation completeness focus: <planned item, production path, integration entry, test evidence, runtime/log evidence, mock/stub exposure, or known unlanded work>
 Assumptions to attack: <case-specific assumptions>
 Adversarial lenses: <case-specific lenses>
 
@@ -40,6 +42,7 @@ Output exactly:
 ##### Summary
 ##### Blocking Findings
 ##### Non-blocking Risks
+##### Implementation Completeness Checks
 ##### Required Fixes
 ##### Missing Tests
 ##### Missing Logs / Observability

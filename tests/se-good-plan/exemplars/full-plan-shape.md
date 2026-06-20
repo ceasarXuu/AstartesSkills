@@ -100,6 +100,12 @@ phased and review-gated.
 
 - API inventory.
 
+#### Implementation Completeness Evidence
+
+| Plan Item | Production Code Path | Integration Entry | Test Evidence | Runtime / Log Evidence | Mock / Stub Exposure | Status |
+|---|---|---|---|---|---|---|
+| Current API inventory | n/a | n/a | n/a | Inventory artifact | none | landed |
+
 #### Testing And Validation
 
 | Validation Item | Method | Passing Standard |
@@ -129,6 +135,13 @@ phased and review-gated.
 | Phase | Gate |
 |---|---|
 | Phase 0 | Discovery evidence reviewed |
+
+## Implementation Completeness Matrix
+
+| Plan Item | Expected Behavior | Production Code Path | Integration Entry | Test Evidence | Runtime / Log Evidence | Mock / Stub Exposure | Status |
+|---|---|---|---|---|---|---|---|
+| API caller inventory | All known callers are mapped before design | n/a for discovery | n/a | Inventory review checklist | Discovery artifact | none | landed |
+| Target API implementation | New API behavior is implemented in production code | Unknown until Discovery | Unknown until Discovery | Contract tests | Runtime logs after canary | blocks completion until real path exists | planned |
 
 ## Dependencies
 

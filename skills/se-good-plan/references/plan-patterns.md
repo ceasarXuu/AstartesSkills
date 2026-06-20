@@ -186,6 +186,21 @@ third-party APIs, feature flag platforms, CI/CD systems, test environments,
 monitoring platforms, security review, product confirmation, design artifacts,
 and client releases.
 
+### Implementation Completeness Matrix
+
+```markdown
+| Plan Item | Expected Behavior | Production Code Path | Integration Entry | Test Evidence | Runtime / Log Evidence | Mock / Stub Exposure | Status |
+|---|---|---|---|---|---|---|---|
+| ... | ... | file, function, module, or command | UI, API, job, CLI, pipeline, or service path | test path and assertion | command, log, trace, or artifact | none / test-only / blocks completion | planned / landed / partial / stub-only / mock-only / deferred |
+```
+
+Use this table for code-bearing implementation, refactor, migration, bug-fix,
+DevOps, and release work. A plan item is complete only when the production code
+path is wired through a real integration entry and validated with non-demo
+evidence. Protocols, interfaces, schemas, entry points, scaffolding, mock or
+fake data, demo scripts, and test-only wiring are not completion evidence by
+themselves.
+
 ### Risk Table
 
 ```markdown
@@ -302,6 +317,7 @@ Replace vague wording with evidence:
 | handle errors | named errors and expected system behavior |
 | ensure stability | health metrics and observation window |
 | launch soon | release gate, canary plan, and pause criteria |
+| implemented | production code path, integration entry, test evidence, runtime/log evidence, and mock/stub exposure |
 
 ## Anti-Patterns
 
@@ -311,6 +327,8 @@ Do not output:
 - a roadmap without executable tasks and gates
 - a technical solution without proof strategy
 - production changes with only "tests pass" as a release gate
+- implementation plans that treat protocols, scaffolds, mocks, fake data, demo
+  scripts, or entry points as complete without production-path evidence
 - data migration without idempotency, validation, and compensation
 - security work without permission boundaries and audit strategy
 - project-specific facts that were not provided or verified

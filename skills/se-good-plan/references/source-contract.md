@@ -63,13 +63,14 @@ The skill must support:
 8. Plan Summary
 9. Overall Technical Design
 10. Phased Execution Plan
-11. Risks, Dependencies, And Mitigations
-12. Testing And Validation Strategy
-13. Release, Rollback, And Fallback Strategy
-14. Observability And Success Metrics
-15. Open Questions
-16. Change Log
-17. Plan Quality Checklist
+11. Implementation Completeness Matrix
+12. Risks, Dependencies, And Mitigations
+13. Testing And Validation Strategy
+14. Release, Rollback, And Fallback Strategy
+15. Observability And Success Metrics
+16. Open Questions
+17. Change Log
+18. Plan Quality Checklist
 
 ## Full Plan Required Additions
 
@@ -104,6 +105,16 @@ The skill must support:
 | ... | system / person / data / environment / third-party | Ready / Pending / Unknown | ... | ... |
 ```
 
+## Implementation Completeness Contract
+
+Plans that expect code changes must trace each planned item to production code,
+an integration entry, test evidence, runtime or log evidence, mock or stub
+exposure, and status.
+
+`landed` is the only complete status. `planned`, `partial`, `stub-only`, and
+`mock-only` cannot satisfy an exit gate unless the user explicitly accepts the
+remaining risk and the follow-up location is recorded.
+
 ## Phase Contract
 
 Every Standard or Full phase must include:
@@ -114,11 +125,12 @@ Every Standard or Full phase must include:
 4. Design Approach
 5. Implementation Tasks
 6. Deliverables
-7. Testing And Validation
-8. Exit Criteria
-9. Review Plan
-10. Risks And Fallback
-11. Gate To Next Phase
+7. Implementation Completeness Evidence
+8. Testing And Validation
+9. Exit Criteria
+10. Review Plan
+11. Risks And Fallback
+12. Gate To Next Phase
 
 ## High-Risk Contract
 

@@ -1,6 +1,6 @@
 ---
 name: se-good-plan
-description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces phased, executable, verifiable, reviewable, rollback-aware plans for software engineering work.
+description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces phased, executable, verifiable, reviewable, rollback-aware plans with plan-to-code completeness evidence for software engineering work.
 ---
 
 # SE Good Plan
@@ -52,6 +52,10 @@ tiny, low-risk edits.
   validation, and rollback or compensation.
 - Security-sensitive work must include permission boundaries, sensitive-data
   handling, abuse cases, audit logging, and security review.
+- Implementation plans must include plan-to-code completeness evidence. Do not
+  count protocols, interfaces, schemas, entry points, scaffolding, mock or fake
+  data, demo scripts, and test-only wiring as completed implementation unless the
+  production path is wired, exercised, and evidenced.
 - Use measurable acceptance criteria. Avoid vague promises like "optimize",
   "improve", "support", "handle", or "complete" unless they are made specific.
 
@@ -133,13 +137,14 @@ Include:
 8. Plan Summary
 9. Overall Technical Design
 10. Phased Execution Plan
-11. Risks, Dependencies, And Mitigations
-12. Testing And Validation Strategy
-13. Release, Rollback, And Fallback Strategy
-14. Observability And Success Metrics
-15. Open Questions
-16. Change Log
-17. Plan Quality Checklist
+11. Implementation Completeness Matrix
+12. Risks, Dependencies, And Mitigations
+13. Testing And Validation Strategy
+14. Release, Rollback, And Fallback Strategy
+15. Observability And Success Metrics
+16. Open Questions
+17. Change Log
+18. Plan Quality Checklist
 
 Use `Full Plan` for high-risk, production-impacting, data-impacting,
 security-impacting, or architecture-impacting work. Add:
@@ -179,6 +184,19 @@ or must be discovered:
 
 If the dependency state is unknown, do not omit it. Mark it `Unknown` and tie it
 to a phase gate or open question.
+
+Use this implementation completeness matrix in every implementation, refactor,
+migration, bug-fix, DevOps, or release plan that expects code changes:
+
+```markdown
+| Plan Item | Expected Behavior | Production Code Path | Integration Entry | Test Evidence | Runtime / Log Evidence | Mock / Stub Exposure | Status |
+|---|---|---|---|---|---|---|---|
+| ... | ... | file, function, module, or command | UI, API, job, CLI, pipeline, or service path | test path and assertion | command, log, trace, or artifact | none / test-only / blocks completion | planned / landed / partial / stub-only / mock-only / deferred |
+```
+
+Only `landed` means complete. `stub-only`, `mock-only`, `partial`, and
+`planned` cannot satisfy an exit gate unless the user explicitly accepts the
+remaining risk and the follow-up location is recorded.
 
 ### 4. Extract Context Honestly
 
@@ -232,6 +250,9 @@ For every Standard or Full Plan, each phase must use this schema:
 #### Design Approach
 #### Implementation Tasks
 #### Deliverables
+#### Implementation Completeness Evidence
+| Plan Item | Production Code Path | Integration Entry | Test Evidence | Runtime / Log Evidence | Mock / Stub Exposure | Status |
+|---|---|---|---|---|---|---|
 #### Testing And Validation
 | Validation Item | Method | Passing Standard |
 |---|---|---|
@@ -252,6 +273,8 @@ but do not skip Discovery, Validation, Release, or Rollback for high-risk work.
 Every phase gate must state what evidence proves the phase can close:
 
 - required tests and exact pass criteria
+- plan-to-code completeness rows showing code landed in production paths, not
+  only protocols, definitions, scaffolding, mocks, fake data, or demo scripts
 - required code, design, security, release, or data review
 - unresolved P0/P1 issues
 - risk mitigations and fallback readiness
@@ -291,6 +314,8 @@ Before final output, verify:
 - [ ] High-risk unknowns are investigated early.
 - [ ] Risks include trigger signals and mitigations.
 - [ ] Tests and validation have passing standards.
+- [ ] Implementation completeness evidence distinguishes landed production paths
+      from protocol-only, scaffold-only, mock-only, and partial work.
 - [ ] Production impact includes release, rollback, fallback, observability,
       and post-release validation.
 - [ ] Data impact includes migration, idempotency, retry/resume, validation,

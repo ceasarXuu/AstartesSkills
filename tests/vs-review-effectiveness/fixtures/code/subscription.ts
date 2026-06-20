@@ -17,6 +17,16 @@ type ChargeResult = {
   status: "paid";
 };
 
+type BillingProfile = {
+  userId: string;
+  billingStatus: "active";
+  source: "fixture";
+};
+
+export async function loadBillingProfileForRenewal(userId: string): Promise<BillingProfile> {
+  return { userId, billingStatus: "active", source: "fixture" };
+}
+
 async function chargeCard(cardToken: string, amountCents: number): Promise<ChargeResult> {
   return { chargeId: `ch_${cardToken}_${amountCents}`, status: "paid" };
 }
@@ -41,4 +51,3 @@ export async function renewSubscription(user: User, requestedPlan: Plan): Promis
   await savePayment(user.id, charge);
   return charge;
 }
-

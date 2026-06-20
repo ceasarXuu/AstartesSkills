@@ -38,11 +38,14 @@ multiple rounds for the same task.
 #### User-Perspective Review Focus
 - <usability, ease-of-use, ease-of-understanding, onboarding, wording, feedback, recovery path, or realistic user behavior to challenge>
 
+#### Implementation Completeness Focus
+- <planned item, expected behavior, production code path, integration entry, test evidence, runtime or log evidence, mock/stub exposure, or known unlanded work to challenge>
+
 #### Assumptions To Attack
 - <input, state, dependency, permission, timing, user behavior, or invariant>
 
 #### Adversarial Lenses
-- <requirements | state | input | concurrency | failure | data | security | usability | ease-of-use | comprehension | maintenance | testing | observability>
+- <requirements | state | input | concurrency | failure | data | security | usability | ease-of-use | comprehension | implementation-completeness | maintenance | testing | observability>
 
 #### Verification Status
 - <tests, smoke checks, logs, runtime validation, or known gaps>
@@ -117,6 +120,18 @@ This section is required for current reports.
 Actionable user-perspective issues must also appear under `Blocking Findings`
 or `Non-blocking Risks` so they receive main-agent triage.
 
+##### Implementation Completeness Checks
+
+| Plan Item | Expected Behavior | Production Code Path | Integration Entry | Test Evidence | Runtime / Log Evidence | Mock / Stub Exposure | Status | Finding Link |
+|---|---|---|---|---|---|---|---|---|
+| <item> | <behavior> | <path:line or missing> | <entry or missing> | <test or missing> | <log/check/artifact or missing> | <none/test-only/blocks completion> | landed / partial / stub-only / mock-only / not-started / deferred | <finding id or none> |
+
+Only `landed` counts as complete. Actionable implementation-completeness gaps
+must also appear under `Blocking Findings` or `Non-blocking Risks` so they
+receive main-agent triage. Treat protocol-only, interface-only, schema-only,
+entry-only, scaffold-only, mock-only, fake-data-only, demo-script-only, and
+test-only wiring as incomplete unless production-path evidence proves otherwise.
+
 ##### Required Fixes
 - <fix tied to a triaged finding, or "none">
 
@@ -150,6 +165,7 @@ Concrete bullet items must also appear in the main-agent response table.
   - <Reviewer Launch Records row or n/a>
 - Rejected findings backed by evidence: yes / no / n/a
 - Deferred findings documented: yes / no / n/a
+- Implementation completeness gaps resolved or accepted by user: yes / no / n/a
 - Blocked reason: <reason or n/a>
 - Allowed to proceed: yes / no
 
