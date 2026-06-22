@@ -1,6 +1,6 @@
 ---
 name: subagent-vs-review
-description: Use when a task needs independent adversarial review during vibe coding, design work, implementation, testing, release planning, documentation, skill creation, or agent workflow design. It uses fresh internal subagents to attack artifact assumptions, happy paths, implementation completeness, user-perspective usability, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.
+description: Use when a task needs independent adversarial review during vibe coding, design work, implementation, testing, release planning, documentation, skill creation, or agent workflow design. It uses fresh internal subagents to attack artifact assumptions, happy paths, implementation completeness, target benefit realization, user-perspective usability, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.
 ---
 
 # subagent-vs-review
@@ -91,6 +91,10 @@ Identify what the reviewer must try to disprove:
 - plan-to-code completeness gaps where work stops at protocols, interfaces,
   schemas, entry points, scaffolding, mock or fake data, demo scripts, or
   test-only wiring instead of production-path implementation
+- target-benefit gaps where the artifact claims speed, accuracy, cost,
+  reliability, quality, throughput, conversion, usability, or operational
+  benefit but lacks a baseline, target, measurement method, comparison evidence,
+  or regression check
 - assumptions that may be false in real inputs, real state, or real users
 - happy-path-only behavior
 - invalid, empty, duplicated, unordered, hostile, or extreme inputs
@@ -143,6 +147,9 @@ Include:
 - implementation-completeness focus: planned items, expected behaviors,
   production code paths, integration entries, test evidence, runtime or log
   evidence, mock or stub exposure, and known unlanded work
+- target-benefit focus: claimed speed, accuracy, cost, reliability, quality,
+  throughput, conversion, usability, or operational benefit, including baseline,
+  target, measurement method, comparison evidence, and possible regressions
 - assumptions to attack: inputs, states, permissions, dependencies, timing,
   ownership, invariants, or user behaviors the implementation relies on
 - adversarial lenses: choose the most relevant lenses from requirements, state,
@@ -240,6 +247,8 @@ Reviewer output must include:
 - implementation completeness checks for plan-item coverage, production code
   paths, integration entries, test evidence, runtime or log evidence, and mock
   or stub exposure
+- target benefit checks for claimed benefits, baselines, targets, measurement
+  method, comparison evidence, and regressions or neutral outcomes
 - required fixes
 - missing tests
 - missing logs or observability
@@ -255,6 +264,8 @@ inline with that finding:
 - proof needed, such as a test, log, runtime check, or product decision
 - plan item and production path affected, when the finding challenges
   implementation completeness
+- claimed benefit, baseline, target, and measured result affected, when the
+  finding challenges target benefit realization
 
 Reviewers must be read-only. They must not edit files.
 
@@ -341,5 +352,9 @@ Before claiming the review is complete:
 - If the review targets implemented plan work, does the report include
   implementation completeness checks for production paths, integration entries,
   tests, runtime/log evidence, and mock/stub exposure?
+- If the target claims a benefit such as speed, accuracy, cost, reliability,
+  quality, throughput, conversion, usability, or operational improvement, does
+  the report check baseline, target, measurement method, comparison evidence,
+  and regression risk?
 - Did accepted blocking findings receive an additional fresh review linked to a
   closure round and launch record?

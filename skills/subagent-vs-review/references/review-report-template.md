@@ -41,11 +41,14 @@ multiple rounds for the same task.
 #### Implementation Completeness Focus
 - <planned item, expected behavior, production code path, integration entry, test evidence, runtime or log evidence, mock/stub exposure, or known unlanded work to challenge>
 
+#### Target Benefit Focus
+- <claimed speed, accuracy, cost, reliability, throughput, quality, conversion, usability, or operational benefit to challenge, including baseline, target, measurement method, comparison evidence, or regression risk>
+
 #### Assumptions To Attack
 - <input, state, dependency, permission, timing, user behavior, or invariant>
 
 #### Adversarial Lenses
-- <requirements | state | input | concurrency | failure | data | security | usability | ease-of-use | comprehension | implementation-completeness | maintenance | testing | observability>
+- <requirements | state | input | concurrency | failure | data | security | usability | ease-of-use | comprehension | implementation-completeness | target-benefit | maintenance | testing | observability>
 
 #### Verification Status
 - <tests, smoke checks, logs, runtime validation, or known gaps>
@@ -132,6 +135,18 @@ receive main-agent triage. Treat protocol-only, interface-only, schema-only,
 entry-only, scaffold-only, mock-only, fake-data-only, demo-script-only, and
 test-only wiring as incomplete unless production-path evidence proves otherwise.
 
+##### Target Benefit Checks
+
+| Claimed Benefit | Baseline | Target | Measurement Method | Comparison Evidence | Result | Regression / Side Effect | Status | Finding Link |
+|---|---|---|---|---|---|---|---|---|
+| <benefit> | <baseline or missing> | <target or missing> | <method or missing> | <test/log/metric/artifact or missing> | achieved / neutral / regressed / unmeasured | <risk or none> | proven / weak-evidence / unmeasured / regressed / deferred | <finding id or none> |
+
+Only `proven` means the claimed benefit is verified. Actionable target-benefit
+gaps must also appear under `Blocking Findings` or `Non-blocking Risks` so they
+receive main-agent triage. Treat implemented-but-unmeasured, neutral-result,
+and regressed outcomes as incomplete benefit realization when the task goal
+depends on that benefit.
+
 ##### Required Fixes
 - <fix tied to a triaged finding, or "none">
 
@@ -166,6 +181,7 @@ Concrete bullet items must also appear in the main-agent response table.
 - Rejected findings backed by evidence: yes / no / n/a
 - Deferred findings documented: yes / no / n/a
 - Implementation completeness gaps resolved or accepted by user: yes / no / n/a
+- Target benefit gaps resolved or accepted by user: yes / no / n/a
 - Blocked reason: <reason or n/a>
 - Allowed to proceed: yes / no
 

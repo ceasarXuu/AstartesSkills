@@ -32,6 +32,7 @@ phased and review-gated.
 ## Goals
 
 - [ ] Establish current-state evidence before implementation.
+- [ ] Define the expected benefit and how it will be measured.
 
 ## Non-goals
 
@@ -165,9 +166,16 @@ phased and review-gated.
 
 ## Testing And Validation Strategy
 
-| Test Type | Scope | Execution Method | Passing Standard |
-|---|---|---|---|
-| Contract | API clients | Automated contract tests | No breaking changes |
+| Validation Type | Test Type | Scope | Execution Method | Passing Standard |
+|---|---|---|---|---|
+| Correctness | Contract | API clients | Automated contract tests | No breaking changes |
+| Benefit | Success rate | API calls | Compare pre/post telemetry | Target improvement met or explicitly not met |
+
+## Benefit Validation Strategy
+
+| Benefit Hypothesis | Metric | Baseline | Target | Measurement Method | Data Source | Observation Window | Pass / Fail Threshold |
+|---|---|---:|---:|---|---|---|---|
+| Migration improves API success rate | Success rate | Unknown | Unknown | Compare before and after canary | Production telemetry | 24h | No claimed benefit until baseline and target are known |
 
 ## Security And Permission Review
 

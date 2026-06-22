@@ -220,7 +220,7 @@
       "id": "se-good-plan",
       "name": "SE Good Plan",
       "path": "skills/se-good-plan",
-      "summary": "Writes and reviews phased, executable, verifiable, reviewable, rollback-aware software engineering plans with plan-to-code completeness evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work.",
+      "summary": "Writes and reviews phased, executable, verifiable, reviewable, rollback-aware software engineering plans with plan-to-code completeness and benefit validation evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work.",
       "tags": ["software-engineering", "planning", "implementation-plan", "review", "rollout"],
       "installable": true,
       "source": {
@@ -229,14 +229,14 @@
         "path": "skills/se-good-plan"
       },
       "release": {
-        "version": "1.1.0",
-        "published_at": "2026-06-21T00:31:04+08:00",
+        "version": "1.2.0",
+        "published_at": "2026-06-22T19:06:56+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Add plan-to-code implementation completeness evidence to Standard and Full plan contracts.",
-          "Define landed, partial, stub-only, mock-only, planned, and deferred implementation statuses.",
-          "Require production code path, integration entry, test evidence, runtime/log evidence, and mock/stub exposure in code-bearing plans.",
-          "Update sanity checks and exemplar coverage for implementation completeness."
+          "Require plans to state expected benefits in addition to implementation deliverables.",
+          "Separate correctness validation from benefit validation in plan acceptance criteria.",
+          "Add benefit validation tables for metrics, baselines, targets, measurement methods, data sources, observation windows, and pass/fail thresholds.",
+          "Add benefit-focused fixtures, exemplar coverage, and sanity checks."
         ]
       },
       "markets": {
@@ -673,7 +673,7 @@
       "id": "subagent-vs-review",
       "name": "Subagent VS Review",
       "path": "skills/subagent-vs-review",
-      "summary": "Runs independent adversarial review rounds with fresh internal subagents that attack artifact assumptions, happy paths, implementation completeness, usability, ease of use, ease of understanding, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.",
+      "summary": "Runs independent adversarial review rounds with fresh internal subagents that attack artifact assumptions, happy paths, implementation completeness, target benefit realization, usability, ease of use, ease of understanding, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.",
       "tags": ["subagent", "review", "vibe-coding", "quality", "agent-workflow"],
       "installable": true,
       "source": {
@@ -682,14 +682,14 @@
         "path": "skills/subagent-vs-review"
       },
       "release": {
-        "version": "1.5.0",
-        "published_at": "2026-06-21T00:31:04+08:00",
+        "version": "1.6.0",
+        "published_at": "2026-06-22T19:05:07+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Add implementation-completeness adversarial review coverage for plan-to-code landing gaps.",
-          "Require review packets and reports to track production code paths, integration entries, test evidence, runtime/log evidence, and mock/stub exposure.",
-          "Treat protocol-only, scaffold-only, mock-only, fake-data-only, demo-only, and test-only wiring as incomplete unless production-path evidence proves otherwise.",
-          "Update effectiveness fixtures and sanity checks for implementation completeness review."
+          "Add target-benefit realization review for claimed speed, accuracy, cost, reliability, throughput, quality, conversion, usability, and operational improvements.",
+          "Require review packets and reports to capture benefit baselines, targets, measurement methods, comparison evidence, results, and regression risks.",
+          "Add benefit-realization reviewer selection rules and blocking triage guidance for unmeasured, neutral, or regressed outcomes.",
+          "Update effectiveness fixtures and sanity checks for target-benefit review."
         ]
       },
       "markets": {

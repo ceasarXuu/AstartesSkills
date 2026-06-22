@@ -33,6 +33,13 @@ profile. Use exactly 1 reviewer per round.
   scaffold-only, mock-only, fake-data-only, demo-script-only, or test-only
   wiring that is being counted as completed implementation.
 
+`benefit-realization-adversary`
+: Challenges whether claimed benefits actually materialized. Compares stated
+  goals such as faster processing, higher accuracy, lower cost, better
+  reliability, higher throughput, improved quality, conversion, or usability
+  against baselines, target thresholds, measurement methods, comparison
+  evidence, and possible regressions or neutral results.
+
 `test-validity-adversary`
 : Challenges self-deceptive tests, tests that only verify implementation
   details, missing black-box checks, missing failure-path checks, regression
@@ -73,11 +80,14 @@ profile. Use exactly 1 reviewer per round.
 - Each selected reviewer must use an adversarial lens: try to falsify at least
   one assumption, happy path, failure path, security boundary, maintenance claim,
   user-comprehension claim, implementation-completeness claim, validation claim,
-  or operational claim.
+  target-benefit claim, or operational claim.
 - Select `implementation-completeness-adversary` whenever the target claims a
   plan, phase, or implementation is done and the highest risk is incomplete
   code landing, scaffold-only work, mock-only behavior, or missing production
   integration.
+- Select `benefit-realization-adversary` whenever the target explicitly claims
+  or depends on a benefit such as speed, accuracy, cost, reliability,
+  throughput, quality, conversion, usability, or operational improvement.
 
 ## Common Combinations
 
@@ -112,6 +122,10 @@ Tie-break examples:
 Code implementation review:
 
 - Prefer `implementation-adversary`.
+- Use `benefit-realization-adversary` when implementation correctness is less
+  risky than whether the claimed speed, accuracy, cost, reliability,
+  throughput, quality, conversion, usability, or operational benefit was
+  actually measured and achieved.
 - Use `implementation-completeness-adversary` when the key question is whether
   every planned item is fully wired into production code paths rather than only
   protocols, scaffolding, entry points, mocks, fake data, demo scripts, or

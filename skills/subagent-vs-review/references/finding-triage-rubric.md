@@ -14,7 +14,11 @@ or explicitly accept/defer the risk.
   goal, invalidates the design, creates unacceptable architecture, security,
   data, release, or operational risk, leaves critical validation missing, or
   counts protocol-only, scaffold-only, mock-only, fake-data-only, demo-only, or
-  test-only wiring as completed implementation.
+  test-only wiring as completed implementation. It can also be blocking when
+  the stated goal depends on a benefit such as speed, accuracy, cost,
+  reliability, throughput, quality, conversion, usability, or operational
+  improvement, but the artifact lacks baseline, target, measurement,
+  comparison evidence, or shows neutral or regressed results.
   A reproducible failure scenario, broken assumption, or untested high-impact
   failure path can be blocking even when the happy path works.
 

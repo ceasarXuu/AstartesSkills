@@ -115,6 +115,23 @@ exposure, and status.
 `mock-only` cannot satisfy an exit gate unless the user explicitly accepts the
 remaining risk and the follow-up location is recorded.
 
+## Benefit Validation Contract
+
+Plans must state expected benefits, not only implementation deliverables.
+
+Acceptance must include:
+
+- correctness validation: tests that prove the change works without regressions,
+  data loss, compatibility failures, or security failures
+- benefit validation: tests or measurements that prove the target outcome
+  improved, such as speed, accuracy, reliability, cost, conversion, or
+  operational-toil improvement
+
+Benefit validation must state metric, baseline, target, measurement method, data
+source, observation window, and pass/fail threshold when relevant. Unknown
+baselines or targets must be marked `Unknown` and discovered early; they must not
+be invented.
+
 ## Phase Contract
 
 Every Standard or Full phase must include:

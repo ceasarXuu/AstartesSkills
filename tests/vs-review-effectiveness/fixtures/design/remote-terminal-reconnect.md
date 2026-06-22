@@ -5,6 +5,9 @@
 When the network drops, the client should reconnect to the previous remote
 terminal session and continue rendering output.
 
+The reconnect flow should reduce perceived interruption by restoring terminal
+output within one second.
+
 ## State Model
 
 - `connected`: websocket is open and terminal output is streaming.
@@ -23,4 +26,3 @@ terminal session and continue rendering output.
 - The client keeps the previous terminal id in memory.
 - The server resumes the terminal when the id is sent again.
 - The UI shows a spinner while reconnecting.
-

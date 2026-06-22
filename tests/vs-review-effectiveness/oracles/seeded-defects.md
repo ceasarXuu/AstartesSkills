@@ -14,6 +14,7 @@ Do not include this file in reviewer navigation packets.
 
 - Blocking: reconnect and user close/cancel race has no precedence rule.
 - Blocking: half-open or stale server session recovery is undefined.
+- Blocking: the one-second interruption benefit is claimed without a baseline, measurement method, or flow that can meet it because retries happen every two seconds.
 - Major: no diagnostic logs, trace ids, or failure evidence for reconnect loops.
 - Major: assumes retry every two seconds is always acceptable and does not define backoff or stop conditions.
 

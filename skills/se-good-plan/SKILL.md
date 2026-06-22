@@ -1,6 +1,6 @@
 ---
 name: se-good-plan
-description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces phased, executable, verifiable, reviewable, rollback-aware plans with plan-to-code completeness evidence for software engineering work.
+description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces phased, executable, verifiable, reviewable, rollback-aware plans with plan-to-code completeness and benefit validation evidence for software engineering work.
 ---
 
 # SE Good Plan
@@ -56,6 +56,9 @@ tiny, low-risk edits.
   count protocols, interfaces, schemas, entry points, scaffolding, mock or fake
   data, demo scripts, and test-only wiring as completed implementation unless the
   production path is wired, exercised, and evidenced.
+- Plans must state expected benefits, not only planned work. Acceptance must
+  include correctness validation and benefit validation, such as speed,
+  accuracy, reliability, cost, conversion, or operational-toil improvements.
 - Use measurable acceptance criteria. Avoid vague promises like "optimize",
   "improve", "support", "handle", or "complete" unless they are made specific.
 
@@ -234,6 +237,9 @@ The problem definition must distinguish:
 
 Goals must be testable. Non-goals must control scope. If a phrase is vague,
 rewrite it with a metric, scenario, artifact, or acceptance criterion.
+Each material goal must include the expected benefit and how it will be tested.
+If the benefit baseline or target is unknown, mark it `Unknown` and make
+baseline discovery part of Phase 0 or an early validation gate.
 
 ### 6. Build The Phased Plan
 
@@ -254,8 +260,10 @@ For every Standard or Full Plan, each phase must use this schema:
 | Plan Item | Production Code Path | Integration Entry | Test Evidence | Runtime / Log Evidence | Mock / Stub Exposure | Status |
 |---|---|---|---|---|---|---|
 #### Testing And Validation
-| Validation Item | Method | Passing Standard |
-|---|---|---|
+| Validation Type | Validation Item | Method | Passing Standard |
+|---|---|---|---|
+| Correctness | ... | ... | no regression, bug, compatibility, data, or security failure |
+| Benefit | ... | ... | measured benefit meets target or explicitly documented threshold |
 #### Exit Criteria
 #### Review Plan
 #### Risks And Fallback
@@ -273,6 +281,8 @@ but do not skip Discovery, Validation, Release, or Rollback for high-risk work.
 Every phase gate must state what evidence proves the phase can close:
 
 - required tests and exact pass criteria
+- benefit tests proving the target outcome improved, not only that the code
+  avoids bugs
 - plan-to-code completeness rows showing code landed in production paths, not
   only protocols, definitions, scaffolding, mocks, fake data, or demo scripts
 - required code, design, security, release, or data review
@@ -306,6 +316,7 @@ Before final output, verify:
 
 - [ ] Background and problem definition are clear.
 - [ ] Goals are measurable and non-goals control scope.
+- [ ] Goals state expected benefits, not only deliverables.
 - [ ] Facts, assumptions, constraints, risks, and open questions are separated.
 - [ ] Complexity and plan depth are justified.
 - [ ] Work is divided into progressive phases.
@@ -314,6 +325,9 @@ Before final output, verify:
 - [ ] High-risk unknowns are investigated early.
 - [ ] Risks include trigger signals and mitigations.
 - [ ] Tests and validation have passing standards.
+- [ ] Validation separates correctness tests from benefit tests.
+- [ ] Benefit validation states baseline, target, measurement method, data
+      source, observation window, and pass/fail threshold when relevant.
 - [ ] Implementation completeness evidence distinguishes landed production paths
       from protocol-only, scaffold-only, mock-only, and partial work.
 - [ ] Production impact includes release, rollback, fallback, observability,

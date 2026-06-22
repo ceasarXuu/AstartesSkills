@@ -2,16 +2,16 @@
   "version": 1,
   "market": "openai-compatible",
   "display_name": "SE Good Plan",
-  "description": "Writes and reviews phased, executable, verifiable, reviewable, rollback-aware software engineering plans with plan-to-code completeness evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work.",
+  "description": "Writes and reviews phased, executable, verifiable, reviewable, rollback-aware software engineering plans with plan-to-code completeness and benefit validation evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work.",
   "release": {
-    "version": "1.1.0",
-    "published_at": "2026-06-21T00:31:04+08:00",
+    "version": "1.2.0",
+    "published_at": "2026-06-22T19:06:56+08:00",
     "publisher": "ceasarXuu",
     "changes": [
-      "Add plan-to-code implementation completeness evidence to Standard and Full plan contracts.",
-      "Define landed, partial, stub-only, mock-only, planned, and deferred implementation statuses.",
-      "Require production code path, integration entry, test evidence, runtime/log evidence, and mock/stub exposure in code-bearing plans.",
-      "Update sanity checks and exemplar coverage for implementation completeness."
+      "Require plans to state expected benefits in addition to implementation deliverables.",
+      "Separate correctness validation from benefit validation in plan acceptance criteria.",
+      "Add benefit validation tables for metrics, baselines, targets, measurement methods, data sources, observation windows, and pass/fail thresholds.",
+      "Add benefit-focused fixtures, exemplar coverage, and sanity checks."
     ]
   },
   "source": {

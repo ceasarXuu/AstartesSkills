@@ -12,6 +12,7 @@ baseline and bottleneck are not yet known.
 - Include p50, p95, and p99 latency, QPS or throughput, error rate, CPU,
   memory, IO, database slow queries, and cache hit rate when relevant.
 - Include load-test comparison and production observation.
+- Include benefit validation for latency, throughput, cost, or resource usage.
 - Avoid claiming a target improvement until a baseline is known.
 
 ## Forbidden Behavior

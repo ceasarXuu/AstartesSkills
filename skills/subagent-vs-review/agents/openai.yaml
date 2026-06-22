@@ -1,4 +1,4 @@
 version: 1
 display_name: Subagent VS Review
-short_description: Runs fresh internal reviews that attack assumptions, usability, ease of use, ease of understanding, failure paths, and evidence gaps.
-default_prompt: Use fresh internal subagents without inherited main-agent context to adversarially review this task by attacking the artifact's assumptions, happy paths, implementation completeness, user-perspective usability, ease of use, ease of understanding, failure modes, and evidence gaps without targeting the author; write the /vs_review/ report and respond to every finding before closure.
+short_description: Runs fresh internal reviews that attack assumptions, implementation completeness, target benefits, usability, failure paths, and evidence gaps.
+default_prompt: Use fresh internal subagents without inherited main-agent context to adversarially review this task by attacking the artifact's assumptions, happy paths, implementation completeness, target benefit realization, user-perspective usability, ease of use, ease of understanding, failure modes, and evidence gaps without targeting the author; write the /vs_review/ report and respond to every finding before closure.

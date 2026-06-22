@@ -230,13 +230,14 @@ Common risks:
 ### Testing And Validation Table
 
 ```markdown
-| Test Type | Scope | Execution Method | Passing Standard |
-|---|---|---|---|
-| Unit | ... | ... | ... |
-| Integration | ... | ... | ... |
-| Regression | ... | ... | ... |
-| Performance | ... | ... | ... |
-| Security | ... | ... | ... |
+| Validation Type | Test Type | Scope | Execution Method | Passing Standard |
+|---|---|---|---|---|
+| Correctness | Unit | ... | ... | no regression in targeted logic |
+| Correctness | Integration | ... | ... | expected system behavior works end to end |
+| Correctness | Regression | ... | ... | no P0/P1 regressions or compatibility failures |
+| Benefit | Performance | ... | ... | target speed, latency, throughput, or cost benefit is met |
+| Benefit | Accuracy | ... | ... | target precision, recall, correctness rate, or quality lift is met |
+| Security | Security | ... | ... | no unacceptable permission, data, or abuse-path risk |
 ```
 
 Possible test types:
@@ -253,6 +254,28 @@ Possible test types:
 - security tests
 - canary validation
 - manual acceptance
+
+### Benefit Validation Table
+
+```markdown
+| Benefit Hypothesis | Metric | Baseline | Target | Measurement Method | Data Source | Observation Window | Pass / Fail Threshold |
+|---|---|---:|---:|---|---|---|---|
+| ... | p95 latency / accuracy / cost / error rate / conversion / toil hours | ... | ... | ... | ... | ... | ... |
+```
+
+Use benefit validation to prove the plan delivered value, not only correctness.
+Correctness tests answer "does it work without breaking things?" Benefit tests
+answer "did it improve the target outcome?" If baseline or target is unknown,
+write `Unknown`, add baseline discovery to Phase 0, and do not invent a lift.
+
+Common benefit categories:
+
+- speed: latency, throughput, build time, recovery time
+- accuracy: precision, recall, match rate, defect rate, false positive rate
+- reliability: error rate, incident rate, retry rate, availability
+- cost: cloud spend, CPU, memory, storage, operations time
+- user outcome: conversion, completion rate, abandonment, time to complete
+- developer outcome: lead time, test runtime, deploy frequency, toil hours
 
 ### Release, Rollback, And Fallback
 
@@ -312,6 +335,7 @@ Replace vague wording with evidence:
 | --- | --- |
 | optimize | metric, baseline, target, measurement method |
 | improve | target delta and validation method |
+| benefit | benefit hypothesis, metric, baseline, target, and pass/fail threshold |
 | complete tests | exact paths, test types, and passing standard |
 | support | scenario, inputs, outputs, and acceptance criteria |
 | handle errors | named errors and expected system behavior |
@@ -327,6 +351,8 @@ Do not output:
 - a roadmap without executable tasks and gates
 - a technical solution without proof strategy
 - production changes with only "tests pass" as a release gate
+- acceptance plans that verify correctness but never test whether the expected
+  benefit was achieved
 - implementation plans that treat protocols, scaffolds, mocks, fake data, demo
   scripts, or entry points as complete without production-path evidence
 - data migration without idempotency, validation, and compensation
