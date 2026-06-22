@@ -4,14 +4,14 @@
   "display_name": "Subagent VS Review",
   "description": "Runs independent adversarial review rounds with fresh internal subagents that attack artifact assumptions, happy paths, implementation completeness, target benefit realization, usability, ease of use, ease of understanding, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.",
   "release": {
-    "version": "1.6.0",
-    "published_at": "2026-06-22T19:05:07+08:00",
+    "version": "1.7.0",
+    "published_at": "2026-06-22T19:18:20+08:00",
     "publisher": "ceasarXuu",
     "changes": [
-      "Add target-benefit realization review for claimed speed, accuracy, cost, reliability, throughput, quality, conversion, usability, and operational improvements.",
-      "Require review packets and reports to capture benefit baselines, targets, measurement methods, comparison evidence, results, and regression risks.",
-      "Add benefit-realization reviewer selection rules and blocking triage guidance for unmeasured, neutral, or regressed outcomes.",
-      "Update effectiveness fixtures and sanity checks for target-benefit review."
+      "Change target-benefit realization findings from blocking findings to non-blocking warnings.",
+      "Clarify that benefit tradeoffs require user decision-making and solution design rather than closure blocking.",
+      "Keep baseline, target, measurement, comparison evidence, and regression checks as required warning evidence.",
+      "Update target-benefit fixtures and sanity checks to reject blocking benefit routing."
     ]
   },
   "source": {

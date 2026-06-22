@@ -141,11 +141,12 @@ test-only wiring as incomplete unless production-path evidence proves otherwise.
 |---|---|---|---|---|---|---|---|---|
 | <benefit> | <baseline or missing> | <target or missing> | <method or missing> | <test/log/metric/artifact or missing> | achieved / neutral / regressed / unmeasured | <risk or none> | proven / weak-evidence / unmeasured / regressed / deferred | <finding id or none> |
 
-Only `proven` means the claimed benefit is verified. Actionable target-benefit
-gaps must also appear under `Blocking Findings` or `Non-blocking Risks` so they
-receive main-agent triage. Treat implemented-but-unmeasured, neutral-result,
-and regressed outcomes as incomplete benefit realization when the task goal
-depends on that benefit.
+Only `proven` means the claimed benefit is verified. Target-benefit gaps must
+appear under `Non-blocking Risks` as warnings so they receive main-agent triage
+without blocking closure. Treat implemented-but-unmeasured, neutral-result, and
+regressed outcomes as incomplete benefit realization, but do not convert that
+benefit gap into a blocking finding unless the same evidence also proves a
+separate correctness, security, data, reliability, or operational failure.
 
 ##### Required Fixes
 - <fix tied to a triaged finding, or "none">
@@ -181,7 +182,7 @@ Concrete bullet items must also appear in the main-agent response table.
 - Rejected findings backed by evidence: yes / no / n/a
 - Deferred findings documented: yes / no / n/a
 - Implementation completeness gaps resolved or accepted by user: yes / no / n/a
-- Target benefit gaps resolved or accepted by user: yes / no / n/a
+- Target benefit warnings recorded: yes / no / n/a
 - Blocked reason: <reason or n/a>
 - Allowed to proceed: yes / no
 

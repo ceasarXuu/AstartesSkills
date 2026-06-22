@@ -91,10 +91,11 @@ Identify what the reviewer must try to disprove:
 - plan-to-code completeness gaps where work stops at protocols, interfaces,
   schemas, entry points, scaffolding, mock or fake data, demo scripts, or
   test-only wiring instead of production-path implementation
-- target-benefit gaps where the artifact claims speed, accuracy, cost,
+- target-benefit warnings where the artifact claims speed, accuracy, cost,
   reliability, quality, throughput, conversion, usability, or operational
   benefit but lacks a baseline, target, measurement method, comparison evidence,
-  or regression check
+  or regression check. Benefit warnings are non-blocking because benefit tradeoffs
+  belong to user decision-making and solution design.
 - assumptions that may be false in real inputs, real state, or real users
 - happy-path-only behavior
 - invalid, empty, duplicated, unordered, hostile, or extreme inputs
@@ -265,7 +266,9 @@ inline with that finding:
 - plan item and production path affected, when the finding challenges
   implementation completeness
 - claimed benefit, baseline, target, and measured result affected, when the
-  finding challenges target benefit realization
+  finding challenges target benefit realization. Benefit-realization findings
+  must be recorded as non-blocking warnings unless the same evidence also proves
+  a separate correctness, security, data, reliability, or operational failure.
 
 Reviewers must be read-only. They must not edit files.
 
@@ -355,6 +358,6 @@ Before claiming the review is complete:
 - If the target claims a benefit such as speed, accuracy, cost, reliability,
   quality, throughput, conversion, usability, or operational improvement, does
   the report check baseline, target, measurement method, comparison evidence,
-  and regression risk?
+  and regression risk as non-blocking warnings?
 - Did accepted blocking findings receive an additional fresh review linked to a
   closure round and launch record?

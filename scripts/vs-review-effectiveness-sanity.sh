@@ -4,7 +4,7 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 bench_dir="$repo_root/tests/vs-review-effectiveness"
-expected_oracle_sha256="91f45213443afc628e3678444679fbc6c6dab1945ae8bff35377be2bb58301b2"
+expected_oracle_sha256="ec6aa64a78a2afaa9238367a195d72f5efe1e94dc21de4e72a5520313de48093"
 
 log() {
   echo "[vs-review-effectiveness] $*"
@@ -184,6 +184,8 @@ require_section_pattern "$template_file" '^##### Implementation Completeness Che
 require_section_pattern "$template_file" '^##### Implementation Completeness Checks$' '^##### ' 'Only `landed` counts as complete' "implementation-completeness checks must define landed as the only complete status"
 require_section_pattern "$template_file" '^##### Target Benefit Checks$' '^##### ' 'Measurement Method' "target benefit checks must require measurement method evidence"
 require_section_pattern "$template_file" '^##### Target Benefit Checks$' '^##### ' 'Only `proven` means the claimed benefit is verified' "target benefit checks must define proven as the only verified benefit status"
+require_section_pattern "$template_file" '^##### Target Benefit Checks$' '^##### ' 'appear under `Non-blocking Risks` as warnings' "target benefit gaps must be non-blocking warnings"
+require_section_pattern "$template_file" '^##### Target Benefit Checks$' '^##### ' 'without blocking closure' "target benefit warnings must not block closure"
 
 contract_negative_dir="$repo_root/tmp/vs-review-effectiveness/contract-negative-$$"
 mkdir -p "$contract_negative_dir"
@@ -207,8 +209,8 @@ sed '/Select `benefit-realization-adversary` whenever the target explicitly clai
 if has_section_pattern "$contract_negative_dir/reviewer-selection-missing-benefit-rule.md" '^## Selection Rules$' '^## ' 'Select `benefit-realization-adversary` whenever the target explicitly claims'; then
   fail "negative contract fixture still passed after removing benefit-realization selection rule"
 fi
-sed 's/Only `proven` means the claimed benefit is verified/`proven` usually means the claimed benefit is verified/g' "$template_file" > "$contract_negative_dir/review-report-template-weak-benefit.md"
-if has_section_pattern "$contract_negative_dir/review-report-template-weak-benefit.md" '^##### Target Benefit Checks$' '^##### ' 'Only `proven` means the claimed benefit is verified'; then
+sed 's/appear under `Non-blocking Risks` as warnings/appear under `Blocking Findings` when important/g' "$template_file" > "$contract_negative_dir/review-report-template-blocking-benefit.md"
+if has_section_pattern "$contract_negative_dir/review-report-template-blocking-benefit.md" '^##### Target Benefit Checks$' '^##### ' 'appear under `Non-blocking Risks` as warnings'; then
   fail "negative contract fixture still passed after weakening target-benefit status rule"
 fi
 cp "$selection_file" "$contract_negative_dir/reviewer-selection-two-reviewers.md"

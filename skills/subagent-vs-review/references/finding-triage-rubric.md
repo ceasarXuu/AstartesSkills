@@ -14,11 +14,7 @@ or explicitly accept/defer the risk.
   goal, invalidates the design, creates unacceptable architecture, security,
   data, release, or operational risk, leaves critical validation missing, or
   counts protocol-only, scaffold-only, mock-only, fake-data-only, demo-only, or
-  test-only wiring as completed implementation. It can also be blocking when
-  the stated goal depends on a benefit such as speed, accuracy, cost,
-  reliability, throughput, quality, conversion, usability, or operational
-  improvement, but the artifact lacks baseline, target, measurement,
-  comparison evidence, or shows neutral or regressed results.
+  test-only wiring as completed implementation.
   A reproducible failure scenario, broken assumption, or untested high-impact
   failure path can be blocking even when the happy path works.
 
@@ -26,6 +22,15 @@ or explicitly accept/defer the risk.
 : The issue is likely to cause regressions, maintenance cost, poor diagnostics,
   or future rework, but the current task may still proceed if the risk is
   explicitly managed.
+
+`target-benefit warning`
+: The issue challenges whether the stated benefit was achieved, such as speed,
+  accuracy, cost, reliability, throughput, quality, conversion, usability, or
+  operational improvement. Missing baseline, missing target, weak measurement,
+  neutral outcome, or regressed outcome is a non-blocking warning because benefit
+  tradeoffs require user decision-making and solution design. Do not mark a
+  benefit-realization finding as blocking unless the same evidence independently
+  proves a correctness, security, data, reliability, or operational failure.
 
 `minor`
 : The issue is useful cleanup, clarity, or polish that does not change whether
