@@ -149,6 +149,11 @@ manifest_file="$repo_root/skills/subagent-vs-review/agents/openai.yaml"
 require_pattern "$skill_file" 'usability, ease of use, and ease of understanding' "skill must explicitly require user-perspective usability review"
 require_pattern "$skill_file" 'implementation completeness' "skill must explicitly require implementation completeness review"
 require_pattern "$skill_file" 'target benefit realization' "skill must explicitly require target benefit realization review"
+require_pattern "$skill_file" 'command -v claude' "skill must discover Claude Code CLI candidates"
+require_pattern "$skill_file" 'command -v codex' "skill must discover Codex CLI candidates"
+require_pattern "$skill_file" 'command -v opencode' "skill must discover OpenCode CLI candidates"
+require_pattern "$skill_file" 'explicit approval before invoking any local CLI reviewer' "skill must require user approval before local CLI fallback"
+require_pattern "$skill_file" 'blocked_due_to_review_unavailable' "skill must block workflow when no approved reviewer is available"
 require_pattern "$skill_file" 'protocols, interfaces,[[:space:]]*$' "skill must name protocol/interface completeness gaps"
 require_pattern "$skill_file" 'demo scripts, or[[:space:]]*$' "skill must name demo-script completeness gaps"
 require_pattern "$skill_file" 'speed, accuracy, cost,[[:space:]]*$' "skill must name benefit classes such as speed and accuracy"
@@ -158,6 +163,8 @@ require_pattern "$skill_file" 'target-benefit focus: claimed speed, accuracy, co
 require_pattern "$manifest_file" 'ease of use, ease of understanding' "agent manifest must expose ease-of-use and comprehension in discovery metadata"
 require_pattern "$manifest_file" 'implementation completeness' "agent manifest must expose implementation completeness in discovery metadata"
 require_pattern "$manifest_file" 'target benefit' "agent manifest must expose target benefit realization in discovery metadata"
+require_pattern "$manifest_file" 'Claude Code, Codex CLI, or OpenCode CLI' "agent manifest must expose local CLI fallback candidates"
+require_pattern "$manifest_file" 'explicit approval' "agent manifest must require approval before external CLI substitute"
 require_pattern "$skill_file" 'Choose exactly 1 reviewer role per review round' "skill must require exactly one reviewer role per round"
 require_pattern "$selection_file" 'Use exactly 1 reviewer per round' "reviewer selection must require exactly one reviewer per round"
 reject_multi_reviewer_guidance "$skill_file" "skill must not restore contradictory multi-reviewer-per-round guidance"
@@ -174,6 +181,7 @@ require_section_pattern "$selection_file" '^Skill, prompt, or agent workflow rev
 require_pattern "$template_file" '^#### User-Perspective Review Focus$' "report template must include user-perspective focus"
 require_pattern "$template_file" '^#### Implementation Completeness Focus$' "report template must include implementation-completeness focus"
 require_pattern "$template_file" '^#### Target Benefit Focus$' "report template must include target benefit focus"
+require_pattern "$template_file" '^### Internal Subagent Unavailable Fallback$' "report template must include internal-subagent unavailable fallback section"
 require_pattern "$template_file" 'usability \| ease-of-use \| comprehension' "report template must expose usability/comprehension lenses"
 require_pattern "$template_file" 'implementation-completeness' "report template must expose implementation-completeness lens"
 require_pattern "$template_file" 'target-benefit' "report template must expose target-benefit lens"
@@ -186,6 +194,8 @@ require_section_pattern "$template_file" '^##### Target Benefit Checks$' '^#####
 require_section_pattern "$template_file" '^##### Target Benefit Checks$' '^##### ' 'Only `proven` means the claimed benefit is verified' "target benefit checks must define proven as the only verified benefit status"
 require_section_pattern "$template_file" '^##### Target Benefit Checks$' '^##### ' 'appear under `Non-blocking Risks` as warnings' "target benefit gaps must be non-blocking warnings"
 require_section_pattern "$template_file" '^##### Target Benefit Checks$' '^##### ' 'without blocking closure' "target benefit warnings must not block closure"
+require_section_pattern "$template_file" '^### Internal Subagent Unavailable Fallback$' '^### ' 'User-approved CLI command' "fallback section must record exact approved CLI command"
+require_section_pattern "$template_file" '^### Internal Subagent Unavailable Fallback$' '^### ' 'blocked_due_to_review_unavailable' "fallback section must record blocked workflow when approval is missing"
 
 contract_negative_dir="$repo_root/tmp/vs-review-effectiveness/contract-negative-$$"
 mkdir -p "$contract_negative_dir"
@@ -212,6 +222,14 @@ fi
 sed 's/appear under `Non-blocking Risks` as warnings/appear under `Blocking Findings` when important/g' "$template_file" > "$contract_negative_dir/review-report-template-blocking-benefit.md"
 if has_section_pattern "$contract_negative_dir/review-report-template-blocking-benefit.md" '^##### Target Benefit Checks$' '^##### ' 'appear under `Non-blocking Risks` as warnings'; then
   fail "negative contract fixture still passed after weakening target-benefit status rule"
+fi
+sed '/explicit approval before invoking any local CLI reviewer/d' "$skill_file" > "$contract_negative_dir/skill-missing-cli-approval.md"
+if grep -q 'explicit approval before invoking any local CLI reviewer' "$contract_negative_dir/skill-missing-cli-approval.md"; then
+  fail "negative contract fixture still passed after removing local CLI approval rule"
+fi
+sed '/User-approved CLI command/d' "$template_file" > "$contract_negative_dir/review-report-template-missing-cli-approval.md"
+if has_section_pattern "$contract_negative_dir/review-report-template-missing-cli-approval.md" '^### Internal Subagent Unavailable Fallback$' '^### ' 'User-approved CLI command'; then
+  fail "negative contract fixture still passed after removing approved CLI command audit field"
 fi
 cp "$selection_file" "$contract_negative_dir/reviewer-selection-two-reviewers.md"
 printf '\n- Use two reviewers for high-risk closure.\n' >> "$contract_negative_dir/reviewer-selection-two-reviewers.md"

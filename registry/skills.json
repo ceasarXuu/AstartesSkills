@@ -673,7 +673,7 @@
       "id": "subagent-vs-review",
       "name": "Subagent VS Review",
       "path": "skills/subagent-vs-review",
-      "summary": "Runs independent adversarial review rounds with fresh internal subagents that attack artifact assumptions, happy paths, implementation completeness, target benefit realization, usability, ease of use, ease of understanding, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.",
+      "summary": "Runs independent adversarial review rounds with fresh internal subagents, or a user-approved local CLI fallback when internal subagents are unavailable, that attack artifact assumptions, happy paths, implementation completeness, target benefit realization, usability, ease of use, ease of understanding, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.",
       "tags": ["subagent", "review", "vibe-coding", "quality", "agent-workflow"],
       "installable": true,
       "source": {
@@ -682,14 +682,14 @@
         "path": "skills/subagent-vs-review"
       },
       "release": {
-        "version": "1.7.0",
-        "published_at": "2026-06-22T19:18:20+08:00",
+        "version": "1.8.0",
+        "published_at": "2026-06-24T02:03:12+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Change target-benefit realization findings from blocking findings to non-blocking warnings.",
-          "Clarify that benefit tradeoffs require user decision-making and solution design rather than closure blocking.",
-          "Keep baseline, target, measurement, comparison evidence, and regression checks as required warning evidence.",
-          "Update target-benefit fixtures and sanity checks to reject blocking benefit routing."
+          "Add a user-approved local CLI reviewer fallback when fresh internal subagents are unavailable.",
+          "Require discovery of Claude Code, Codex CLI, and OpenCode CLI candidates before proposing a fallback reviewer.",
+          "Require explicit user approval for the exact local CLI command before using an external substitute.",
+          "Block the review workflow when no candidate exists or the user does not approve the fallback."
         ]
       },
       "markets": {

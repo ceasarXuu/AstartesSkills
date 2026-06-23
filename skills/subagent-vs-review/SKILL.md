@@ -1,6 +1,6 @@
 ---
 name: subagent-vs-review
-description: Use when a task needs independent adversarial review during vibe coding, design work, implementation, testing, release planning, documentation, skill creation, or agent workflow design. It uses fresh internal subagents to attack artifact assumptions, happy paths, implementation completeness, target benefit realization, user-perspective usability, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.
+description: Use when a task needs independent adversarial review during vibe coding, design work, implementation, testing, release planning, documentation, skill creation, or agent workflow design. It uses fresh internal subagents, or a user-approved local CLI reviewer fallback when internal subagents are unavailable, to attack artifact assumptions, happy paths, implementation completeness, target benefit realization, user-perspective usability, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.
 ---
 
 # subagent-vs-review
@@ -38,9 +38,10 @@ goal.
 
 ## Hard Rules
 
-1. Use the current agent runtime's internal subagent mechanism only.
+1. Prefer the current agent runtime's internal subagent mechanism.
 2. Do not call external agents, external CLI reviewers, or third-party review
-   tools as a substitute for this skill.
+   tools while internal subagents are available, or without explicit user
+   approval for the exact local CLI command.
 3. Each reviewer must be a fresh session. Do not inherit the main agent's full
    context, chat history, reasoning, failed attempts, drafts, or conclusions.
 4. The main agent must send a review navigation packet, not a diff dump or a
@@ -57,8 +58,10 @@ goal.
    internal subagent review after the main agent responds.
 10. Blocking findings should not be deferred unless the user explicitly accepts
    the risk.
-11. If fresh internal subagents are unavailable, say the review path is
-    unavailable or degraded. Do not pretend independent review happened.
+11. If fresh internal subagents are unavailable, search for approved local CLI
+    reviewer candidates, ask the user before calling one, and interrupt the
+    review workflow if the user does not approve. Do not pretend independent
+    review happened.
 12. The adversarial stance targets the artifact, assumptions, and failure paths,
     not the authoring agent or user.
 13. Reviewers must focus on high-impact failure modes. Do not inflate style
@@ -180,11 +183,31 @@ similar findings, so one focused fresh reviewer is the normal review unit.
 Read `references/reviewer-selection.md` for reviewer options and selection
 rules.
 
-### 5. Run Fresh Internal Subagents
+### 5. Run Fresh Reviewers
 
 Spawn each reviewer as a fresh internal subagent session. Do not fork the main
 agent context. Pass only the review navigation packet and the required report
 output contract.
+
+If the current runtime cannot spawn fresh internal subagents:
+
+1. Record the internal subagent path as unavailable in the report.
+2. Search the local machine for reviewer CLI candidates with bounded discovery
+   commands such as `command -v claude`, `command -v claude-code`,
+   `command -v codex`, `command -v codex-cli`, and `command -v opencode`.
+3. Show the user the discovered command paths and the proposed reviewer role.
+4. Ask for explicit approval before invoking any local CLI reviewer.
+5. If the user approves one candidate, run only that approved CLI with the same
+   neutral review navigation packet, read-only instructions, and no inherited
+   main-agent context. Record the mode as `approved_external_cli_substitute`.
+6. If no candidate is available or the user does not approve, stop the review
+   workflow, record `blocked_due_to_review_unavailable`, and tell the user the
+   review did not run.
+
+Local CLI substitutes are degraded replacements for unavailable internal
+subagents. They may use Claude Code, Codex CLI, or OpenCode CLI only after user
+approval, and they must not receive hidden reasoning, full chat history, or
+persuasive summaries.
 
 Set a timeout policy before spawning reviewers:
 
@@ -224,7 +247,7 @@ If the replacement also times out or is unavailable:
 For each reviewer, record a launch record in the report:
 
 - reviewer role
-- internal subagent mechanism or tool used
+- internal subagent mechanism or approved local CLI command used
 - session, job, or agent identifier when available
 - trace source for the spawn event, transcript, notification, or equivalent
   runtime evidence when the runtime exposes one
@@ -232,6 +255,9 @@ For each reviewer, record a launch record in the report:
 - what input packet was sent
 - what context was explicitly excluded
 - whether the reviewer had read-only instructions
+- whether the reviewer used internal subagent mode or
+  `approved_external_cli_substitute`, including user approval evidence for the
+  latter
 
 For each reviewer attempt, record a timeout record. Use the same reviewer role
 as the launch row. Only `completed`, `completed_after_extension`, and
@@ -349,6 +375,9 @@ Before claiming the review is complete:
   equivalent traceable handles?
 - Does each launch record include a trace source when the runtime exposes one?
 - Do the launch records prove reviewers avoided inherited main-agent context?
+- If internal subagents were unavailable, does the report show local CLI
+  discovery, exact user approval, or a blocked workflow when approval was not
+  granted?
 - Does every finding have an `accept`, `reject`, or `defer` response?
 - Are rejected findings backed by evidence?
 - Are deferred findings justified and tracked?

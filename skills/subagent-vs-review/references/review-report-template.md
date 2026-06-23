@@ -11,8 +11,8 @@ multiple rounds for the same task.
 - Report schema: adversarial-v1
 - Task: <user or product goal>
 - Report path: `vs_review/YYYY-MM-DD-<topic>-review.md`
-- Review mode: fresh internal subagents
-- Source session policy: no inherited main-agent context
+- Review mode: fresh internal subagents | approved_external_cli_substitute | blocked_due_to_review_unavailable
+- Source session policy: no inherited main-agent context; approved CLI substitutes receive only the review packet
 - Status: open | passed | blocked | accepted-risk
 
 ## Round 1: <short round purpose>
@@ -59,6 +59,25 @@ multiple rounds for the same task.
 - Read target files directly.
 - Do not modify files.
 - Cite evidence paths and line numbers when possible.
+- If internal subagents are unavailable, use an approved local CLI substitute
+  only after explicit user approval for the exact command.
+
+### Internal Subagent Unavailable Fallback
+
+- Required only when fresh internal subagents are unavailable.
+- Internal subagent unavailable reason: <reason or n/a>
+- Local CLI discovery commands:
+  - `command -v claude`
+  - `command -v claude-code`
+  - `command -v codex`
+  - `command -v codex-cli`
+  - `command -v opencode`
+- Discovered CLI candidates:
+  - <command path or none>
+- User approval requested: yes / no / n/a
+- User-approved CLI command: <exact command or n/a>
+- User decision: approved / rejected / no candidate / n/a
+- Fallback outcome: approved_external_cli_substitute / blocked_due_to_review_unavailable / n/a
 
 ### Reviewer Timeout Policy
 
@@ -78,7 +97,7 @@ This section is required for current reports.
 
 | Reviewer | Internal Mechanism | Session / Job ID | Trace Source | Context Forked | Input Packet | Context Explicitly Excluded | Read-only |
 |---|---|---|---|---|---|---|---|
-| <reviewer-role> | <subagent tool/runtime> | <id or equivalent trace handle> | <tool call, notification, transcript, or unavailable> | fork_context=false | Round 1 Review Input | main-agent history, reasoning, drafts, conclusions, full diff unless needed | yes |
+| <reviewer-role> | <subagent tool/runtime or approved local CLI command> | <id or equivalent trace handle> | <tool call, notification, transcript, CLI transcript, or unavailable> | fork_context=false or external_cli_no_context_packet_only | Round 1 Review Input | main-agent history, reasoning, drafts, conclusions, full diff unless needed | yes |
 
 ### Reviewer Timeout Records
 
