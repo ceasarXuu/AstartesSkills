@@ -682,14 +682,14 @@
         "path": "skills/subagent-vs-review"
       },
       "release": {
-        "version": "1.8.0",
-        "published_at": "2026-06-24T02:03:12+08:00",
+        "version": "1.8.1",
+        "published_at": "2026-06-24T02:15:12+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Add a user-approved local CLI reviewer fallback when fresh internal subagents are unavailable.",
-          "Require discovery of Claude Code, Codex CLI, and OpenCode CLI candidates before proposing a fallback reviewer.",
-          "Require explicit user approval for the exact local CLI command before using an external substitute.",
-          "Block the review workflow when no candidate exists or the user does not approve the fallback."
+          "Expand unavailable-subagent fallback discovery across Claude, Codex, OpenCode, and Pi local agent commands.",
+          "Ask the user for another local agent command when no built-in fallback candidate is discovered.",
+          "Require verification and explicit approval for any user-recommended agent command before use.",
+          "Terminate the review workflow when no verified and approved reviewer is available."
         ]
       },
       "markets": {

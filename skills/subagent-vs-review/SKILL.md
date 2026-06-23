@@ -58,10 +58,10 @@ goal.
    internal subagent review after the main agent responds.
 10. Blocking findings should not be deferred unless the user explicitly accepts
    the risk.
-11. If fresh internal subagents are unavailable, search for approved local CLI
-    reviewer candidates, ask the user before calling one, and interrupt the
-    review workflow if the user does not approve. Do not pretend independent
-    review happened.
+11. If fresh internal subagents are unavailable, search for local CLI reviewer
+    candidates, ask the user before calling one, and interrupt the review
+    workflow if no approved candidate or user-recommended reviewer is
+    available. Do not pretend independent review happened.
 12. The adversarial stance targets the artifact, assumptions, and failure paths,
     not the authoring agent or user.
 13. Reviewers must focus on high-impact failure modes. Do not inflate style
@@ -192,22 +192,30 @@ output contract.
 If the current runtime cannot spawn fresh internal subagents:
 
 1. Record the internal subagent path as unavailable in the report.
-2. Search the local machine for reviewer CLI candidates with bounded discovery
-   commands such as `command -v claude`, `command -v claude-code`,
-   `command -v codex`, `command -v codex-cli`, and `command -v opencode`.
-3. Show the user the discovered command paths and the proposed reviewer role.
+2. Search the local machine for reviewer CLI candidates across the four
+   supported families with bounded discovery commands such as
+   `command -v claude`, `command -v claude-code`, `command -v codex`,
+   `command -v codex-cli`, `command -v opencode`, and `command -v pi`.
+3. If one or more candidates are discovered, show the user the command paths
+   and the proposed reviewer role.
 4. Ask for explicit approval before invoking any local CLI reviewer.
-5. If the user approves one candidate, run only that approved CLI with the same
+5. If no candidate is discovered, ask the user whether another local agent is
+   available. Require the exact command or executable path, verify it with
+   `command -v` or an executable-path check, and ask for explicit approval for
+   that exact command before use.
+6. If the user approves one candidate or verified recommendation, run only that
+   approved CLI with the same
    neutral review navigation packet, read-only instructions, and no inherited
    main-agent context. Record the mode as `approved_external_cli_substitute`.
-6. If no candidate is available or the user does not approve, stop the review
-   workflow, record `blocked_due_to_review_unavailable`, and tell the user the
-   review did not run.
+7. If no candidate is available, the user has no other available agent, the
+   user-recommended command cannot be verified, or the user does not approve,
+   stop the review workflow, record `blocked_due_to_review_unavailable`, and
+   tell the user the review did not run.
 
 Local CLI substitutes are degraded replacements for unavailable internal
-subagents. They may use Claude Code, Codex CLI, or OpenCode CLI only after user
-approval, and they must not receive hidden reasoning, full chat history, or
-persuasive summaries.
+subagents. They may use Claude, Codex, OpenCode, Pi, or a verified
+user-recommended local agent only after user approval, and they must not receive
+hidden reasoning, full chat history, or persuasive summaries.
 
 Set a timeout policy before spawning reviewers:
 
@@ -376,8 +384,9 @@ Before claiming the review is complete:
 - Does each launch record include a trace source when the runtime exposes one?
 - Do the launch records prove reviewers avoided inherited main-agent context?
 - If internal subagents were unavailable, does the report show local CLI
-  discovery, exact user approval, or a blocked workflow when approval was not
-  granted?
+  discovery across Claude, Codex, OpenCode, and Pi, exact user approval,
+  user-recommended agent handling when discovery found no candidates, or a
+  blocked workflow when no approved reviewer was available?
 - Does every finding have an `accept`, `reject`, or `defer` response?
 - Are rejected findings backed by evidence?
 - Are deferred findings justified and tracked?

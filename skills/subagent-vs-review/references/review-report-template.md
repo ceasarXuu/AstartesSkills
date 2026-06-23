@@ -72,11 +72,15 @@ multiple rounds for the same task.
   - `command -v codex`
   - `command -v codex-cli`
   - `command -v opencode`
+  - `command -v pi`
 - Discovered CLI candidates:
   - <command path or none>
+- User-recommended alternative agent requested: yes / no / n/a
+- User-recommended agent command: <exact command or n/a>
+- User-recommended agent verification: verified / unavailable / n/a
 - User approval requested: yes / no / n/a
 - User-approved CLI command: <exact command or n/a>
-- User decision: approved / rejected / no candidate / n/a
+- User decision: approved / rejected / no candidate / no alternative agent / n/a
 - Fallback outcome: approved_external_cli_substitute / blocked_due_to_review_unavailable / n/a
 
 ### Reviewer Timeout Policy

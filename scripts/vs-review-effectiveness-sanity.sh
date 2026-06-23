@@ -152,7 +152,10 @@ require_pattern "$skill_file" 'target benefit realization' "skill must explicitl
 require_pattern "$skill_file" 'command -v claude' "skill must discover Claude Code CLI candidates"
 require_pattern "$skill_file" 'command -v codex' "skill must discover Codex CLI candidates"
 require_pattern "$skill_file" 'command -v opencode' "skill must discover OpenCode CLI candidates"
+require_pattern "$skill_file" 'command -v pi' "skill must discover Pi CLI candidates"
 require_pattern "$skill_file" 'explicit approval before invoking any local CLI reviewer' "skill must require user approval before local CLI fallback"
+require_pattern "$skill_file" 'ask the user whether another local agent is[[:space:]]*$' "skill must ask for user-recommended agents when discovery finds no candidates"
+require_pattern "$skill_file" 'user-recommended command cannot be verified' "skill must block unverified user-recommended agents"
 require_pattern "$skill_file" 'blocked_due_to_review_unavailable' "skill must block workflow when no approved reviewer is available"
 require_pattern "$skill_file" 'protocols, interfaces,[[:space:]]*$' "skill must name protocol/interface completeness gaps"
 require_pattern "$skill_file" 'demo scripts, or[[:space:]]*$' "skill must name demo-script completeness gaps"
@@ -163,7 +166,8 @@ require_pattern "$skill_file" 'target-benefit focus: claimed speed, accuracy, co
 require_pattern "$manifest_file" 'ease of use, ease of understanding' "agent manifest must expose ease-of-use and comprehension in discovery metadata"
 require_pattern "$manifest_file" 'implementation completeness' "agent manifest must expose implementation completeness in discovery metadata"
 require_pattern "$manifest_file" 'target benefit' "agent manifest must expose target benefit realization in discovery metadata"
-require_pattern "$manifest_file" 'Claude Code, Codex CLI, or OpenCode CLI' "agent manifest must expose local CLI fallback candidates"
+require_pattern "$manifest_file" 'Claude, Codex, OpenCode, and Pi CLI' "agent manifest must expose local CLI fallback candidates"
+require_pattern "$manifest_file" 'another local agent command' "agent manifest must ask for a user-recommended agent when built-in discovery finds none"
 require_pattern "$manifest_file" 'explicit approval' "agent manifest must require approval before external CLI substitute"
 require_pattern "$skill_file" 'Choose exactly 1 reviewer role per review round' "skill must require exactly one reviewer role per round"
 require_pattern "$selection_file" 'Use exactly 1 reviewer per round' "reviewer selection must require exactly one reviewer per round"
@@ -195,6 +199,8 @@ require_section_pattern "$template_file" '^##### Target Benefit Checks$' '^#####
 require_section_pattern "$template_file" '^##### Target Benefit Checks$' '^##### ' 'appear under `Non-blocking Risks` as warnings' "target benefit gaps must be non-blocking warnings"
 require_section_pattern "$template_file" '^##### Target Benefit Checks$' '^##### ' 'without blocking closure' "target benefit warnings must not block closure"
 require_section_pattern "$template_file" '^### Internal Subagent Unavailable Fallback$' '^### ' 'User-approved CLI command' "fallback section must record exact approved CLI command"
+require_section_pattern "$template_file" '^### Internal Subagent Unavailable Fallback$' '^### ' 'User-recommended agent command' "fallback section must record user-recommended agent commands"
+require_section_pattern "$template_file" '^### Internal Subagent Unavailable Fallback$' '^### ' 'User-recommended agent verification' "fallback section must record verification of user-recommended agent commands"
 require_section_pattern "$template_file" '^### Internal Subagent Unavailable Fallback$' '^### ' 'blocked_due_to_review_unavailable' "fallback section must record blocked workflow when approval is missing"
 
 contract_negative_dir="$repo_root/tmp/vs-review-effectiveness/contract-negative-$$"
@@ -230,6 +236,10 @@ fi
 sed '/User-approved CLI command/d' "$template_file" > "$contract_negative_dir/review-report-template-missing-cli-approval.md"
 if has_section_pattern "$contract_negative_dir/review-report-template-missing-cli-approval.md" '^### Internal Subagent Unavailable Fallback$' '^### ' 'User-approved CLI command'; then
   fail "negative contract fixture still passed after removing approved CLI command audit field"
+fi
+sed '/User-recommended agent command/d' "$template_file" > "$contract_negative_dir/review-report-template-missing-user-agent.md"
+if has_section_pattern "$contract_negative_dir/review-report-template-missing-user-agent.md" '^### Internal Subagent Unavailable Fallback$' '^### ' 'User-recommended agent command'; then
+  fail "negative contract fixture still passed after removing user-recommended agent audit field"
 fi
 cp "$selection_file" "$contract_negative_dir/reviewer-selection-two-reviewers.md"
 printf '\n- Use two reviewers for high-risk closure.\n' >> "$contract_negative_dir/reviewer-selection-two-reviewers.md"
