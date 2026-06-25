@@ -8,7 +8,8 @@ required sections, or templates. Keep output proportional to task risk.
 ### Feature Development
 
 Must cover user path, API and data model changes, permission boundaries,
-acceptance criteria, compatibility, regression testing, and release strategy.
+acceptance criteria, compatibility, regression testing, release strategy, and
+logs for key user-path and system-path state transitions.
 
 Recommended phases:
 
@@ -22,7 +23,8 @@ Recommended phases:
 ### Bug Fix
 
 Must cover reproduction path, root cause, impact scope, fix design, regression
-tests, prevention, release, and rollback.
+tests, prevention, release, rollback, and logs that reveal recurrence,
+successful prevention, and failure reasons if the fix does not apply.
 
 Required questions:
 
@@ -67,7 +69,8 @@ Required rules:
 
 Must cover data volume, data quality, migration, idempotency,
 retry/resume behavior, dual-write or dual-read if needed, validation, rollback,
-and compensation.
+compensation, and per-batch or per-job logging for start, progress, validation,
+commit, retry, compensation, and failure reason states.
 
 Recommended phases:
 
@@ -89,7 +92,8 @@ Required rules:
 ### Architecture Migration
 
 Must cover compatibility layer, dependency systems, traffic switching,
-degradation path, data consistency, and progressive rollout.
+degradation path, data consistency, progressive rollout, and logs or traces that
+show which route handled each request and why fallback or degradation occurred.
 
 Recommended phases:
 
@@ -105,7 +109,9 @@ Recommended phases:
 ### Performance Optimization
 
 Must start with a baseline and a bottleneck hypothesis. Include load testing,
-comparison, regression risk, and production observation.
+comparison, regression risk, production observation, and logging or tracing that
+can identify the slow link and failure reason without turning every request into
+high-cardinality noise.
 
 Required metrics when relevant:
 
@@ -143,7 +149,8 @@ Required inclusions:
 ### DevOps / CI/CD
 
 Must cover environment separation, build flow, test flow, release permissions,
-failure recovery, artifact management, and secret management.
+failure recovery, artifact management, secret management, and pipeline logs that
+capture stage state, artifact identity, success, failure, and failure reason.
 
 Recommended phases:
 
@@ -277,6 +284,49 @@ Common benefit categories:
 - user outcome: conversion, completion rate, abandonment, time to complete
 - developer outcome: lead time, test runtime, deploy frequency, toil hours
 
+### Change-Chain Logging Matrix
+
+```markdown
+| Change Link | Key State | Success Signal | Failure Signal | Failure Reason Field | Correlation / Trace Field | Log Level | Consumer |
+|---|---|---|---|---|---|---|---|
+| ... | queued / started / validated / committed / published / rolled back | ... | ... | error_code / reason / exception / validation_error | request_id / job_id / trace_id / entity_id | info / warn / error | on-call / owner / dashboard / audit |
+```
+
+Use the logging matrix to make the plan observable along the whole change
+chain. A complete row answers:
+
+- where in the chain the state is emitted
+- which key state proves the change is progressing
+- what log, metric, trace, or audit event proves success
+- what signal proves failure or ambiguity
+- which structured field explains the failure reason
+- which correlation or trace field links the event to a request, job, release,
+  migration batch, entity, or user-visible operation
+- who consumes the signal during rollout, debugging, audit, or support
+
+Common chain links:
+
+- user action, API ingress, authorization, validation, business operation,
+  persistence, async enqueue, worker execution, downstream call, publish,
+  notification, cache invalidation, rollback, compensation, and cleanup
+- build trigger, test stage, artifact publish, deploy stage, health check,
+  traffic shift, rollback, and post-release verification
+- migration batch selection, read, transform, write, compare, commit, retry,
+  resume, compensation, and final consistency check
+
+Logging guardrails:
+
+- Prefer structured fields over free-form messages for status and reason.
+- Include enough correlation to reconstruct one affected request, job, batch,
+  release, or entity across the chain.
+- Avoid sensitive data, secrets, raw tokens, payment details, or unnecessary
+  personal data in logs.
+- Avoid unbounded high-cardinality labels in metrics; put detailed values in
+  logs or traces when safe.
+- Define sampling only after specifying which failures must always be captured.
+- State retention, dashboard, alert, or runbook expectations when the change is
+  production-impacting.
+
 ### Release, Rollback, And Fallback
 
 ```markdown
@@ -327,6 +377,11 @@ Common benefit categories:
 Cover logs, metrics, traces, dashboards, alerts, user behavior, business
 metrics, and data consistency metrics when relevant.
 
+Observability must include log design, not only metric names. The plan should
+show how operators identify the affected chain's current state, successful
+completion, failed step, and failure reason during rollout and post-release
+validation.
+
 ## Wording Guardrails
 
 Replace vague wording with evidence:
@@ -340,6 +395,7 @@ Replace vague wording with evidence:
 | support | scenario, inputs, outputs, and acceptance criteria |
 | handle errors | named errors and expected system behavior |
 | ensure stability | health metrics and observation window |
+| add logging | chain link, key state, success signal, failure signal, failure reason field, correlation field, consumer |
 | launch soon | release gate, canary plan, and pause criteria |
 | implemented | production code path, integration entry, test evidence, runtime/log evidence, and mock/stub exposure |
 
@@ -353,6 +409,8 @@ Do not output:
 - production changes with only "tests pass" as a release gate
 - acceptance plans that verify correctness but never test whether the expected
   benefit was achieved
+- observability plans that list metrics but omit chain-state logs, failure
+  signals, or failure reason fields
 - implementation plans that treat protocols, scaffolds, mocks, fake data, demo
   scripts, or entry points as complete without production-path evidence
 - data migration without idempotency, validation, and compensation

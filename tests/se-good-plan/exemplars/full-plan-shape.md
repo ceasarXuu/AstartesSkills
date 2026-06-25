@@ -107,11 +107,18 @@ phased and review-gated.
 |---|---|---|---|---|---|---|
 | Current API inventory | n/a | n/a | n/a | Inventory artifact | none | landed |
 
+#### Logging And Observability Design
+
+| Change Link | Key State | Success Signal | Failure Signal | Failure Reason Field | Correlation / Trace Field | Log Level | Consumer |
+|---|---|---|---|---|---|---|---|
+| API ingress | request received | request accepted log | validation or auth failure log | error_code | request_id / trace_id | info / warn | on-call / dashboard |
+
 #### Testing And Validation
 
-| Validation Item | Method | Passing Standard |
-|---|---|---|
-| Caller inventory | Static and log review | All known callers listed |
+| Validation Type | Validation Item | Method | Passing Standard |
+|---|---|---|---|
+| Correctness | Caller inventory | Static and log review | All known callers listed |
+| Observability | API ingress logging | Inspect sample logs or trace | Request state, success, failure, and failure reason are visible |
 
 #### Exit Criteria
 
@@ -177,6 +184,14 @@ phased and review-gated.
 |---|---|---:|---:|---|---|---|---|
 | Migration improves API success rate | Success rate | Unknown | Unknown | Compare before and after canary | Production telemetry | 24h | No claimed benefit until baseline and target are known |
 
+## Logging And Observability Design
+
+| Change Link | Key State | Success Signal | Failure Signal | Failure Reason Field | Correlation / Trace Field | Log Level | Consumer |
+|---|---|---|---|---|---|---|---|
+| API ingress | received / rejected | accepted request log | auth, validation, or routing failure log | error_code / reason | request_id / trace_id | info / warn | on-call / dashboard |
+| Compatibility route | old route / new route | routed to selected API version | fallback or route mismatch log | fallback_reason | request_id / release_id | info / warn | rollout owner |
+| Rollback | rollback started / completed | traffic restored to old API | rollback failure log | rollback_reason | release_id / trace_id | warn / error | on-call / incident lead |
+
 ## Security And Permission Review
 
 - Confirm auth and authorization behavior before launch.
@@ -200,6 +215,9 @@ phased and review-gated.
 | Metric | Current Baseline | Target | Alert Threshold | Observation Window |
 |---|---:|---:|---:|---|
 | Error rate | Unknown | Not above baseline | Baseline + threshold | 24h |
+
+- Logs must show request state, selected route, fallback reason, rollback state,
+  and failure reason without exposing sensitive request payloads.
 
 ## Post-release Verification And Cleanup
 

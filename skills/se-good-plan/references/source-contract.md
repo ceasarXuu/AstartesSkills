@@ -132,6 +132,32 @@ source, observation window, and pass/fail threshold when relevant. Unknown
 baselines or targets must be marked `Unknown` and discovered early; they must not
 be invented.
 
+## Logging Design Contract
+
+Plans that change runtime behavior, release flow, data movement, jobs, APIs,
+user workflows, or operator procedures must include a logging design for the
+affected change chain.
+
+The logging design must state:
+
+- change links covered from trigger to side effect
+- key states emitted by each link
+- success signals for each important state transition
+- failure signals for each important state transition
+- structured failure reason fields such as `error_code`, `reason`,
+  `exception`, or `validation_error`
+- correlation or trace fields such as `request_id`, `job_id`, `trace_id`,
+  `release_id`, `batch_id`, or `entity_id`
+- log levels and consumers for rollout, debugging, audit, support, dashboards,
+  alerts, or runbooks
+
+Validation must prove the planned logs, traces, metrics, or audit events can
+show whether the change succeeded, failed, became ambiguous, and why.
+
+If a state cannot be logged safely, the plan must explain the privacy, security,
+cost, or cardinality reason and define an alternate metric, trace, or audit
+event.
+
 ## Phase Contract
 
 Every Standard or Full phase must include:
@@ -143,16 +169,17 @@ Every Standard or Full phase must include:
 5. Implementation Tasks
 6. Deliverables
 7. Implementation Completeness Evidence
-8. Testing And Validation
-9. Exit Criteria
-10. Review Plan
-11. Risks And Fallback
-12. Gate To Next Phase
+8. Logging And Observability Design
+9. Testing And Validation
+10. Exit Criteria
+11. Review Plan
+12. Risks And Fallback
+13. Gate To Next Phase
 
 ## High-Risk Contract
 
 Production-impacting work must include release, rollback, fallback or
-degradation, observability, and post-release validation.
+degradation, observability, logging design, and post-release validation.
 
 Data changes must include migration, idempotency, retry or resume behavior,
 validation, and rollback or compensation.

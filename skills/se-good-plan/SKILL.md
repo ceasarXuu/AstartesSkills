@@ -1,6 +1,6 @@
 ---
 name: se-good-plan
-description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces phased, executable, verifiable, reviewable, rollback-aware plans with plan-to-code completeness and benefit validation evidence for software engineering work.
+description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces phased, executable, verifiable, reviewable, rollback-aware plans with plan-to-code completeness, benefit validation, and chain-state logging evidence for software engineering work.
 ---
 
 # SE Good Plan
@@ -59,6 +59,9 @@ tiny, low-risk edits.
 - Plans must state expected benefits, not only planned work. Acceptance must
   include correctness validation and benefit validation, such as speed,
   accuracy, reliability, cost, conversion, or operational-toil improvements.
+- Plans must include logging design for the affected change chain. Logs must
+  capture key states, success signals, failure signals, and failure reasons so
+  operators can tell where the change succeeded, failed, or became ambiguous.
 - Use measurable acceptance criteria. Avoid vague promises like "optimize",
   "improve", "support", "handle", or "complete" unless they are made specific.
 
@@ -201,6 +204,20 @@ Only `landed` means complete. `stub-only`, `mock-only`, `partial`, and
 `planned` cannot satisfy an exit gate unless the user explicitly accepts the
 remaining risk and the follow-up location is recorded.
 
+Use this change-chain logging matrix in every plan that changes runtime
+behavior, release flow, data movement, jobs, APIs, user workflows, or operator
+procedures:
+
+```markdown
+| Change Link | Key State | Success Signal | Failure Signal | Failure Reason Field | Correlation / Trace Field | Log Level | Consumer |
+|---|---|---|---|---|---|---|---|
+| ... | queued / started / validated / committed / published / rolled back | ... | ... | error_code / reason / exception / validation_error | request_id / job_id / trace_id / entity_id | info / warn / error | on-call / owner / dashboard / audit |
+```
+
+The logging design must cover the chain from trigger to side effect, not only
+the final result. If a state cannot be logged safely, explain the privacy,
+security, or cost reason and define an alternate metric, trace, or audit event.
+
 ### 4. Extract Context Honestly
 
 Before writing the plan, identify what the user already provided:
@@ -259,11 +276,15 @@ For every Standard or Full Plan, each phase must use this schema:
 #### Implementation Completeness Evidence
 | Plan Item | Production Code Path | Integration Entry | Test Evidence | Runtime / Log Evidence | Mock / Stub Exposure | Status |
 |---|---|---|---|---|---|---|
+#### Logging And Observability Design
+| Change Link | Key State | Success Signal | Failure Signal | Failure Reason Field | Correlation / Trace Field | Log Level | Consumer |
+|---|---|---|---|---|---|---|---|
 #### Testing And Validation
 | Validation Type | Validation Item | Method | Passing Standard |
 |---|---|---|---|
 | Correctness | ... | ... | no regression, bug, compatibility, data, or security failure |
 | Benefit | ... | ... | measured benefit meets target or explicitly documented threshold |
+| Observability | ... | ... | key states, success, failure, and failure reason are visible in logs, traces, metrics, or audit events |
 #### Exit Criteria
 #### Review Plan
 #### Risks And Fallback
@@ -285,6 +306,9 @@ Every phase gate must state what evidence proves the phase can close:
   avoids bugs
 - plan-to-code completeness rows showing code landed in production paths, not
   only protocols, definitions, scaffolding, mocks, fake data, or demo scripts
+- logging evidence showing the affected chain's key states, success, failure,
+  and failure reasons are observable through logs, traces, metrics, or audit
+  events
 - required code, design, security, release, or data review
 - unresolved P0/P1 issues
 - risk mitigations and fallback readiness
@@ -328,6 +352,9 @@ Before final output, verify:
 - [ ] Validation separates correctness tests from benefit tests.
 - [ ] Benefit validation states baseline, target, measurement method, data
       source, observation window, and pass/fail threshold when relevant.
+- [ ] Logging design covers the affected change chain's key states, success
+      signals, failure signals, failure reason fields, correlation IDs, log
+      levels, and consumers.
 - [ ] Implementation completeness evidence distinguishes landed production paths
       from protocol-only, scaffold-only, mock-only, and partial work.
 - [ ] Production impact includes release, rollback, fallback, observability,

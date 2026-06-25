@@ -120,7 +120,7 @@ Reference:
 | `docs-manager` | Design, reorganize, audit, and maintain repository documentation systems with versioned PRDs, technical designs, engineering plans, link management, archive policy, and validation tooling. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill docs-manager` |
 | `frontend-refactoring` | Refactor legacy frontend surfaces by isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill frontend-refactoring` |
 | `multi-path-debug` | Confirm bug root causes before repair through targeted intake, independent research paths, evidence-weighted synthesis, and user confirmation before fixes. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill multi-path-debug` |
-| `se-good-plan` | Write and review phased, executable, verifiable, reviewable, rollback-aware software engineering plans with plan-to-code completeness and benefit validation evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill se-good-plan` |
+| `se-good-plan` | Write and review phased, executable, verifiable, reviewable, rollback-aware software engineering plans with plan-to-code completeness, benefit validation, and chain-state logging evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill se-good-plan` |
 | `show-my-repo` | Turn a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill show-my-repo` |
 | `storybook-skills-standard` | Design and audit Storybook-driven component workflows, story coverage, mocks, docs, interaction tests, accessibility checks, and visual baselines. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill storybook-skills-standard` |
 | `summary-my-repo` | Generate an internal repository summary pack with architecture, directory responsibilities, and core logic walkthroughs. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill summary-my-repo` |
@@ -270,8 +270,8 @@ and `multi-path-debug` runs its root-cause-before-repair contract sanity check.
 `se-good-plan` runs its engineering-plan contract sanity check.
 That check covers the checked-in source contract, trigger coverage, Standard and
 Full plan section inventories, metadata/status and dependency templates,
-benefit validation tables, release metadata formatting, and regression fixtures
-for required plan fields.
+benefit validation tables, chain-state logging matrices, release metadata
+formatting, and regression fixtures for required plan fields.
 
 The smoke test verifies that the selected skill is:
 

@@ -13,6 +13,8 @@ baseline and bottleneck are not yet known.
   memory, IO, database slow queries, and cache hit rate when relevant.
 - Include load-test comparison and production observation.
 - Include benefit validation for latency, throughput, cost, or resource usage.
+- Include logging or tracing for request ingress, bottleneck link, downstream
+  call, timeout, retry, success, failure, and failure reason.
 - Avoid claiming a target improvement until a baseline is known.
 
 ## Forbidden Behavior
@@ -20,3 +22,4 @@ baseline and bottleneck are not yet known.
 - Start with implementation before measuring the baseline.
 - Promise a specific latency target without provided data.
 - Treat local unit tests as sufficient proof of performance improvement.
+- List latency metrics without a chain-state logging design.

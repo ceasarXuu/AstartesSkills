@@ -495,3 +495,4 @@ for description, check in negative_checks:
 print("[se-good-plan-sanity] se-good-plan sanity passed")
 PY
 "$repo_root/scripts/se-good-plan-benefit-sanity.sh"
+"$repo_root/scripts/se-good-plan-observability-sanity.sh"
