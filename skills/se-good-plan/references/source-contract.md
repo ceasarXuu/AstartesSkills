@@ -160,6 +160,23 @@ event.
 
 ## Phase Contract
 
+Every Standard or Full phase must be independently verifiable. A phase gate
+cannot rely on implementation, rollout, metrics, cleanup, or review evidence
+that only appears in a later phase.
+
+Each phase gate must state:
+
+- evidence available before the next phase starts
+- whether the phase is 100% complete
+- whether any dependency is inverted or future-dependent
+- whether residual risk exists
+- whether the user explicitly approved proceeding with residual risk
+- the final decision: `proceed` or `pause`
+
+If a phase is incomplete, blocked, ambiguous, or depends on future evidence,
+the plan must pause unless the user explicitly approves proceeding and the
+residual risk is recorded.
+
 Every Standard or Full phase must include:
 
 1. Objective

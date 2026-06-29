@@ -136,13 +136,17 @@ phased and review-gated.
 
 #### Gate To Next Phase
 
-- [ ] Discovery evidence is reviewed.
+| Gate Condition | Verification Evidence | Completion Status | User Approval Required | Proceed Decision |
+|---|---|---|---|---|
+| Current API behavior is documented | API inventory and caller evidence reviewed in Phase 0 | complete | no | proceed |
+| No future-phase dependency closes Phase 0 | Phase 0 evidence does not depend on Phase 1 implementation | complete | no | proceed |
 
 ## Phase Gate Overview
 
-| Phase | Gate |
-|---|---|
-| Phase 0 | Discovery evidence reviewed |
+| Phase | Independent Verification | Forbidden Future Dependency | Exit Evidence | Completion Required Before Next Phase | Proceed Decision |
+|---|---|---|---|---|---|
+| Phase 0 | API inventory and caller evidence available in Discovery | No Phase 1 design or implementation evidence is needed to close Phase 0 | Discovery artifact reviewed | 100% complete before Phase 1 | proceed |
+| Phase 1 | Target design review and compatibility evidence available before implementation | No Phase 2 implementation evidence can close Phase 1 | Pending | Pause until complete unless user approves residual risk | pause |
 
 ## Implementation Completeness Matrix
 

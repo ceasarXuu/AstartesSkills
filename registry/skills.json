@@ -220,7 +220,7 @@
       "id": "se-good-plan",
       "name": "SE Good Plan",
       "path": "skills/se-good-plan",
-      "summary": "Writes and reviews phased, executable, verifiable, reviewable, rollback-aware software engineering plans with plan-to-code completeness, benefit validation, and chain-state logging evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work.",
+      "summary": "Writes and reviews phased, executable, independently verifiable, reviewable, rollback-aware software engineering plans with strict phase gates, plan-to-code completeness, benefit validation, and chain-state logging evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work.",
       "tags": ["software-engineering", "planning", "implementation-plan", "review", "rollout"],
       "installable": true,
       "source": {
@@ -229,14 +229,14 @@
         "path": "skills/se-good-plan"
       },
       "release": {
-        "version": "1.3.0",
-        "published_at": "2026-06-25T15:23:36+08:00",
+        "version": "1.4.0",
+        "published_at": "2026-06-29T18:12:21+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Require plans to include chain-state logging design for affected runtime, release, data, job, API, user, or operator flows.",
-          "Add logging matrices that capture key states, success signals, failure signals, failure reason fields, correlation fields, log levels, and consumers.",
-          "Extend validation fixtures, the full-plan exemplar, and sanity checks to verify logging observability evidence.",
-          "Document safe logging guardrails for sensitive data, cardinality, sampling, retention, dashboards, alerts, and runbooks."
+          "Require every Standard and Full plan phase to be independently verifiable before the next phase starts.",
+          "Forbid inverted phase dependencies where a later phase is needed to close an earlier phase.",
+          "Require each phase gate to record completion status, residual risk, user approval status, and a proceed or pause decision.",
+          "Add strict phase-gate fixtures, exemplar coverage, and sanity checks."
         ]
       },
       "markets": {

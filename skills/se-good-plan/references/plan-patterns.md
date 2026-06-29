@@ -47,7 +47,7 @@ Recommended sections:
 
 Must preserve external behavior unless behavior changes are explicit goals.
 Must cover compatibility, incremental replacement, test coverage, old-logic
-cleanup, and rollback.
+cleanup, rollback, and independently verified migration gates.
 
 Recommended phases:
 
@@ -64,6 +64,8 @@ Required rules:
 - Each migration step must be independently verifiable.
 - Old logic removal must happen after the new path is stable.
 - Behavior changes must be separated from structural changes.
+- Do not claim a module migration phase is complete because a later cleanup,
+  default-path switch, or rollout phase will validate it.
 
 ### Data Migration
 
@@ -88,6 +90,8 @@ Required rules:
 - State what happens after partial failure.
 - State whether scripts can be safely re-run.
 - State how source and target data are compared.
+- Each migration rehearsal, batch, cutover, and cleanup phase must have its own
+  gate evidence before the next phase starts.
 
 ### Architecture Migration
 
@@ -207,6 +211,27 @@ path is wired through a real integration entry and validated with non-demo
 evidence. Protocols, interfaces, schemas, entry points, scaffolding, mock or
 fake data, demo scripts, and test-only wiring are not completion evidence by
 themselves.
+
+### Phase Dependency And Gate Matrix
+
+```markdown
+| Phase | Independent Verification | Forbidden Future Dependency | Exit Evidence | Completion Required Before Next Phase | Proceed Decision |
+|---|---|---|---|---|---|
+| Phase N | test, log, review, artifact, or measurement available inside this phase | no Phase N+1 artifact needed to close Phase N | ... | 100% complete or explicit user approval with recorded residual risk | proceed / pause |
+```
+
+Use this matrix to prove phase boundaries are sound. A valid phase can be
+closed with evidence available at or before that phase gate. If the plan says
+Phase 2 is complete only after Phase 3 runs, either:
+
+- move the validation into Phase 2
+- split Phase 2 into a smaller independently verifiable phase
+- move the unfinished work into Phase 3 and mark Phase 2 partial
+- pause and ask the user whether to proceed with recorded residual risk
+
+The default decision for an incomplete, blocked, ambiguous, or future-dependent
+phase is `pause`. Use `proceed` only when the phase is 100% complete or the
+user has explicitly approved the residual risk.
 
 ### Risk Table
 
@@ -392,6 +417,8 @@ Replace vague wording with evidence:
 | improve | target delta and validation method |
 | benefit | benefit hypothesis, metric, baseline, target, and pass/fail threshold |
 | complete tests | exact paths, test types, and passing standard |
+| finish phase | phase-local exit evidence and proceed / pause decision |
+| continue next phase | 100% current-phase completion or explicit user approval with residual risk |
 | support | scenario, inputs, outputs, and acceptance criteria |
 | handle errors | named errors and expected system behavior |
 | ensure stability | health metrics and observation window |
@@ -406,6 +433,9 @@ Do not output:
 - a task list without problem, risk, validation, or rollback
 - a roadmap without executable tasks and gates
 - a technical solution without proof strategy
+- phases that can only be verified by later phases
+- phase gates that continue despite incomplete, blocked, or ambiguous evidence
+  without explicit user approval
 - production changes with only "tests pass" as a release gate
 - acceptance plans that verify correctness but never test whether the expected
   benefit was achieved

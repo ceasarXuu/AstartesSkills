@@ -1,6 +1,6 @@
 ---
 name: se-good-plan
-description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces phased, executable, verifiable, reviewable, rollback-aware plans with plan-to-code completeness, benefit validation, and chain-state logging evidence for software engineering work.
+description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces phased, executable, independently verifiable, reviewable, rollback-aware plans with strict phase gates, plan-to-code completeness, benefit validation, and chain-state logging evidence for software engineering work.
 ---
 
 # SE Good Plan
@@ -10,6 +10,9 @@ description: Use when the user asks for a software engineering plan, implementat
 Use this skill to write or review software engineering plans that are practical
 for engineers, reviewable by technical leads, and understandable to
 stakeholders.
+
+Plans must remain phased, executable, verifiable, reviewable, rollback-aware,
+and now independently verifiable at every phase gate.
 
 A good plan is not a generic TODO list or a high-level roadmap. It must explain
 what to do, why it should be done that way, how to prove it worked, what can go
@@ -45,6 +48,13 @@ tiny, low-risk edits.
 - Break medium and high-risk work into progressive phases.
 - Each phase must include entry criteria, checks, tasks, deliverables,
   validation, exit criteria, review plan, risks, fallback, and next-phase gate.
+- Each phase must be independently verifiable. A phase cannot require a later
+  phase to prove its own exit criteria, and a later phase cannot retroactively
+  close an earlier phase.
+- Do not proceed to the next phase unless the current phase is 100% complete or
+  the user explicitly approves proceeding with recorded residual risk. If a
+  phase is incomplete, ambiguous, or depends on future evidence, pause instead
+  of continuing.
 - Move high-risk and high-uncertainty validation earlier.
 - Production-impacting work must include release, rollback, fallback or
   degradation, observability, and post-release validation.
@@ -218,6 +228,18 @@ The logging design must cover the chain from trigger to side effect, not only
 the final result. If a state cannot be logged safely, explain the privacy,
 security, or cost reason and define an alternate metric, trace, or audit event.
 
+Use this phase dependency and gate matrix in every Standard or Full plan:
+
+```markdown
+| Phase | Independent Verification | Forbidden Future Dependency | Exit Evidence | Completion Required Before Next Phase | Proceed Decision |
+|---|---|---|---|---|---|
+| Phase N | test, log, review, artifact, or measurement available inside this phase | no Phase N+1 artifact needed to close Phase N | ... | 100% complete or explicit user approval with recorded residual risk | proceed / pause |
+```
+
+If a phase needs evidence from a later phase before it can close, the phase
+boundary is wrong. Move that validation earlier, split the phase, or mark the
+plan blocked until the dependency is resolved.
+
 ### 4. Extract Context Honestly
 
 Before writing the plan, identify what the user already provided:
@@ -260,6 +282,11 @@ baseline discovery part of Phase 0 or an early validation gate.
 
 ### 6. Build The Phased Plan
 
+Phase boundaries must be strict. Each phase must produce evidence that can be
+checked before the next phase starts. Do not create a plan where Phase 2 can
+only be validated after Phase 3 or where downstream rollout evidence is needed
+to claim an earlier build, migration, or validation phase is complete.
+
 For every Standard or Full Plan, each phase must use this schema:
 
 ```markdown
@@ -291,6 +318,9 @@ For every Standard or Full Plan, each phase must use this schema:
 | Risk | Impact | Trigger Signal | Mitigation | Fallback |
 |---|---|---|---|---|
 #### Gate To Next Phase
+| Gate Condition | Verification Evidence | Completion Status | User Approval Required | Proceed Decision |
+|---|---|---|---|---|
+| ... | evidence available before next phase starts | complete / incomplete / blocked | no / yes with residual risk | proceed / pause |
 ```
 
 Common phases are Discovery, Design, Foundation, Implementation, Integration,
@@ -302,6 +332,8 @@ but do not skip Discovery, Validation, Release, or Rollback for high-risk work.
 Every phase gate must state what evidence proves the phase can close:
 
 - required tests and exact pass criteria
+- phase-local evidence that closes the phase without relying on future-phase
+  implementation, rollout, metrics, or cleanup
 - benefit tests proving the target outcome improved, not only that the code
   avoids bugs
 - plan-to-code completeness rows showing code landed in production paths, not
@@ -313,10 +345,15 @@ Every phase gate must state what evidence proves the phase can close:
 - unresolved P0/P1 issues
 - risk mitigations and fallback readiness
 - artifacts to archive, such as scripts, dashboards, runbooks, or review notes
+- an explicit proceed / pause decision
 
 For production-impacting work, also require rollback rehearsal or rollback
 verification, monitoring and alerting, feature flag readiness when applicable,
 and post-release observation windows.
+
+If the current phase is not fully complete, record the missing evidence,
+residual risk, and user approval status. Without explicit user approval, the
+correct next action is `pause`, not continuing to the next phase.
 
 ### 8. Review Existing Plans
 
@@ -326,6 +363,9 @@ When reviewing an existing plan, lead with findings:
 - goals that cannot be measured
 - missing non-goals or scope controls
 - phases without gates or evidence
+- phase gates that depend on later phases or cannot be verified independently
+- phase transitions that proceed without 100% completion or explicit user
+  approval for residual risk
 - risks without triggers or fallback
 - production changes without rollout, rollback, or observability
 - data changes without idempotency, validation, or compensation
@@ -344,8 +384,12 @@ Before final output, verify:
 - [ ] Facts, assumptions, constraints, risks, and open questions are separated.
 - [ ] Complexity and plan depth are justified.
 - [ ] Work is divided into progressive phases.
+- [ ] Each phase is independently verifiable and has no inverted dependency on
+      later phases.
 - [ ] Each phase has entry criteria, checks, tasks, deliverables, validation,
       exit criteria, review plan, risks, fallback, and next gate.
+- [ ] Each phase gate requires 100% completion or explicit user approval with
+      recorded residual risk before proceeding; otherwise the plan pauses.
 - [ ] High-risk unknowns are investigated early.
 - [ ] Risks include trigger signals and mitigations.
 - [ ] Tests and validation have passing standards.
