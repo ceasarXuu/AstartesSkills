@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "market": "openai-compatible",
+  "display_name": "Plan Report",
+  "description": "Reports plan implementation results with evidence-based overall, stage, and module completion percentages; goal alignment verification; unfinished-work impact analysis; and recommended next actions.",
+  "release": {
+    "version": "1.0.0",
+    "published_at": "2026-06-30T19:48:34+08:00",
+    "publisher": "ceasarXuu",
+    "changes": [
+      "Publish the initial plan-report skill for factual implementation result reports.",
+      "Require completion percentages at overall, stage, and module levels with explicit scoring evidence.",
+      "Add structured goal alignment, verification, unfinished-work impact, and next-action report templates.",
+      "Forbid vague completion phrasing and require table- and chart-first reporting."
+    ]
+  },
+  "source": {
+    "type": "github",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+    "path": "skills/plan-report"
+  }
+}

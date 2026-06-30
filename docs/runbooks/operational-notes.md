@@ -139,3 +139,11 @@
 - Add a skill-specific sanity script when the workflow has a non-obvious contract. For `multi-path-debug`, the script checks ordering, prompt gates, and interaction fixtures that preserve the root-cause-before-repair gate, external-agent authorization, low-confidence continuation, and evidence-weighted synthesis.
 - External debug advisors should be documented as discoverable and user-approved paths, not mandatory dependencies. This keeps the skill usable when Claude, Gemini, Opencode, or similar local agents are unavailable.
 - Repo validation should compare skill folders and registry entries in both directions. A skill directory that is not registered is packaging drift, not a valid hidden package.
+
+## 2026-06-30 新建报告型 Skill 的打包检查
+
+- 问题：`skill-creator` 的 `init_skill.py` 会生成 `scripts/example.py`、`references/api_reference.md`、`assets/example_asset.txt` 等占位资源；如果直接提交，会把无用途文件发布到 skill 包里。
+- 决策：初始化后只保留真正会被 skill 加载的引用文件；无关占位 `scripts/` 和 `assets/` 先移入系统回收站，再用真实的 `SKILL.md`、`agents/openai.yaml`、`markets/openai-compatible.json` 和 `registry/skills.json` 元数据替换模板。
+- 问题：报告模板里外层 Markdown 示例包含内层 Mermaid 代码块，若外层也用三反引号，会提前闭合并导致渲染结构错误。
+- 决策：外层示例使用四反引号，内层 Mermaid 保持三反引号；把这个约束写入对应 sanity 脚本，避免后续模板回归。
+- 复用方式：创建新 skill 后，先跑专项 sanity、`quick_validate.py`、`package_skill.py <skill> /tmp/<package-check>` 和 `./scripts/validate-repo.sh`；打包校验输出放到 `/tmp`，不要把临时 `.skill` 包留在仓库工作区。
