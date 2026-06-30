@@ -146,4 +146,6 @@
 - 决策：初始化后只保留真正会被 skill 加载的引用文件；无关占位 `scripts/` 和 `assets/` 先移入系统回收站，再用真实的 `SKILL.md`、`agents/openai.yaml`、`markets/openai-compatible.json` 和 `registry/skills.json` 元数据替换模板。
 - 问题：报告模板里外层 Markdown 示例包含内层 Mermaid 代码块，若外层也用三反引号，会提前闭合并导致渲染结构错误。
 - 决策：外层示例使用四反引号，内层 Mermaid 保持三反引号；把这个约束写入对应 sanity 脚本，避免后续模板回归。
+- 问题：`git push` 可能返回 GitHub HTTP 401，即使 `gh auth status` 显示当前账号已登录并拥有 `repo` 权限；原因通常是 Git 仍在使用旧的 HTTPS credential helper 凭据。
+- 决策：先用 `git rev-parse HEAD`、`git rev-parse origin/main`、`git ls-remote origin refs/heads/main` 确认远端是否真的更新；若本地仍 ahead 且 `gh` 登录有效，运行 `gh auth setup-git` 后重试 `git push origin main`。
 - 复用方式：创建新 skill 后，先跑专项 sanity、`quick_validate.py`、`package_skill.py <skill> /tmp/<package-check>` 和 `./scripts/validate-repo.sh`；打包校验输出放到 `/tmp`，不要把临时 `.skill` 包留在仓库工作区。
