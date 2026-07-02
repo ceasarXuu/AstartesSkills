@@ -1,6 +1,6 @@
 ---
 name: plan-report
-description: Use when the user asks to report, summarize, audit, or present the implementation result of a plan, roadmap, PRD, engineering plan, refactor plan, migration plan, release plan, or task list. Produces evidence-based completion reports with overall, stage, and module completion percentages; goal-to-result verification tables; unfinished-work impact analysis; and concrete next actions, using tables and charts instead of vague prose.
+description: Use when the user asks to report, summarize, audit, or present the implementation result of a plan, roadmap, PRD, engineering plan, refactor plan, migration plan, release plan, or task list. Produces evidence-based completion reports with overall, stage, and module completion percentages; goal-to-result verification tables; explicit concrete engineering benefits; unfinished-work impact analysis; and concrete next actions, using tables and charts instead of vague prose.
 ---
 
 # Plan Report
@@ -12,7 +12,8 @@ a factual completion report.
 
 The report must answer what was planned, what was actually implemented, how
 completion was calculated, what remains unfinished, why it remains unfinished,
-what impact it creates, and what should happen next.
+what concrete engineering benefits were achieved or not verified, what impact
+unfinished work creates, and what should happen next.
 
 ## Core Rules
 
@@ -35,6 +36,16 @@ what impact it creates, and what should happen next.
   appear in the unfinished-work table.
 - Every unfinished item must include a specific reason, the evidence behind that
   reason, and the likely impact if left unresolved.
+- Every main goal must include at least one concrete engineering benefit, such
+  as reduced latency, lower build time, fewer manual steps, improved test
+  coverage, lower failure rate, clearer rollback path, reduced operational
+  toil, improved maintainability, smaller blast radius, or stronger auditability.
+- Engineering benefits must include a metric, baseline, target, observed result,
+  and verification method when the data exists. If the data does not exist,
+  mark the benefit `not verified` and state the exact missing measurement.
+- Do not replace engineering benefits with generic value claims such as
+  "improved quality", "better maintainability", or "higher efficiency" unless
+  the report states the concrete mechanism and measurable effect.
 - Do not use fuzzy completion language such as "basically complete", "main path
   complete", "mostly done", "no major gaps", "almost finished", or equivalent
   wording in any language.
@@ -128,6 +139,8 @@ The report must include:
 - module completion table for every stage
 - chart of stage or module completion
 - Goal Alignment Matrix covering main goals and subgoals
+- Engineering Benefit Matrix with concrete benefits, metrics, baselines,
+  targets, observed results, and verification status
 - evidence and verification matrix
 - unfinished-work table with reason, evidence, and impact
 - recommended next actions with owner, priority, dependency, and verification
@@ -157,6 +170,24 @@ Use evidence labels in tables:
 
 Every completed item should have at least one implementation evidence label and
 one verification evidence label. If it does not, it cannot score 100%.
+
+## Engineering Benefit Rules
+
+Use this table to classify engineering benefits:
+
+| Benefit Type | Concrete Examples |
+|---|---|
+| Performance | Lower latency, higher throughput, shorter render time, smaller bundle size. |
+| Reliability | Lower error rate, fewer retries, stronger recovery, reduced incident risk. |
+| Delivery speed | Faster CI, shorter release steps, fewer manual operations, easier rollback. |
+| Maintainability | Removed duplicate logic, clearer module boundary, lower file complexity, simpler ownership. |
+| Testability | Higher meaningful coverage, deterministic fixtures, better regression detection. |
+| Observability | New logs, metrics, traces, dashboards, alert signals, or failure reasons. |
+| Security / compliance | Stronger permission boundary, safer secret handling, better audit trail. |
+
+Every engineering benefit must be tied to actual work and evidence. If the
+implementation only creates the possibility of a future benefit, report it as a
+next action, not as achieved benefit.
 
 ## Language And Style
 

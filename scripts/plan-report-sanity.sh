@@ -36,6 +36,9 @@ require_file "$manifest"
 
 require_text "$skill_md" "overall, stage, and module completion percentages"
 require_text "$skill_md" "Goal Alignment Matrix"
+require_text "$skill_md" "Engineering Benefit Matrix"
+require_text "$skill_md" "Every main goal must include at least one concrete engineering benefit"
+require_text "$skill_md" "metric, baseline, target, observed result"
 require_text "$skill_md" "Every unfinished item must include a specific reason"
 require_text "$skill_md" "Do not use fuzzy completion language"
 require_text "$skill_md" "references/report-template.md"
@@ -43,8 +46,11 @@ require_text "$skill_md" "references/report-template.md"
 require_text "$template" "## 1. Completion Overview"
 require_text "$template" "## 2. Stage And Module Completion"
 require_text "$template" "## 3. Goal Alignment Matrix"
-require_text "$template" "## 5. Unfinished Work"
-require_text "$template" "## 6. Recommended Next Actions"
+require_text "$template" "## 4. Engineering Benefit Matrix"
+require_text "$template" "## 6. Unfinished Work"
+require_text "$template" "## 7. Recommended Next Actions"
+require_text "$template" "Engineering Benefit Quality Bar"
+require_text "$template" "concrete engineering benefit, not generic value wording"
 require_text "$template" '````markdown'
 require_text "$template" '```mermaid'
 require_text "$template" "基本完成"
@@ -62,8 +68,8 @@ template = Path(manifest_path).parents[1] / "references" / "report-template.md"
 template_text = template.read_text(encoding="utf-8")
 
 release = manifest["release"]
-assert release["version"] == "1.0.0"
-assert release["published_at"] == "2026-06-30T19:48:34+08:00"
+assert release["version"] == "1.0.1"
+assert release["published_at"] == "2026-07-02T16:25:50+08:00"
 assert release["publisher"] == "ceasarXuu"
 assert release["changes"]
 

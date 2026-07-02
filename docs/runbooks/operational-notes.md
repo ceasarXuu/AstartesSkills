@@ -148,4 +148,6 @@
 - 决策：外层示例使用四反引号，内层 Mermaid 保持三反引号；把这个约束写入对应 sanity 脚本，避免后续模板回归。
 - 问题：`git push` 可能返回 GitHub HTTP 401，即使 `gh auth status` 显示当前账号已登录并拥有 `repo` 权限；原因通常是 Git 仍在使用旧的 HTTPS credential helper 凭据。
 - 决策：先用 `git rev-parse HEAD`、`git rev-parse origin/main`、`git ls-remote origin refs/heads/main` 确认远端是否真的更新；若本地仍 ahead 且 `gh` 登录有效，运行 `gh auth setup-git` 后重试 `git push origin main`。
+- 问题：`skill-creator` 的 `quick_validate.py` 和 `package_skill.py` 依赖 `PyYAML`；不同 Python 运行时依赖不一致时，`/opt/homebrew/bin/python3` 或 Codex bundled Python 可能报 `ModuleNotFoundError: No module named 'yaml'`，但 `/usr/bin/python3` 可正常运行。
+- 决策：打包校验失败时先用 `which -a python3 python` 枚举运行时，并逐个执行 `import yaml` 检查；找到可用解释器后显式运行 `/usr/bin/python3 <skill-creator>/scripts/quick_validate.py ...` 和 `/usr/bin/python3 <skill-creator>/scripts/package_skill.py ...`。
 - 复用方式：创建新 skill 后，先跑专项 sanity、`quick_validate.py`、`package_skill.py <skill> /tmp/<package-check>` 和 `./scripts/validate-repo.sh`；打包校验输出放到 `/tmp`，不要把临时 `.skill` 包留在仓库工作区。

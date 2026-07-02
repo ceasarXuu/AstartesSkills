@@ -41,19 +41,25 @@ xychart-beta
 |---|---|---|---|---|---|---|
 | ... | ... | ... | ... | ... | ... | complete / partial / not started / blocked / deferred / removed from scope / not verified |
 
-## 4. Evidence And Verification Matrix
+## 4. Engineering Benefit Matrix
+
+| Main Goal | Engineering Benefit | Benefit Type | Baseline | Target | Observed Result | Verification Evidence | Status |
+|---|---|---|---|---|---|---|---|
+| ... | concrete engineering benefit, not generic value wording | performance / reliability / delivery speed / maintainability / testability / observability / security-compliance | ... | ... | measured value, not verified, or not applicable with reason | command, test, metric, log, review, or artifact | achieved / partial / not verified / not achieved |
+
+## 5. Evidence And Verification Matrix
 
 | Item | Evidence Type | Evidence Location | Verification Performed | Result | Gap |
 |---|---|---|---|---|---|
 | ... | code / test / runtime / doc / review | path, command, log, artifact, or link | ... | passed / failed / not run / blocked | ... |
 
-## 5. Unfinished Work
+## 6. Unfinished Work
 
 | Unfinished Item | Planned Scope | Current State | Reason Not Completed | Evidence For Reason | Impact If Left Unfinished | Required Decision |
 |---|---|---|---|---|---|---|
 | ... | ... | ... | specific, factual reason | ... | ... | finish / defer / remove scope / redesign / blocked by external dependency |
 
-## 6. Recommended Next Actions
+## 7. Recommended Next Actions
 
 | Priority | Action | Rationale | Dependency | Expected Outcome | Verification |
 |---:|---|---|---|---|---|
@@ -97,6 +103,17 @@ Do not use these phrases or close equivalents:
 | 基本完成 | 明确百分比、已完成项、未完成项 |
 | 主线完成 | 明确已验证路径和未验证路径 |
 | 没有大的缺口 | 明确缺口清单，或说明在已检查范围内未发现未完成项 |
+
+## Engineering Benefit Quality Bar
+
+Every main goal needs at least one concrete engineering benefit row.
+
+| Weak Benefit | Acceptable Benefit |
+|---|---|
+| Improved maintainability. | Split report scoring from output formatting; module responsibility is now isolated and future scoring changes touch one file instead of three. |
+| Better performance. | Build time decreased from 8m10s to 5m40s in CI run `<id>`, a 31% reduction against the plan target of 25%. |
+| More reliable. | Added retry reason logging and regression coverage for timeout failures; verification command `<command>` now fails on missing reason fields. |
+| Easier to operate. | Release rollback now has a documented command and smoke check; operator manual steps decreased from 7 to 3. |
 
 ## Unfinished Reason Quality Bar
 
