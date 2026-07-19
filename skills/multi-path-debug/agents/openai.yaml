@@ -1,4 +1,0 @@
-version: 1
-display_name: Multi-Path Debug
-short_description: Confirm bug root causes through targeted intake, independent research paths, evidence-weighted synthesis, and user confirmation before repair.
-default_prompt: Help me debug this bug using the multi-path-debug workflow. First do light orientation and clarify only the highest-value missing context. Discover optional external agent paths, but ask my approval before invoking any external agent. Run independent root-cause research paths, synthesize by evidence quality rather than agent agreement, and stop before repair. If confidence is low, ask to continue investigation instead of asking to fix; only ask me to confirm repair after the root cause is evidence-backed.

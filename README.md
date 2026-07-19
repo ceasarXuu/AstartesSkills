@@ -38,14 +38,14 @@ npx skills add https://github.com/ceasarXuu/AstartesSkills --list
 Install one skill from this repository:
 
 ```bash
-npx skills add https://github.com/ceasarXuu/AstartesSkills --skill astartes-coding-custodes
+npx skills add https://github.com/ceasarXuu/AstartesSkills --skill bug-killer
 ```
 
 Install for a specific agent:
 
 ```bash
 npx skills add https://github.com/ceasarXuu/AstartesSkills \
-  --skill astartes-coding-custodes \
+  --skill bug-killer \
   --agent codex
 ```
 
@@ -53,7 +53,7 @@ Install globally without prompts:
 
 ```bash
 npx skills add https://github.com/ceasarXuu/AstartesSkills \
-  --skill astartes-coding-custodes \
+  --skill bug-killer \
   --agent codex \
   --global \
   --yes
@@ -70,20 +70,20 @@ npx skills add https://github.com/ceasarXuu/AstartesSkills
 Clone locally, then install by copying the skill folder:
 
 ```bash
-./scripts/install-skill.sh astartes-coding-custodes
+./scripts/install-skill.sh bug-killer
 ```
 
 Install to a custom destination:
 
 ```bash
-./scripts/install-skill.sh --target ~/.codex/skills astartes-coding-custodes
+./scripts/install-skill.sh --target ~/.codex/skills bug-killer
 ```
 
 Install directly from GitHub without cloning first:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ceasarXuu/AstartesSkills/main/scripts/install-skill.sh \
-  | bash -s -- --repo https://github.com/ceasarXuu/AstartesSkills.git astartes-coding-custodes
+  | bash -s -- --repo https://github.com/ceasarXuu/AstartesSkills.git bug-killer
 ```
 
 ## skills.sh Compatibility
@@ -100,7 +100,7 @@ Verified repository commands:
 
 ```bash
 npx skills add https://github.com/ceasarXuu/AstartesSkills --list
-npx skills add https://github.com/ceasarXuu/AstartesSkills --skill astartes-coding-custodes
+npx skills add https://github.com/ceasarXuu/AstartesSkills --skill bug-killer
 ```
 
 Reference:
@@ -113,13 +113,10 @@ Reference:
 
 | Skill | Purpose | Install |
 | --- | --- | --- |
-| `astartes-coding-custodes` | Prevent iterative quality decay during AI-assisted coding by enforcing analysis, minimal change planning, strict review, and entropy control. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill astartes-coding-custodes` |
 | `bug-killer` | Debug medium and large bugs with `/coe` case tracking, independent research paths, and a diagnostic evidence gate before repair design. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill bug-killer` |
 | `clear-prd` | Clarify product requirements through guided multi-round questions focused on product logic, user experience, interaction design, rules, edge cases, and acceptance criteria, then write a Draft or Ready PRD. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill clear-prd` |
-| `coe-debug` | Track complex debug cases in project-root `/coe` files with strict problem, hypothesis, and evidence nodes. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill coe-debug` |
 | `docs-manager` | Design, reorganize, audit, and maintain repository documentation systems with versioned PRDs, technical designs, engineering plans, link management, archive policy, and validation tooling. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill docs-manager` |
 | `frontend-refactoring` | Refactor legacy frontend surfaces by isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill frontend-refactoring` |
-| `multi-path-debug` | Confirm bug root causes before repair through targeted intake, independent research paths, evidence-weighted synthesis, and user confirmation before fixes. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill multi-path-debug` |
 | `se-good-plan` | Write and review phased, executable, independently verifiable, reviewable, rollback-aware software engineering plans with strict phase gates, plan-to-code completeness, benefit validation, and chain-state logging evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill se-good-plan` |
 | `show-my-repo` | Turn a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill show-my-repo` |
 | `storybook-skills-standard` | Design and audit Storybook-driven component workflows, story coverage, mocks, docs, interaction tests, accessibility checks, and visual baselines. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill storybook-skills-standard` |
@@ -144,11 +141,9 @@ Reference:
 .
 ├── skills/                         # Standalone skills
 │   ├── _templates/                 # Reusable skill templates
-│   ├── astartes-coding-custodes/   # AI coding governance skill
 │   ├── clear-prd/                  # Product-first PRD clarification skill
 │   ├── docs-manager/               # Versioned documentation governance skill
 │   ├── frontend-refactoring/       # Legacy frontend migration skill
-│   ├── multi-path-debug/           # Root-cause-first multi-path debug skill
 │   ├── se-good-plan/               # Software engineering plan writing and review skill
 │   ├── show-my-repo/               # Repo packaging and presentation skill
 │   ├── storybook-skills-standard/  # Storybook component workflow governance skill
@@ -258,15 +253,13 @@ Checks currently include:
 ./scripts/test-repo.sh
 ./scripts/test-repo.sh bug-killer
 ./scripts/test-repo.sh clear-prd
-./scripts/test-repo.sh multi-path-debug
 ./scripts/test-repo.sh se-good-plan
 ```
 
-Without arguments, this verifies the default `astartes-coding-custodes` package.
+Without arguments, this verifies the default `bug-killer` package.
 With a skill id, it verifies that package and runs any skill-specific checks.
 For example, `bug-killer` runs its heavy-debug activation and evidence-gate
 contract sanity check, `clear-prd` runs its clarification-contract sanity check,
-and `multi-path-debug` runs its root-cause-before-repair contract sanity check.
 `se-good-plan` runs its engineering-plan contract sanity check.
 That check covers the checked-in source contract, trigger coverage, Standard and
 Full plan section inventories, metadata/status and dependency templates,
@@ -315,7 +308,7 @@ Implemented:
 - GitHub direct-install script
 - registry and export scaffolding
 - `skills.sh`-compatible repository layout
-- first real skill: `astartes-coding-custodes`
+- maintained installable skills with registry and marketplace metadata
 
 Planned next:
 

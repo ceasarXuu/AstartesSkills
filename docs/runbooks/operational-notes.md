@@ -151,3 +151,10 @@
 - 问题：`skill-creator` 的 `quick_validate.py` 和 `package_skill.py` 依赖 `PyYAML`；不同 Python 运行时依赖不一致时，`/opt/homebrew/bin/python3` 或 Codex bundled Python 可能报 `ModuleNotFoundError: No module named 'yaml'`，但 `/usr/bin/python3` 可正常运行。
 - 决策：打包校验失败时先用 `which -a python3 python` 枚举运行时，并逐个执行 `import yaml` 检查；找到可用解释器后显式运行 `/usr/bin/python3 <skill-creator>/scripts/quick_validate.py ...` 和 `/usr/bin/python3 <skill-creator>/scripts/package_skill.py ...`。
 - 复用方式：创建新 skill 后，先跑专项 sanity、`quick_validate.py`、`package_skill.py <skill> /tmp/<package-check>` 和 `./scripts/validate-repo.sh`；打包校验输出放到 `/tmp`，不要把临时 `.skill` 包留在仓库工作区。
+
+## 2026-07-19 下线不再维护的 Skill
+
+- 问题：仅删除 `skills/<id>/` 会遗留注册表、README 安装示例、默认冒烟目标和专项 sanity 接线，使用户仍看到不可安装的 skill，或导致 CI 因缺失脚本失败。
+- 决策：下线时同步移除 skill 包、`registry/skills.json` 条目、README 当前展示与安装入口、专项 sanity 脚本及其调用；历史计划、审查报告和构想文档保留，继续承担决策追溯作用。
+- 验证：运行 `./scripts/validate-repo.sh`，确认注册 skills 数与发现目录数一致；再运行默认冒烟和仍维护的专项回归测试。
+- 复用方式：若默认冒烟目标被下线，必须在同一次变更中切换到仍维护且具有代表性的 skill，避免无参数测试立即失效。

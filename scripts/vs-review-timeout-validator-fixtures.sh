@@ -28,7 +28,7 @@ write_minimal_repo() {
   chmod +x "$fixture_dir/scripts/validate-repo.sh"
   chmod +x "$fixture_dir/scripts/validate-skill-registry-coverage.py"
 
-  for sanity_script in bug-killer-sanity.sh clear-prd-sanity.sh multi-path-debug-sanity.sh se-good-plan-sanity.sh; do
+  for sanity_script in bug-killer-sanity.sh clear-prd-sanity.sh plan-report-sanity.sh se-good-plan-sanity.sh; do
     printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' 'exit 0' > "$fixture_dir/scripts/$sanity_script"
     chmod +x "$fixture_dir/scripts/$sanity_script"
   done

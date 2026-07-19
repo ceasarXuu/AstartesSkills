@@ -3,7 +3,7 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-skill_id="${1:-astartes-coding-custodes}"
+skill_id="${1:-bug-killer}"
 skill_dir="$repo_root/skills/$skill_id"
 registry_file="$repo_root/registry/skills.json"
 manifest_file="$skill_dir/markets/openai-compatible.json"
@@ -46,11 +46,6 @@ fi
 if [[ "$skill_id" == "clear-prd" ]]; then
   log "checking clear-prd clarification contract"
   "$repo_root/scripts/clear-prd-sanity.sh"
-fi
-
-if [[ "$skill_id" == "multi-path-debug" ]]; then
-  log "checking multi-path-debug root-cause contract"
-  "$repo_root/scripts/multi-path-debug-sanity.sh"
 fi
 
 if [[ "$skill_id" == "bug-killer" ]]; then

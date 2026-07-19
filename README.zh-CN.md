@@ -21,13 +21,10 @@
 
 当前可安装示例包括：
 
-- `astartes-coding-custodes`：面向编码治理与执行规范的 skill
 - `bug-killer`：面向中大型 bug 的重型统一 debug 方法论，融合 `/coe` 案件账本、多路径独立调查和修复设计前的诊断证据门禁；小 bug 默认不启用
 - `clear-prd`：面向产品需求澄清的 skill，通过多轮产品逻辑、用户体验、交互、规则与验收问题形成 Draft 或 Ready PRD
-- `coe-debug`：面向复杂排障的 evidence-first skill，把 Problem / Hypothesis / Evidence 持续写入项目根目录 `/coe` 案件文件
 - `docs-manager`：面向仓库文档治理的 skill，维护版本化 PRD、技术设计、工程计划、链接索引、归档策略和验证脚本
 - `frontend-refactoring`：面向老前端重构的 skill，核心是隔离新 UI、重做视图层并安全切流
-- `multi-path-debug`：面向 bug 根因确认的 skill，通过轻量追问、多路径独立研究、证据加权汇总和用户确认，把根因确认与修复实施拆开
 - `se-good-plan`：面向软件工程计划写作与审查的 skill，生成分阶段、可执行、可独立验证、可审查、可回滚，并带严格 phase 门禁、plan-to-code 完整性证据、收益验收和链路关键状态日志证据的软件工程计划
 - `show-my-repo`：把 repo 提炼成面向投资人、用户、路演和落地页的展示包
 - `storybook-skills-standard`：面向 Storybook 组件驱动开发、story 覆盖、mock、文档、交互测试、可访问性与视觉基线治理的 skill
@@ -59,7 +56,7 @@ npx skills add https://github.com/ceasarXuu/AstartesSkills
 一次安装多个 skills：
 
 ```bash
-./scripts/install-skill.sh summary-my-repo astartes-coding-custodes
+./scripts/install-skill.sh summary-my-repo bug-killer
 ```
 
 安装到自定义目录：
