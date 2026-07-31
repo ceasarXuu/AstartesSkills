@@ -65,9 +65,11 @@ The goal is to:
 1. establish a measurable baseline;
 2. identify where time and evidence are misaligned;
 3. locate the blocking critical path;
-4. propose or implement the smallest reliable improvements;
-5. verify both speed and evidence coverage;
-6. install guardrails that prevent regression.
+4. classify findings with the P0-P5 priority ladder;
+5. select one Next Best Intervention;
+6. implement the smallest reliable improvement;
+7. verify both speed and evidence coverage;
+8. install a proportional guardrail that prevents regression.
 
 ### Guard / Prevention
 
@@ -105,6 +107,160 @@ The main diagnostic signal is mismatch between these graphs. Examples:
 - duplicated tests that produce the same evidence at multiple layers;
 - non-blocking release or compliance work placed on the PR critical path;
 - a large Change Graph caused by unnecessary architectural coupling.
+
+## Governance Priority Model
+
+A large audit must not return an unranked backlog and call the work complete.
+Use four decision layers in order:
+
+```text
+hard priority class
+  -> governance stage
+  -> same-tier opportunity value
+  -> one measurable Next Best Intervention
+```
+
+### Hard Priority Ladder
+
+Assign every material finding exactly one priority class before comparing
+benefit or effort.
+
+| Priority | Name | Meaning | Default action |
+| --- | --- | --- | --- |
+| P0 | Restore trust or availability | Results may be wrong, validation may silently miss risk, or the loop cannot complete reliably | Fix immediately before ordinary speed work |
+| P1 | Remove blocking no-evidence work | Work blocks the next decision but produces no distinct engineering evidence | Remove, reuse, parallelize, or move it off the critical path first |
+| P2 | Reduce validation amplification | Actual build or validation scope is materially larger than the minimum sufficient scope | Introduce safe affected-scope selection and explicit escalation |
+| P3 | Improve reuse and incrementality | Necessary work is repeatedly recomputed because cache, artifact, daemon, or environment reuse is poor | Improve reuse only after confirming the work is necessary |
+| P4 | Redesign test and gate architecture | Test layers, gate roles, ownership, or trigger policy are structurally duplicated or misplaced | Redesign with explicit evidence ownership and rollout controls |
+| P5 | Restore architectural locality | Module, service, fixture, generation, or dependency structure makes local validation impossible | Use incremental structural change after tactical options are exhausted |
+
+Examples of P0 include:
+
+- cache reuse can return stale or incompatible outputs;
+- affected-test selection can silently omit high-risk changes;
+- required checks are so flaky that pass or fail results are not trustworthy;
+- local and CI results are systematically inconsistent;
+- incremental builds are unreliable, forcing repeated clean builds;
+- the feedback path deadlocks, hangs, or cannot complete;
+- failures cannot be reproduced well enough to restore confidence.
+
+Priority rules:
+
+1. P0 outranks every speed opportunity, even when its direct time cost is small.
+2. A high-value P3 or P4 item cannot outrank an unresolved P0.
+3. When benefits are comparable, P1 outranks P2, P2 outranks P3, and so on.
+4. A lower-priority item may be selected first only when it is a documented
+   prerequisite for the higher-priority fix or materially reduces the risk of
+   that fix.
+5. Record the reason whenever the selected intervention does not follow the
+   normal ladder.
+
+### Governance Sequence
+
+Use this default stage order:
+
+```text
+stabilize trust and availability
+  -> remove blocking waste
+  -> reduce execution and validation scope
+  -> improve reuse, incrementality, and parallelism
+  -> redesign test and gate responsibilities
+  -> restore architectural locality
+  -> retain only the guardrails proven useful
+```
+
+A stage may be skipped when evidence shows that no relevant finding exists. Do
+not begin with a build-system replacement, remote execution platform, or large
+module split merely because those changes appear comprehensive.
+
+### Same-Tier Opportunity Value
+
+Use opportunity value only after hard priority classification.
+
+```text
+opportunity value increases with:
+  critical-path time saved
+  x frequency
+  x affected developers, Agents, PRs, or platforms
+  x diagnostic confidence
+  x durability of the benefit
+
+opportunity value decreases with:
+  implementation and verification effort
+  x correctness or cache-poisoning risk
+  x maintenance burden
+  x rollback difficulty
+```
+
+Use measured values when available. Otherwise use explicit qualitative ratings
+such as high, medium, and low. Do not manufacture precise scores from weak data.
+
+An enabling intervention may outrank a larger isolated saving when it safely
+unlocks several P1 or P2 improvements. State the unlocked work and the evidence
+for that dependency.
+
+### Next Best Intervention
+
+Every Audit / Recovery output must select exactly one **Next Best Intervention**.
+Do not stop at a ranked list.
+
+Use this contract:
+
+| Field | Required content |
+| --- | --- |
+| Finding | The specific problem to address now |
+| Priority class | P0-P5 |
+| Why first | Why it outranks the other findings |
+| Expected critical-path benefit | Per-run and recurring benefit when estimable |
+| Scope | Files, jobs, tests, environments, or Agents affected |
+| Effort | Low / medium / high with rationale |
+| Correctness risk | Low / medium / high with failure mode |
+| Evidence preserved or moved | What confidence remains and where deferred evidence runs |
+| Rollback | How to disable or revert the intervention |
+| Validation | Before/after and invalidation or escalation tests |
+| Follow-up gate | What result determines the next intervention |
+
+If evidence is too weak to choose an implementation change, the Next Best
+Intervention must be a bounded measurement or experiment, not a generic request
+to gather more data.
+
+### Governance Work-In-Progress Limit
+
+Except during a P0 incident, default to:
+
+```text
+one primary governance intervention
++
+one directly associated regression guardrail
+```
+
+Do not simultaneously change cache semantics, test selection, CI gate policy,
+and module architecture unless the changes are independently attributable and
+independently reversible.
+
+P0 work may be parallelized when separate failures require immediate
+containment. Record ownership and avoid conflicting changes to the same evidence
+path.
+
+### Stop Conditions
+
+Stop or pause the current governance cycle when one or more of these are true:
+
+- the target Time to Trusted Feedback is inside the agreed project budget;
+- remaining findings do not materially affect a blocking decision;
+- the expected benefit is smaller than implementation, validation, or ongoing
+  maintenance cost;
+- remaining issues are rare and have low population impact;
+- further progress requires a high-risk structural change without a justified
+  business or engineering case;
+- measurement variance is similar to or greater than the expected improvement;
+- the dominant delay is an external dependency that this project cannot
+  reasonably control;
+- the selected intervention failed its benefit or safety gate and requires a
+  new diagnosis.
+
+Do not optimize every slow step. Optimize the work that repeatedly blocks an
+important decision and whose benefit exceeds its governance cost.
 
 ## Non-Negotiable Principles
 
@@ -258,23 +414,20 @@ Separate tactical causes from structural causes.
   non-isolated services, code generation bound to every compile, or module
   boundaries that cannot support local validation.
 
-### Step 6: Prioritize interventions
+### Step 6: Prioritize and choose the intervention
 
-Rank findings by:
+1. Assign P0-P5 to every material finding.
+2. Resolve P0 before ordinary speed work.
+3. Place the remaining findings in the governance sequence.
+4. Compare only same-tier findings using opportunity value.
+5. Select exactly one Next Best Intervention.
+6. Record why other high-ranked findings are not first.
+7. Apply the governance WIP limit and define the follow-up gate.
 
-- critical-path time saved;
-- frequency;
-- confidence in the diagnosis;
-- implementation effort;
-- correctness and cache-poisoning risk;
-- rollback ease;
-- expected maintenance burden.
-
-Prefer low-risk removal of no-evidence waiting before deep architecture changes.
 Do not recommend a new build system, remote execution platform, or large module
 split unless simpler interventions cannot address the measured bottleneck.
 
-### Step 7: Implement the smallest effective change
+### Step 7: Implement the Next Best Intervention
 
 Examples include:
 
@@ -289,8 +442,8 @@ Examples include:
 - make tests hermetic enough to parallelize;
 - stop coding Agents from rebuilding identical states across subagents.
 
-Make one measurable intervention at a time when practical so attribution remains
-clear.
+Prefer one measurable intervention at a time so benefit and failure attribution
+remain clear.
 
 ### Step 8: Verify the result
 
@@ -307,9 +460,16 @@ A successful optimization must verify:
 If the optimized path skips work, deliberately test at least one case that must
 invalidate the cache or escalate validation.
 
-### Step 9: Install guardrails
+Use the follow-up gate to decide whether to:
 
-Convert the successful optimization into a durable project constraint:
+- retain and guard the change;
+- revise or roll back the change;
+- select the next intervention;
+- stop the governance cycle.
+
+### Step 9: Install one proportional guardrail
+
+Convert the successful optimization into a durable project constraint, such as:
 
 - latency budget;
 - changed-scope or affected-test policy;
@@ -320,6 +480,9 @@ Convert the successful optimization into a durable project constraint:
 - CI critical-path monitoring;
 - Agent command-reuse rule;
 - periodic full-validation schedule where needed.
+
+Do not create a separate large governance program when a narrow regression check
+or ownership rule is sufficient.
 
 ## Guard / Prevention Workflow
 
@@ -349,6 +512,11 @@ Continuously challenge changes that:
 - duplicate setup across CI jobs or subagents;
 - serialize independent work;
 - hide test or cache selection behind heuristics with no safe fallback.
+
+When multiple regressions are found, fix any P0 introduced by the current change
+first. Otherwise block only the highest-priority regression needed to keep the
+current change from degrading the loop; record lower-priority legacy debt rather
+than expanding the task without limit.
 
 ### After implementation
 
@@ -391,6 +559,7 @@ universal thresholds.
 | No-Evidence Wait Share | Blocking time spent on work that adds no new validation evidence |
 | Cache Value | Avoided computation time minus lookup, transfer, storage, and invalidation cost |
 | Retry-Adjusted Feedback Cost | Initial duration plus expected retry and failure-localization cost |
+| Governance Payback | Recurring critical-path benefit divided by implementation and maintenance cost |
 
 Do not optimize cache hit rate, job count, or total CPU minutes in isolation.
 
@@ -398,18 +567,22 @@ Do not optimize cache hit rate, job count, or total CPU minutes in isolation.
 
 ### Audit output
 
-Lead with findings, ordered by impact. Include:
+Lead with findings, ordered by the P0-P5 ladder and then opportunity value.
+Include:
 
 1. audit scope and evidence quality;
 2. baseline and critical path;
-3. findings with root cause and supporting evidence;
-4. prioritized interventions;
-5. expected benefit, risk, and rollback for each intervention;
-6. implemented changes when requested;
-7. before-and-after validation;
-8. residual risks and recommended guardrails.
+3. findings with priority class, root cause, and supporting evidence;
+4. governance stage and same-tier ranking;
+5. exactly one Next Best Intervention;
+6. expected benefit, risk, rollback, and validation for that intervention;
+7. deferred findings and why they are not first;
+8. implemented changes when requested;
+9. before-and-after validation;
+10. follow-up gate, stop decision, residual risks, and recommended guardrail.
 
 Distinguish measured facts, repository-derived facts, hypotheses, and estimates.
+Do not return only a problem inventory or an unranked recommendation list.
 
 ### Guard output
 
@@ -417,9 +590,11 @@ Keep the response proportional. Include:
 
 - selected validation scope;
 - feedback-loop risks introduced by the change;
+- highest-priority regression addressed or prevented;
 - constraints applied during implementation;
 - escalation decisions;
 - any budget, cache, gate, or architecture regression found;
+- deferred legacy debt that was intentionally kept out of scope;
 - final validation evidence.
 
 Do not generate a long governance report for a routine change unless a material
@@ -429,18 +604,23 @@ risk or regression is found.
 
 Reject or challenge these patterns unless evidence justifies them:
 
-- "Run everything because it is safer."
-- "Clear all caches and reinstall dependencies first."
-- "The patch is small, so it is low risk."
-- "The cache hit rate increased, so the optimization worked."
-- "Move every slow test to nightly."
-- "Allow the slow or flaky gate to fail without fixing its evidence role."
-- "Buy larger runners before removing unnecessary work."
-- "Split every CI step into a separate job" when setup duplication dominates.
+- returning a long unranked backlog without choosing what to do first;
+- using a single score that allows a P3 optimization to outrank a P0 trust issue;
+- launching cache, gate, test-selection, and architecture changes together;
+- continuing governance after the feedback budget is met and marginal value is
+  lower than governance cost;
+- "Run everything because it is safer.";
+- "Clear all caches and reinstall dependencies first.";
+- "The patch is small, so it is low risk.";
+- "The cache hit rate increased, so the optimization worked.";
+- "Move every slow test to nightly.";
+- "Allow the slow or flaky gate to fail without fixing its evidence role.";
+- "Buy larger runners before removing unnecessary work.";
+- "Split every CI step into a separate job" when setup duplication dominates;
 - "Put every check on the PR path" because ownership and trigger policy are
-  undefined.
+  undefined;
 - "Replace the build system" before proving the current system is the root
-  cause.
+  cause;
 - coding Agents repeatedly running identical commands without new inputs.
 
 ## Completion Checklist
@@ -450,6 +630,13 @@ Before claiming the task complete, verify:
 - [ ] The optimized decision boundary is explicit.
 - [ ] The critical path is identified or the lack of runtime evidence is stated.
 - [ ] Findings distinguish tactical waste from structural coupling.
+- [ ] Every material finding has a P0-P5 priority class.
+- [ ] P0 trust or availability issues are resolved or explicitly blocking.
+- [ ] Same-tier ranking uses evidence rather than invented precision.
+- [ ] Exactly one Next Best Intervention is selected.
+- [ ] The reason it outranks other findings is explicit.
+- [ ] Governance WIP is limited unless a P0 incident justifies parallel work.
+- [ ] A follow-up gate and stop condition are defined.
 - [ ] Validation scope is based on risk and dependency impact, not patch size.
 - [ ] Incremental state is preserved unless invalidation is justified.
 - [ ] Cache changes include correctness and invalidation evidence.
@@ -458,11 +645,12 @@ Before claiming the task complete, verify:
 - [ ] Warm and cold conditions are not compared dishonestly.
 - [ ] Agent and subagent duplication is considered when relevant.
 - [ ] Results are measured where execution is available.
-- [ ] Successful changes are converted into guardrails or budgets.
+- [ ] A successful intervention has one proportional guardrail.
 
 ## References
 
-- `references/audit-playbook.md`: detailed audit evidence checklist, finding
-  taxonomy, prioritization model, and report template.
+- `references/audit-playbook.md`: detailed audit evidence checklist, P0-P5
+  priority ladder, governance sequencing, Next Best Intervention contract,
+  prioritization model, WIP limits, stop conditions, and report template.
 - `references/guardrails.md`: daily engineering constraints for builds, tests,
   CI, caches, environments, architecture, and coding Agents.
