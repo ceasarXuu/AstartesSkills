@@ -1,212 +1,174 @@
 # SE Good Plan Source Contract
 
-This normalized contract is derived from the attached design document:
-`Software Engineering Plan Writing Skill Design`, created 2026-06-04, v0.1.
-
-The sanity script uses this file as checked-in traceability for requirements
-that must not disappear from the installable skill package.
+This file defines the behavior that must remain stable across future edits to
+`se-good-plan`.
 
 ## Trigger Contract
 
-The skill must trigger for:
-
-- software engineering plan
-- implementation plan
-- refactor plan
-- migration plan
-- rollout plan
-- bug-fix plan
-- performance optimization plan
-- security change plan
-- DevOps / CI/CD plan
-- technical execution plan
-- review of an existing engineering plan
+The skill must trigger for software engineering implementation, refactor,
+migration, rollout, bug-fix, performance, security, DevOps / CI/CD, release,
+technical execution, plan decomposition, and existing-plan review requests.
 
 ## Context Honesty Contract
 
-The skill must not invent:
+The skill must not invent architecture, services, databases, traffic, data
+scale, business rules, schedules, staffing, deadlines, release dates, or
+maintenance windows. Missing information must be represented as an assumption,
+open question, or concrete Discovery work unit.
 
-- codebase architecture
-- databases or services
-- business rules
-- traffic or data scale
-- schedules
-- staffing
-- resource commitments
-- deadlines
-- launch dates
-- maintenance windows
+## Executable Specificity Contract
 
-Missing context must be represented as assumptions, open questions, or
-`Phase 0: Discovery`.
+An implementation plan must identify for every code-bearing work unit:
 
-## Plan Depth Contract
+- a concrete change location
+- a named target object
+- one explicit engineering action
+- the resulting behavior or invariant
+- exact verification evidence
 
-The skill must support:
+Abstract statements such as "refactor the module", "add an abstraction",
+"optimize caching", "improve error handling", or "complete integration" do not
+satisfy this contract by themselves.
 
-| Complexity | Plan depth | Typical phase count |
-| --- | --- | ---: |
-| Low | Lightweight | 2-3 |
-| Medium | Standard | 4-5 |
-| High | Full | 6-8 |
-| Critical | Full with stronger review gates | 7-10 |
+If the location or target object is unknown, the plan must use
+`blocked-on-discovery` and define the inspection location, command or method,
+expected evidence, and decision that evidence unlocks.
 
-## Standard Plan Required Sections
+## Smallest Closed-Loop Engineering Unit Contract
 
-1. Metadata
-2. Background
-3. Problem Definition
-4. Goals
-5. Non-goals
-6. Constraints And Assumptions
-7. Current State
-8. Plan Summary
-9. Overall Technical Design
-10. Phased Execution Plan
-11. Implementation Completeness Matrix
-12. Risks, Dependencies, And Mitigations
-13. Testing And Validation Strategy
-14. Release, Rollback, And Fallback Strategy
-15. Observability And Success Metrics
-16. Open Questions
-17. Change Log
-18. Plan Quality Checklist
+Plans must decompose work into the smallest coherent units that are
+independently executable, inspectable, auditable, verifiable, and reversible or
+safely stoppable.
 
-## Full Plan Required Additions
+Each work unit must have:
 
-- Complexity And Risk Assessment
-- Alternatives And Tradeoffs
-- Phase Gate Overview
-- Data Migration Strategy
-- API / Compatibility Strategy
-- Security And Permission Review
-- Post-release Verification And Cleanup
-- Decision Log
+- one primary objective or invariant
+- one primary change axis
+- one primary engineering action
+- a bounded change surface
+- explicit dependencies
+- independent verification
+- an independent rollback, disable, or safe-stop boundary
 
-## Metadata Contract
+A unit must be split when it combines independent API, data, internal
+implementation, cache, client, deployment, observability, security, or cleanup
+changes. A phase may sequence multiple units, but it cannot hide their
+individual actions, evidence, status, or rollback boundaries.
+
+## Plan And Execution State Contract
+
+`Plan Authoring` is the default mode.
+
+Allowed planning statuses:
+
+- `planned`
+- `blocked-on-discovery`
+- `deferred`
+
+A plan draft must not claim `complete`, `landed`, `verified`, `proceed`, or any
+other execution result without actual evidence supplied by the user or verified
+through tools.
+
+`Execution Tracking` may use:
+
+- `not-started`
+- `in-progress`
+- `verified`
+- `blocked`
+- `failed`
+- `rolled-back`
+
+Proceed or pause decisions belong to Execution Tracking.
+
+## Artifact And Code Status Contract
+
+Discovery and design artifacts use:
+
+- `planned`
+- `drafted`
+- `reviewed`
+- `verified`
+
+Code-bearing implementation uses:
+
+- `planned`
+- `implemented`
+- `integrated`
+- `runtime-verified`
+
+Discovery inventories, design documents, decision records, and review artifacts
+must not use production-code states. Protocols, schemas, scaffolds, mocks, fake
+data, demos, and test-only wiring do not prove a production implementation is
+integrated or runtime-verified.
+
+## Proportional Output Contract
+
+The skill must prefer the smallest document shape that preserves clarity.
+
+- Lightweight: problem, target, 1-3 work units, verification, and rollback.
+- Standard: concise context, technical approach, phased work units,
+  verification, and relevant release or risk sections.
+- Full: Standard plus only the data, compatibility, security, release,
+  observability, alternatives, or decision sections required by the risk.
+
+The skill must not require a fixed 18-section document or a large repeated
+subsection template for every phase. Optional sections are included only when
+they affect execution, validation, safety, or a decision.
+
+## Work Unit Contract
+
+The primary implementation representation is:
 
 ```markdown
-- Created:
-- Updated:
-- Version:
-- Status: Draft | Reviewing | Approved | In Progress | Blocked | Completed | Deprecated
-- Owner / Responsible:
-- Related Systems:
-- Related Links:
-- Risk Level:
-- Plan Type: Lightweight | Standard | Full
+| ID | Objective | Change Axis | Change Location | Target Object | Concrete Action | Resulting Behavior | Verification | Safe Stop / Rollback | Plan Status |
+|---|---|---|---|---|---|---|---|---|---|
 ```
 
-## Dependency Contract
-
-```markdown
-| Dependency | Type | Current Status | Blocking Risk | Handling Plan |
-|---|---|---|---|---|
-| ... | system / person / data / environment / third-party | Ready / Pending / Unknown | ... | ... |
-```
-
-## Implementation Completeness Contract
-
-Plans that expect code changes must trace each planned item to production code,
-an integration entry, test evidence, runtime or log evidence, mock or stub
-exposure, and status.
-
-`landed` is the only complete status. `planned`, `partial`, `stub-only`, and
-`mock-only` cannot satisfy an exit gate unless the user explicitly accepts the
-remaining risk and the follow-up location is recorded.
-
-## Benefit Validation Contract
-
-Plans must state expected benefits, not only implementation deliverables.
-
-Acceptance must include:
-
-- correctness validation: tests that prove the change works without regressions,
-  data loss, compatibility failures, or security failures
-- benefit validation: tests or measurements that prove the target outcome
-  improved, such as speed, accuracy, reliability, cost, conversion, or
-  operational-toil improvement
-
-Benefit validation must state metric, baseline, target, measurement method, data
-source, observation window, and pass/fail threshold when relevant. Unknown
-baselines or targets must be marked `Unknown` and discovered early; they must not
-be invented.
-
-## Logging Design Contract
-
-Plans that change runtime behavior, release flow, data movement, jobs, APIs,
-user workflows, or operator procedures must include a logging design for the
-affected change chain.
-
-The logging design must state:
-
-- change links covered from trigger to side effect
-- key states emitted by each link
-- success signals for each important state transition
-- failure signals for each important state transition
-- structured failure reason fields such as `error_code`, `reason`,
-  `exception`, or `validation_error`
-- correlation or trace fields such as `request_id`, `job_id`, `trace_id`,
-  `release_id`, `batch_id`, or `entity_id`
-- log levels and consumers for rollout, debugging, audit, support, dashboards,
-  alerts, or runbooks
-
-Validation must prove the planned logs, traces, metrics, or audit events can
-show whether the change succeeded, failed, became ambiguous, and why.
-
-If a state cannot be logged safely, the plan must explain the privacy, security,
-cost, or cardinality reason and define an alternate metric, trace, or audit
-event.
+A valid row has one primary change axis and one primary action. Dependencies set
+order but do not justify coupling unrelated changes into one row.
 
 ## Phase Contract
 
-Every Standard or Full phase must be independently verifiable. A phase gate
-cannot rely on implementation, rollout, metrics, cleanup, or review evidence
-that only appears in a later phase.
+Phases are optional sequencing and risk-isolation containers. A phase must name
+its entry condition, included work units, phase-local evidence, and the
+condition for starting the next phase.
 
-Each phase gate must state:
+In Plan Authoring mode these are future requirements, not completed evidence or
+a proceed decision. If one phase can be verified only by a later phase, the
+boundary must be changed or the work units must be split.
 
-- evidence available before the next phase starts
-- whether the phase is 100% complete
-- whether any dependency is inverted or future-dependent
-- whether residual risk exists
-- whether the user explicitly approved proceeding with residual risk
-- the final decision: `proceed` or `pause`
+## Engineering Safety Contract
 
-If a phase is incomplete, blocked, ambiguous, or depends on future evidence,
-the plan must pause unless the user explicitly approves proceeding and the
-residual risk is recorded.
+Production-impacting work includes release, rollback or fallback,
+observability, and post-release validation.
 
-Every Standard or Full phase must include:
+Data changes include idempotency, retry or resume behavior, validation, and
+rollback or compensation.
 
-1. Objective
-2. Entry Criteria
-3. Entry Criteria Checks
-4. Design Approach
-5. Implementation Tasks
-6. Deliverables
-7. Implementation Completeness Evidence
-8. Logging And Observability Design
-9. Testing And Validation
-10. Exit Criteria
-11. Review Plan
-12. Risks And Fallback
-13. Gate To Next Phase
-
-## High-Risk Contract
-
-Production-impacting work must include release, rollback, fallback or
-degradation, observability, logging design, and post-release validation.
-
-Data changes must include migration, idempotency, retry or resume behavior,
-validation, and rollback or compensation.
-
-Security-sensitive work must include permission boundaries, sensitive-data
+Security-sensitive work includes permission boundaries, sensitive-data
 handling, abuse cases, audit logging, and security review.
+
+Plans state expected benefits and include correctness and benefit validation
+where relevant. Runtime-changing work makes important success, failure, and
+failure-reason states observable.
 
 ## Existing Plan Review Contract
 
-When reviewing an existing plan, the skill must lead with findings and check
-for missing problem definition, measurable goals, non-goals, phase gates,
-rollback, observability, data safeguards, security review, and unsupported
-project facts.
+Review mode must lead with findings and check for vague actions, missing change
+locations or objects, oversized work units, coupled change axes, hidden work
+inside broad phases, mixed planning and execution states, mixed artifact and
+code statuses, template bloat, missing verification, missing rollback, and
+unsupported project facts.
+
+## Behavioral Validation Contract
+
+Repository tests must validate representative plan outputs, not only the
+presence of contract keywords. The quality validator must reject at least:
+
+- vague actions without concrete engineering mechanics
+- multiple primary change axes or actions in one unit
+- execution-complete states in a Plan Authoring document
+- production-code states applied to discovery or design artifacts
+
+It must also accept a concise plan composed of concrete, single-axis,
+independently verifiable work units.
