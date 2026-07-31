@@ -62,6 +62,7 @@ Read [references/provider-package-contract.md](references/provider-package-contr
 ## Bundled Combination
 
 - `codex-deepseek-flash`: read [references/codex-deepseek-flash.md](references/codex-deepseek-flash.md), then use `scripts/install_codex_deepseek.py`.
+- `claude-code-deepseek`: read [references/claude-code-deepseek.md](references/claude-code-deepseek.md), then use `scripts/install_claude_deepseek.py`.
 
 ## Handoff Contract
 

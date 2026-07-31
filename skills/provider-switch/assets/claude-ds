@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+
+readonly provider_switch_settings=__SETTINGS_PATH__
+
+if [ ! -r "$provider_switch_settings" ]; then
+  printf '%s\n' "[provider-switch] ERROR missing Claude Code DeepSeek settings: $provider_switch_settings" >&2
+  exit 78
+fi
+
+if grep -q '<YOUR_DEEPSEEK_API_KEY>' "$provider_switch_settings"; then
+  printf '%s\n' "[provider-switch] ERROR add the DeepSeek API key to $provider_switch_settings" >&2
+  exit 78
+fi
+
+if ! command -v claude >/dev/null 2>&1; then
+  printf '%s\n' "[provider-switch] ERROR claude is not available on PATH" >&2
+  exit 127
+fi
+
+printf '%s\n' "[provider-switch] launch agent=claude-code provider=deepseek-api model=deepseek-v4-pro[1m] fast_model=deepseek-v4-flash scope=temporary-profile mode=default-permissions auth=provider-token" >&2
+exec claude --settings "$provider_switch_settings" "$@"

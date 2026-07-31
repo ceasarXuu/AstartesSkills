@@ -171,3 +171,11 @@
 - 问题：历史 runbook 记录的 `package_skill.py` 在当前系统 `skill-creator` 中已不存在，且本机 Three.js 合并后遗留只含 `.DS_Store` 的旧 skill 目录，导致全仓校验把它们识别为缺少 `SKILL.md` 的安装包。
 - 决策：以当前 `SKILL.md` 明示的 `init_skill.py`、`quick_validate.py` 为准；额外用仓库 market export 和临时安装 smoke 代替已移除的打包脚本。确认旧目录没有业务文件后移入回收站，再重跑全仓门禁。
 - 复用方式：不要把 runbook 中的工具清单当作永久 API；每次先枚举当前 system skill 的 scripts。合并或下线 macOS 目录后检查 `.DS_Store` 是否让本应消失的目录继续存在。
+
+## 2026-07-31 Claude Code + DeepSeek 临时配置实测
+
+- 问题：DeepSeek 官方接入示例通过进程环境变量替换 Claude Code 的 endpoint、credential 和模型映射；若把这些值直接写入全局 `~/.claude/settings.json`，普通 `claude` 会话也会被切换，且难以证明 claude.ai OAuth 登录未受影响。
+- 决策：把变量写入 `~/.claude/provider-switch/deepseek.settings.json`，通过 `claude --settings <专用文件>` 的 `claude-ds` 启动器临时加载；安装器只管理这个专用文件和启动器，更新时保留非占位 Key、备份旧文件并原子替换。
+- 本地验证：Claude Code `2.1.218` 的 loopback mock 请求成功携带 provider credential；`deepseek-v4-pro[1m]` 会在传输层解析为模型 `deepseek-v4-pro`，并在 Messages URL 上附带 `beta=true`。随后用 safe mode、无工具、单轮、无会话持久化和 `$0.05` 预算上限发送固定提示词，DeepSeek 真实端点返回 `DEEPSEEK_OK`。
+- 隔离证据：安装前后 `~/.claude/settings.json` 哈希一致；mock 和真实请求后 `claude auth status` 仍显示 `loggedIn=true`、`authMethod=oauth_token`、`apiProvider=firstParty`。
+- 复用方式：测试 Claude Code 的 Anthropic 兼容 Provider 时，先用专用 settings + loopback Messages mock 验证 path、模型解析和认证头，再在无业务目录中发送固定最小提示词做真实烟测；不要记录认证头内容，也不要用仓库源码充当测试提示词。

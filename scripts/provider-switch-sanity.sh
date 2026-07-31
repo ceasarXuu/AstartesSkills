@@ -5,9 +5,12 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 skill_dir="$repo_root/skills/provider-switch"
 installer="$skill_dir/scripts/install_codex_deepseek.py"
+claude_installer="$skill_dir/scripts/install_claude_deepseek.py"
 catalog="$skill_dir/assets/providers.json"
 config_asset="$skill_dir/assets/codex-deepseek-flash.config.toml"
 wrapper_asset="$skill_dir/assets/codex-ds-flash"
+claude_settings_asset="$skill_dir/assets/claude-code-deepseek.settings.json"
+claude_wrapper_asset="$skill_dir/assets/claude-ds"
 fixture="$repo_root/tests/provider-switch/fixtures/codex-deepseek-setup.sh"
 
 log() {
@@ -41,6 +44,7 @@ for item in data["providers"]:
     assert (skill_dir / item["installer"]).is_file()
 assert len(ids) == len(set(ids))
 assert "codex-deepseek-flash" in ids
+assert "claude-code-deepseek" in ids
 PY
 
 if rg -q '^(preferred_auth_method|forced_login_method)[[:space:]]*=' "$config_asset"; then
@@ -48,15 +52,25 @@ if rg -q '^(preferred_auth_method|forced_login_method)[[:space:]]*=' "$config_as
 fi
 rg -q '^requires_openai_auth[[:space:]]*=[[:space:]]*false$' "$config_asset"
 rg -q '^exec codex -p deepseek-flash --dangerously-bypass-approvals-and-sandbox "\$@"$' "$wrapper_asset"
-python3 - "$installer" <<'PY'
+python3 -m json.tool "$claude_settings_asset" >/dev/null
+rg -q 'https://api.deepseek.com/anthropic' "$claude_settings_asset"
+rg -q 'deepseek-v4-pro\[1m\]' "$claude_settings_asset"
+rg -q 'deepseek-v4-flash' "$claude_settings_asset"
+rg -q '^exec claude --settings "\$provider_switch_settings" "\$@"$' "$claude_wrapper_asset"
+if rg -q -- '--dangerously-skip-permissions' "$claude_wrapper_asset"; then
+  fail "Claude wrapper must keep default permission prompts"
+fi
+python3 - "$installer" "$claude_installer" "$skill_dir/scripts/validate_claude_mock.py" <<'PY'
 import ast
 import sys
 from pathlib import Path
 
-ast.parse(Path(sys.argv[1]).read_text(encoding="utf-8"))
+for item in sys.argv[1:]:
+    ast.parse(Path(item).read_text(encoding="utf-8"))
 PY
 
-runtime_root="$(mktemp -d "${TMPDIR:-/tmp}/provider-switch-test.XXXXXX")"
+temp_parent="${TMPDIR:-/tmp}"
+runtime_root="$(mktemp -d "${temp_parent%/}/provider-switch-test.XXXXXX")"
 trap 'rm -rf "$runtime_root"' EXIT
 test_home="$runtime_root/codex-home"
 test_bin="$runtime_root/bin"
@@ -72,6 +86,16 @@ fi
 printf '%s\n' "$@"
 SH
 chmod 755 "$fake_bin/codex"
+
+cat > "$fake_bin/claude" <<'SH'
+#!/bin/sh
+if [ "${1:-}" = "--version" ]; then
+  printf '%s\n' '2.1.218 (Claude Code)'
+  exit 0
+fi
+printf '%s\n' "$@"
+SH
+chmod 755 "$fake_bin/claude"
 
 install_cmd=(
   python3 "$installer"
@@ -153,6 +177,86 @@ rg -q '^--dangerously-bypass-approvals-and-sandbox$' "$runtime_root/wrapper.out"
 rg -q '^argument with spaces$' "$runtime_root/wrapper.out"
 if rg -q 'diagnostic-provider-token' "$runtime_root/wrapper.err"; then
   fail "wrapper logged a provider key"
+fi
+
+log "checking Claude Code first install and global-settings isolation"
+claude_home="$runtime_root/claude-home"
+claude_bin="$runtime_root/claude-bin"
+mkdir -p "$claude_home" "$claude_bin"
+printf '%s\n' '{"marker":"preserve-global-settings"}' > "$claude_home/settings.json"
+global_settings_hash="$(shasum -a 256 "$claude_home/settings.json" | awk '{print $1}')"
+claude_install_cmd=(
+  python3 "$claude_installer"
+  --claude-home "$claude_home"
+  --bin-dir "$claude_bin"
+  --claude-command "$fake_bin/claude"
+)
+"${claude_install_cmd[@]}" > "$runtime_root/claude-first.log"
+claude_settings="$claude_home/provider-switch/deepseek.settings.json"
+[[ -f "$claude_settings" ]]
+[[ -x "$claude_bin/claude-ds" ]]
+rg -q '<YOUR_DEEPSEEK_API_KEY>' "$claude_settings"
+[[ "$global_settings_hash" = "$(shasum -a 256 "$claude_home/settings.json" | awk '{print $1}')" ]]
+python3 - "$claude_settings" "$claude_bin/claude-ds" <<'PY'
+import stat
+import sys
+from pathlib import Path
+
+settings = Path(sys.argv[1])
+wrapper = Path(sys.argv[2])
+assert stat.S_IMODE(settings.stat().st_mode) == 0o600
+assert stat.S_IMODE(wrapper.stat().st_mode) == 0o755
+PY
+
+log "checking Claude Code credential import, preservation, and idempotency"
+DEEPSEEK_API_KEY='diagnostic-claude-token' "${claude_install_cmd[@]}" > "$runtime_root/claude-key.log"
+rg -q 'diagnostic-claude-token' "$claude_settings"
+if rg -q 'diagnostic-claude-token' "$runtime_root/claude-key.log"; then
+  fail "Claude installer logged a provider key"
+fi
+rg -q '\[provider-switch\] import credential=environment name=DEEPSEEK_API_KEY' "$runtime_root/claude-key.log"
+"${claude_install_cmd[@]}" > "$runtime_root/claude-second.log"
+rg -q '\[provider-switch\] preserve credential=existing-provider-token' "$runtime_root/claude-second.log"
+rg -q '\[provider-switch\] unchanged target=.*deepseek.settings.json' "$runtime_root/claude-second.log"
+if rg -q 'diagnostic-claude-token' "$runtime_root/claude-second.log"; then
+  fail "Claude installer logged a preserved provider key"
+fi
+
+log "checking Claude Code changed-file backup"
+python3 - "$claude_settings" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+data = json.loads(path.read_text(encoding="utf-8"))
+data["unmanaged-test-field"] = True
+path.write_text(json.dumps(data), encoding="utf-8")
+PY
+"${claude_install_cmd[@]}" > "$runtime_root/claude-update.log"
+backup_settings="$(find "$claude_home/provider-switch-backups" -name claude-deepseek.settings.json -type f -print -quit)"
+[[ -n "$backup_settings" ]] || fail "missing recoverable Claude settings backup"
+rg -q '\[provider-switch\] backup source=' "$runtime_root/claude-update.log"
+
+log "checking Claude Code invalid-existing-settings failure atomicity"
+bad_claude_home="$runtime_root/bad-claude-home"
+bad_claude_bin="$runtime_root/bad-claude-bin"
+mkdir -p "$bad_claude_home/provider-switch"
+printf '%s\n' '{invalid' > "$bad_claude_home/provider-switch/deepseek.settings.json"
+if python3 "$claude_installer" --claude-home "$bad_claude_home" --bin-dir "$bad_claude_bin" --claude-command "$fake_bin/claude" > "$runtime_root/claude-invalid.log" 2>&1; then
+  fail "invalid existing Claude settings unexpectedly succeeded"
+fi
+[[ ! -e "$bad_claude_bin/claude-ds" ]] || fail "invalid settings created a partial Claude wrapper"
+rg -q '\[provider-switch\] ERROR' "$runtime_root/claude-invalid.log"
+
+log "checking Claude Code wrapper argument forwarding and redacted launch log"
+PATH="$fake_bin:$PATH" "$claude_bin/claude-ds" --version 'argument with spaces' > "$runtime_root/claude-wrapper.out" 2> "$runtime_root/claude-wrapper.err"
+rg -q 'auth=provider-token' "$runtime_root/claude-wrapper.err"
+rg -q '^--settings$' "$runtime_root/claude-wrapper.out"
+rg -Fqx "$claude_settings" "$runtime_root/claude-wrapper.out"
+rg -q '^argument with spaces$' "$runtime_root/claude-wrapper.out"
+if rg -q 'diagnostic-claude-token' "$runtime_root/claude-wrapper.err"; then
+  fail "Claude wrapper logged a provider key"
 fi
 
 log "provider-switch sanity passed"

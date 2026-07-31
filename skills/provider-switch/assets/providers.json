@@ -11,6 +11,17 @@
       "minimum_agent_version": "0.144.0",
       "reference": "references/codex-deepseek-flash.md",
       "installer": "scripts/install_codex_deepseek.py"
+    },
+    {
+      "id": "claude-code-deepseek",
+      "agent": "claude-code",
+      "provider": "deepseek-api",
+      "model": "deepseek-v4-pro[1m]",
+      "scope": "temporary-profile",
+      "command": "claude-ds",
+      "minimum_agent_version": "2.1.218",
+      "reference": "references/claude-code-deepseek.md",
+      "installer": "scripts/install_claude_deepseek.py"
     }
   ]
 }

@@ -205,13 +205,13 @@
         "path": "skills/provider-switch"
       },
       "release": {
-        "version": "1.0.0",
-        "published_at": "2026-07-31T19:40:59+08:00",
+        "version": "1.1.0",
+        "published_at": "2026-07-31T20:28:01+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Publish the initial provider-switch skill with a catalog-based extension contract for multiple Agent and Provider combinations.",
-          "Add the Codex and DeepSeek V4 Flash package with temporary profile isolation, provider-scoped bearer auth, atomic installation, secret preservation, and recoverable backups.",
-          "Add offline fixtures and sanity coverage for catalog integrity, failure atomicity, idempotent updates, argument forwarding, auth-boundary protection, and log redaction."
+          "Add a Claude Code and DeepSeek package using a dedicated settings file and the claude-ds temporary launcher.",
+          "Preserve Claude Code global settings and claude.ai login while isolating the DeepSeek endpoint, token, model mapping, and nonessential traffic policy to the provider-switched process.",
+          "Add deterministic installation, secret preservation, recoverable backups, argument-forwarding checks, local mock coverage, and local-machine smoke-test guidance."
         ]
       },
       "markets": {
