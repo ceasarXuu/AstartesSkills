@@ -18,12 +18,13 @@ open question, or concrete Discovery work unit.
 
 ## Executable Specificity Contract
 
-An implementation plan must identify for every code-bearing work unit:
+An implementation plan must identify for every work unit:
 
 - a concrete change location
 - a named target object
 - one explicit engineering action
 - the resulting behavior or invariant
+- a specific benefit understandable to wider project members
 - exact verification evidence
 
 Abstract statements such as "refactor the module", "add an abstraction",
@@ -32,7 +33,8 @@ satisfy this contract by themselves.
 
 If the location or target object is unknown, the plan must use
 `blocked-on-discovery` and define the inspection location, command or method,
-expected evidence, and decision that evidence unlocks.
+expected evidence, decision that evidence unlocks, and benefit of resolving the
+unknown.
 
 ## Smallest Closed-Loop Engineering Unit Contract
 
@@ -45,6 +47,7 @@ Each work unit must have:
 - one primary objective or invariant
 - one primary change axis
 - one primary engineering action
+- one explicit benefit
 - a bounded change surface
 - explicit dependencies
 - independent verification
@@ -53,7 +56,27 @@ Each work unit must have:
 A unit must be split when it combines independent API, data, internal
 implementation, cache, client, deployment, observability, security, or cleanup
 changes. A phase may sequence multiple units, but it cannot hide their
-individual actions, evidence, status, or rollback boundaries.
+individual actions, benefits, evidence, status, or rollback boundaries.
+
+## Benefit Communication Contract
+
+Every work unit must contain a `Benefit` field.
+
+The Benefit must:
+
+- explain why the unit matters beyond its implementation details
+- connect the technical change to a project, user, team, delivery, reliability,
+  maintainability, cost, support, risk, or operational outcome
+- be understandable to project members outside the implementation area
+- be specific enough to distinguish the unit from neighboring units
+- not merely repeat `Resulting Behavior`
+
+Generic statements such as "improves quality", "adds value", "helps the
+project", or "makes the system better" are invalid.
+
+A Benefit may be qualitative. Formal benefit validation with a metric,
+baseline, target, data source, and observation window is required only when the
+benefit is measurable, disputed, or material to a decision or release gate.
 
 ## Plan And Execution State Contract
 
@@ -120,12 +143,13 @@ they affect execution, validation, safety, or a decision.
 The primary implementation representation is:
 
 ```markdown
-| ID | Objective | Change Axis | Change Location | Target Object | Concrete Action | Resulting Behavior | Verification | Safe Stop / Rollback | Plan Status |
-|---|---|---|---|---|---|---|---|---|---|
+| ID | Objective | Change Axis | Change Location | Target Object | Concrete Action | Resulting Behavior | Benefit | Verification | Safe Stop / Rollback | Plan Status |
+|---|---|---|---|---|---|---|---|---|---|---|
 ```
 
-A valid row has one primary change axis and one primary action. Dependencies set
-order but do not justify coupling unrelated changes into one row.
+A valid row has one primary change axis, one primary action, and one specific
+Benefit. Dependencies set order but do not justify coupling unrelated changes
+into one row.
 
 ## Phase Contract
 
@@ -148,17 +172,17 @@ rollback or compensation.
 Security-sensitive work includes permission boundaries, sensitive-data
 handling, abuse cases, audit logging, and security review.
 
-Plans state expected benefits and include correctness and benefit validation
-where relevant. Runtime-changing work makes important success, failure, and
-failure-reason states observable.
+Every work unit states its Benefit. Formal benefit validation is added when the
+claim is measurable or material to a decision. Runtime-changing work makes
+important success, failure, and failure-reason states observable.
 
 ## Existing Plan Review Contract
 
 Review mode must lead with findings and check for vague actions, missing change
-locations or objects, oversized work units, coupled change axes, hidden work
-inside broad phases, mixed planning and execution states, mixed artifact and
-code statuses, template bloat, missing verification, missing rollback, and
-unsupported project facts.
+locations or objects, missing or generic benefits, oversized work units,
+coupled change axes, hidden work inside broad phases, mixed planning and
+execution states, mixed artifact and code statuses, template bloat, missing
+verification, missing rollback, and unsupported project facts.
 
 ## Behavioral Validation Contract
 
@@ -167,8 +191,9 @@ presence of contract keywords. The quality validator must reject at least:
 
 - vague actions without concrete engineering mechanics
 - multiple primary change axes or actions in one unit
+- missing, thin, generic, or behavior-duplicating benefits
 - execution-complete states in a Plan Authoring document
 - production-code states applied to discovery or design artifacts
 
 It must also accept a concise plan composed of concrete, single-axis,
-independently verifiable work units.
+independently verifiable work units with specific benefits.
