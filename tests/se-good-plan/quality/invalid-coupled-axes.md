@@ -5,6 +5,6 @@
 
 ## Work Units
 
-| ID | Objective | Change Axis | Change Location | Target Object | Concrete Action | Resulting Behavior | Verification | Safe Stop / Rollback | Plan Status |
-|---|---|---|---|---|---|---|---|---|---|
-| W1 | Ship account locale | data + API + client | src/account/locale_flow.md | account locale flow | Add locale support | Schema, endpoint, and UI change together | Run the full account end-to-end test | Revert the entire release | planned |
+| ID | Objective | Change Axis | Change Location | Target Object | Concrete Action | Resulting Behavior | Benefit | Verification | Safe Stop / Rollback | Plan Status |
+|---|---|---|---|---|---|---|---|---|---|---|
+| W1 | Ship account locale | data + API + client | src/account/locale_flow.md | account locale flow | Add locale support | Schema, endpoint, and UI change together | Gives users locale support across the complete account flow | Run the full account end-to-end test | Revert the entire release | planned |
