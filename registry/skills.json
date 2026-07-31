@@ -1,1 +1,454 @@
-{"version":1,"skills":[{"id":"bug-killer","name":"Bug Killer","path":"skills/bug-killer","summary":"Debugs medium and large bugs with persistent /coe case tracking, independent multi-path root-cause investigation, and a diagnostic evidence gate before repair design.","tags":["debugging","root-cause-analysis","evidence","observability","multi-agent"],"installable":true,"source":{"type":"github","repo":"https://github.com/ceasarXuu/AstartesSkills.git","path":"skills/bug-killer"},"release":{"version":"1.0.0","published_at":"2026-06-05T03:57:54+08:00","publisher":"ceasarXuu","changes":["Publish the initial bug-killer skill as a new unified debugging methodology instead of patching existing debug skills.","Fuse /coe case tracking, multi-path investigation, and a diagnostic evidence gate before repair design.","Add an activation gate so the heavy workflow is reserved for medium and large bugs, repeated failed fixes, broad impact, or explicit user requests.","Require evidence to link back to predeclared predictions or diagnostic evidence-plan clauses and keep research packets schema-safe inside /coe cases.","Add case template, interaction fixtures, marketplace metadata, and validation coverage for evidence-gated repair behavior."]},"markets":{"github":{"install_method":"copy"},"openai-compatible":{"manifest":"skills/bug-killer/markets/openai-compatible.json"}}},{"id":"clear-prd","name":"Clear PRD","path":"skills/clear-prd","summary":"Clarifies product requirements through guided multi-round questions focused on product logic, user experience, interaction design, rules, edge cases, and acceptance criteria, then writes a Draft or Ready PRD.","tags":["prd","requirements","product-design","ux","clarification"],"installable":true,"source":{"type":"github","repo":"https://github.com/ceasarXuu/AstartesSkills.git","path":"skills/clear-prd"},"release":{"version":"1.0.0","published_at":"2026-06-02T05:20:31+08:00","publisher":"ceasarXuu","changes":["Publish the initial clear-prd skill for product-first requirements clarification and Draft or Ready PRD generation.","Add low-friction pacing, partial-answer handling, requester review summary, and sign-off checklist requirements.","Add an interaction fixture for partial and custom-answer behavior."]},"markets":{"github":{"install_method":"copy"},"openai-compatible":{"manifest":"skills/clear-prd/markets/openai-compatible.json"}}},{"id":"docs-manager","name":"Docs Manager","path":"skills/docs-manager","summary":"Designs, reorganizes, audits, and maintains repository documentation systems with versioned PRDs, technical designs, engineering plans, link management, archive policy, and validation tooling.","tags":["documentation","docs-governance","prd","technical-design","validation"],"installable":true,"source":{"type":"github","repo":"https://github.com/ceasarXuu/AstartesSkills.git","path":"skills/docs-manager"},"release":{"version":"1.0.0","published_at":"2026-06-16T05:54:01+08:00","publisher":"ceasarXuu","changes":["Import the docs-manager skill from the global skill directory into AstartesSkills as a managed installable skill.","Package version document templates and the docs governance validation script with OpenAI-compatible marketplace metadata."]},"markets":{"github":{"install_method":"copy"},"openai-compatible":{"manifest":"skills/docs-manager/markets/openai-compatible.json"}}},{"id":"frontend-refactoring","name":"frontend refactoring","path":"skills/frontend-refactoring","summary":"Refactors legacy frontend surfaces by inventorying structure first, isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems.","tags":["frontend","css","refactor","ui-architecture","migration"],"installable":true,"source":{"type":"github","repo":"https://github.com/ceasarXuu/AstartesSkills.git","path":"skills/frontend-refactoring"},"release":{"version":"1.2.1","published_at":"2026-04-23T00:00:00+08:00","publisher":"ceasarXuu","changes":["Require structure-first inventorying before frontend migration work.","Record release metadata for the skill in the repository publishing flow."]},"markets":{"github":{"install_method":"copy"},"openai-compatible":{"manifest":"skills/frontend-refactoring/markets/openai-compatible.json"}}},{"id":"plan-report","name":"Plan Report","path":"skills/plan-report","summary":"Reports plan implementation results with evidence-based overall, stage, and module completion percentages, goal alignment verification, concrete engineering benefit analysis, unfinished-work impact analysis, and concrete next actions.","tags":["reporting","plan-review","implementation-report","evidence","completion-tracking"],"installable":true,"source":{"type":"github","repo":"https://github.com/ceasarXuu/AstartesSkills.git","path":"skills/plan-report"},"release":{"version":"1.0.1","published_at":"2026-07-02T16:25:50+08:00","publisher":"ceasarXuu","changes":["Require plan implementation reports to include explicit concrete engineering benefits for every main goal.","Add an Engineering Benefit Matrix with metric, baseline, target, observed result, and verification evidence fields.","Add quality-bar examples that reject generic benefit claims without measurable engineering effect."]},"markets":{"github":{"install_method":"copy"},"openai-compatible":{"manifest":"skills/plan-report/markets/openai-compatible.json"}}},{"id":"se-good-plan","name":"SE Good Plan","path":"skills/se-good-plan","summary":"Writes and reviews phased, executable, independently verifiable, reviewable, rollback-aware software engineering plans with strict phase gates, plan-to-code completeness, benefit validation, and chain-state logging evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work.","tags":["software-engineering","planning","implementation-plan","review","rollout"],"installable":true,"source":{"type":"github","repo":"https://github.com/ceasarXuu/AstartesSkills.git","path":"skills/se-good-plan"},"release":{"version":"1.4.0","published_at":"2026-06-29T18:12:21+08:00","publisher":"ceasarXuu","changes":["Require every Standard and Full plan phase to be independently verifiable before the next phase starts.","Forbid inverted phase dependencies where a later phase is needed to close an earlier phase.","Require each phase gate to record completion status, residual risk, user approval status, and a proceed or pause decision.","Add strict phase-gate fixtures, exemplar coverage, and sanity checks."]},"markets":{"github":{"install_method":"copy"},"openai-compatible":{"manifest":"skills/se-good-plan/markets/openai-compatible.json"}}},{"id":"storybook-skills-standard","name":"Storybook Skills Standard","path":"skills/storybook-skills-standard","summary":"Designs and audits Storybook-driven frontend component workflows, story coverage, mocks, docs, interaction tests, accessibility checks, and visual baselines.","tags":["storybook","frontend","design-system","component-driven","ui-testing"],"installable":true,"source":{"type":"github","repo":"https://github.com/ceasarXuu/AstartesSkills.git","path":"skills/storybook-skills-standard"},"release":{"version":"1.0.0","published_at":"2026-04-23T22:50:00+08:00","publisher":"ceasarXuu","changes":["Import the Storybook frontend design and component development standard as a managed installable skill.","Package the long-form standard as a reference and include compact Storybook examples for reuse.","Normalize the project-level preview example to TSX when decorators use JSX."]},"markets":{"github":{"install_method":"copy"},"openai-compatible":{"manifest":"skills/storybook-skills-standard/markets/openai-compatible.json"}}},{"id":"threejs-game","name":"Three.js Game","path":"skills/threejs-game","summary":"Designs, builds, refactors, optimizes, tests, and releases maintainable three.js games across runtime architecture, assets, rendering, input, interaction, physics, animation, VFX, performance, persistence, networking, WebXR, and QA.","tags":["threejs","game-development","webgl","webgpu","game-architecture","performance","webxr"],"installable":true,"source":{"type":"github","repo":"https://github.com/ceasarXuu/AstartesSkills.git","path":"skills/threejs-game"},"release":{"version":"2.0.0","published_at":"2026-07-31T10:01:20+08:00","publisher":"ceasarXuu","changes":["Consolidate the threejs-game router and twelve installable child skills into one comprehensive skill.","Preserve runtime, assets, rendering, input, interaction, physics, animation, materials and VFX, performance, state and networking, XR, and QA as internal tracks.","Remove the legacy threejs-game-* child skill IDs and update repository discovery metadata."]},"markets":{"github":{"install_method":"copy"},"openai-compatible":{"manifest":"skills/threejs-game/markets/openai-compatible.json"}}},{"id":"subagent-vs-review","name":"Subagent VS Review","path":"skills/subagent-vs-review","summary":"Runs independent adversarial review rounds with fresh internal subagents, or a user-approved local CLI fallback when internal subagents are unavailable, that attack artifact assumptions, happy paths, implementation completeness, target benefit realization, usability, ease of use, ease of understanding, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.","tags":["subagent","review","vibe-coding","quality","agent-workflow"],"installable":true,"source":{"type":"github","repo":"https://github.com/ceasarXuu/AstartesSkills.git","path":"skills/subagent-vs-review"},"release":{"version":"1.8.1","published_at":"2026-06-24T02:15:12+08:00","publisher":"ceasarXuu","changes":["Expand unavailable-subagent fallback discovery across Claude, Codex, OpenCode, and Pi local agent commands.","Ask the user for another local agent command when no built-in fallback candidate is discovered.","Require verification and explicit approval for any user-recommended agent command before use.","Terminate the review workflow when no verified and approved reviewer is available."]},"markets":{"github":{"install_method":"copy"},"openai-compatible":{"manifest":"skills/subagent-vs-review/markets/openai-compatible.json"}}},{"id":"show-my-repo","name":"Show My Repo","path":"skills/show-my-repo","summary":"Turns a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages.","tags":["repo-analysis","product-packaging","pitch","go-to-market","architecture"],"installable":true,"source":{"type":"github","repo":"https://github.com/ceasarXuu/AstartesSkills.git","path":"skills/show-my-repo"},"release":{"version":"1.1.0","published_at":"2026-03-26T20:38:26+08:00","publisher":"ceasarXuu","changes":["Add versioned repo-root output folders for repeated packaging runs.","Keep the marketplace-ready repo packaging workflow self-contained."]},"markets":{"github":{"install_method":"copy"},"openai-compatible":{"manifest":"skills/show-my-repo/markets/openai-compatible.json"}}},{"id":"summary-my-repo","name":"Summary My Repo","path":"skills/summary-my-repo","summary":"Creates an internal repository summary pack with architecture, directory mapping, and core logic walkthroughs for fast collaborator onboarding.","tags":["repo-analysis","architecture","onboarding","documentation","engineering-summary"],"installable":true,"source":{"type":"github","repo":"https://github.com/ceasarXuu/AstartesSkills.git","path":"skills/summary-my-repo"},"release":{"version":"1.1.0","published_at":"2026-03-28T21:01:26+08:00","publisher":"ceasarXuu","changes":["Require code-evidence snippets for core architectural claims.","Strengthen internal repo summaries with auditable proof."]},"markets":{"github":{"install_method":"copy"},"openai-compatible":{"manifest":"skills/summary-my-repo/markets/openai-compatible.json"}}},{"id":"dev-loop","name":"Dev Loop","path":"skills/dev-loop","summary":"Audits, prioritizes, optimizes, and protects software development feedback loops across builds, tests, CI gates, caches, environments, dependency structure, and coding-Agent execution without silently weakening required engineering evidence.","tags":["software-engineering","developer-experience","build","testing","ci-cd","cache","feedback-loop"],"installable":true,"source":{"type":"github","repo":"https://github.com/ceasarXuu/AstartesSkills.git","path":"skills/dev-loop"},"release":{"version":"1.1.0","published_at":"2026-07-31T09:16:00+08:00","publisher":"ceasarXuu","changes":["Add a hard P0-P5 priority ladder that separates trust failures, blocking no-evidence work, validation amplification, reuse problems, gate redesign, and architectural locality.","Add a staged governance sequence and same-tier opportunity ranking based on critical-path benefit, frequency, population, confidence, durability, effort, correctness risk, maintenance, and rollback difficulty.","Require every audit to select exactly one Next Best Intervention with expected benefit, evidence preservation, risk, rollback, validation, and a follow-up gate.","Add governance work-in-progress limits and stop conditions so feedback-loop governance does not become an unbounded engineering program."]},"markets":{"github":{"install_method":"copy"},"openai-compatible":{"manifest":"skills/dev-loop/markets/openai-compatible.json"}}}]}
+{
+  "version": 1,
+  "skills": [
+    {
+      "id": "bug-killer",
+      "name": "Bug Killer",
+      "path": "skills/bug-killer",
+      "summary": "Debugs medium and large bugs with persistent /coe case tracking, independent multi-path root-cause investigation, and a diagnostic evidence gate before repair design.",
+      "tags": [
+        "debugging",
+        "root-cause-analysis",
+        "evidence",
+        "observability",
+        "multi-agent"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/bug-killer"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-06-05T03:57:54+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Publish the initial bug-killer skill as a new unified debugging methodology instead of patching existing debug skills.",
+          "Fuse /coe case tracking, multi-path investigation, and a diagnostic evidence gate before repair design.",
+          "Add an activation gate so the heavy workflow is reserved for medium and large bugs, repeated failed fixes, broad impact, or explicit user requests.",
+          "Require evidence to link back to predeclared predictions or diagnostic evidence-plan clauses and keep research packets schema-safe inside /coe cases.",
+          "Add case template, interaction fixtures, marketplace metadata, and validation coverage for evidence-gated repair behavior."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/bug-killer/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "clear-prd",
+      "name": "Clear PRD",
+      "path": "skills/clear-prd",
+      "summary": "Clarifies product requirements through guided multi-round questions focused on product logic, user experience, interaction design, rules, edge cases, and acceptance criteria, then writes a Draft or Ready PRD.",
+      "tags": [
+        "prd",
+        "requirements",
+        "product-design",
+        "ux",
+        "clarification"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/clear-prd"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-06-02T05:20:31+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Publish the initial clear-prd skill for product-first requirements clarification and Draft or Ready PRD generation.",
+          "Add low-friction pacing, partial-answer handling, requester review summary, and sign-off checklist requirements.",
+          "Add an interaction fixture for partial and custom-answer behavior."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/clear-prd/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "docs-manager",
+      "name": "Docs Manager",
+      "path": "skills/docs-manager",
+      "summary": "Designs, reorganizes, audits, and maintains repository documentation systems with versioned PRDs, technical designs, engineering plans, link management, archive policy, and validation tooling.",
+      "tags": [
+        "documentation",
+        "docs-governance",
+        "prd",
+        "technical-design",
+        "validation"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/docs-manager"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-06-16T05:54:01+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the docs-manager skill from the global skill directory into AstartesSkills as a managed installable skill.",
+          "Package version document templates and the docs governance validation script with OpenAI-compatible marketplace metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/docs-manager/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "frontend-refactoring",
+      "name": "frontend refactoring",
+      "path": "skills/frontend-refactoring",
+      "summary": "Refactors legacy frontend surfaces by inventorying structure first, isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems.",
+      "tags": [
+        "frontend",
+        "css",
+        "refactor",
+        "ui-architecture",
+        "migration"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/frontend-refactoring"
+      },
+      "release": {
+        "version": "1.2.1",
+        "published_at": "2026-04-23T00:00:00+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Require structure-first inventorying before frontend migration work.",
+          "Record release metadata for the skill in the repository publishing flow."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/frontend-refactoring/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "plan-report",
+      "name": "Plan Report",
+      "path": "skills/plan-report",
+      "summary": "Reports plan implementation results with evidence-based overall, stage, and module completion percentages, goal alignment verification, concrete engineering benefit analysis, unfinished-work impact analysis, and concrete next actions.",
+      "tags": [
+        "reporting",
+        "plan-review",
+        "implementation-report",
+        "evidence",
+        "completion-tracking"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/plan-report"
+      },
+      "release": {
+        "version": "1.0.1",
+        "published_at": "2026-07-02T16:25:50+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Require plan implementation reports to include explicit concrete engineering benefits for every main goal.",
+          "Add an Engineering Benefit Matrix with metric, baseline, target, observed result, and verification evidence fields.",
+          "Add quality-bar examples that reject generic benefit claims without measurable engineering effect."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/plan-report/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "se-good-plan",
+      "name": "SE Good Plan",
+      "path": "skills/se-good-plan",
+      "summary": "Writes and reviews phased, executable, independently verifiable, reviewable, rollback-aware software engineering plans with strict phase gates, plan-to-code completeness, benefit validation, and chain-state logging evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work.",
+      "tags": [
+        "software-engineering",
+        "planning",
+        "implementation-plan",
+        "review",
+        "rollout"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/se-good-plan"
+      },
+      "release": {
+        "version": "1.4.0",
+        "published_at": "2026-06-29T18:12:21+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Require every Standard and Full plan phase to be independently verifiable before the next phase starts.",
+          "Forbid inverted phase dependencies where a later phase is needed to close an earlier phase.",
+          "Require each phase gate to record completion status, residual risk, user approval status, and a proceed or pause decision.",
+          "Add strict phase-gate fixtures, exemplar coverage, and sanity checks."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/se-good-plan/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "storybook-skills-standard",
+      "name": "Storybook Skills Standard",
+      "path": "skills/storybook-skills-standard",
+      "summary": "Designs and audits Storybook-driven frontend component workflows, story coverage, mocks, docs, interaction tests, accessibility checks, and visual baselines.",
+      "tags": [
+        "storybook",
+        "frontend",
+        "design-system",
+        "component-driven",
+        "ui-testing"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/storybook-skills-standard"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-04-23T22:50:00+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Import the Storybook frontend design and component development standard as a managed installable skill.",
+          "Package the long-form standard as a reference and include compact Storybook examples for reuse.",
+          "Normalize the project-level preview example to TSX when decorators use JSX."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/storybook-skills-standard/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "threejs-game",
+      "name": "Three.js Game",
+      "path": "skills/threejs-game",
+      "summary": "Designs, builds, refactors, optimizes, tests, and releases maintainable three.js games across runtime architecture, assets, rendering, input, interaction, physics, animation, VFX, performance, persistence, networking, WebXR, and QA.",
+      "tags": [
+        "threejs",
+        "game-development",
+        "webgl",
+        "webgpu",
+        "game-architecture",
+        "performance",
+        "webxr"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/threejs-game"
+      },
+      "release": {
+        "version": "2.0.0",
+        "published_at": "2026-07-31T10:01:20+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Consolidate the threejs-game router and twelve installable child skills into one comprehensive skill.",
+          "Preserve runtime, assets, rendering, input, interaction, physics, animation, materials and VFX, performance, state and networking, XR, and QA as internal tracks.",
+          "Remove the legacy threejs-game-* child skill IDs and update repository discovery metadata."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/threejs-game/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "subagent-vs-review",
+      "name": "Subagent VS Review",
+      "path": "skills/subagent-vs-review",
+      "summary": "Runs independent adversarial review rounds with fresh internal subagents, or a user-approved local CLI fallback when internal subagents are unavailable, that attack artifact assumptions, happy paths, implementation completeness, target benefit realization, usability, ease of use, ease of understanding, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.",
+      "tags": [
+        "subagent",
+        "review",
+        "vibe-coding",
+        "quality",
+        "agent-workflow"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/subagent-vs-review"
+      },
+      "release": {
+        "version": "1.8.1",
+        "published_at": "2026-06-24T02:15:12+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Expand unavailable-subagent fallback discovery across Claude, Codex, OpenCode, and Pi local agent commands.",
+          "Ask the user for another local agent command when no built-in fallback candidate is discovered.",
+          "Require verification and explicit approval for any user-recommended agent command before use.",
+          "Terminate the review workflow when no verified and approved reviewer is available."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/subagent-vs-review/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "show-my-repo",
+      "name": "Show My Repo",
+      "path": "skills/show-my-repo",
+      "summary": "Turns a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages.",
+      "tags": [
+        "repo-analysis",
+        "product-packaging",
+        "pitch",
+        "go-to-market",
+        "architecture"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/show-my-repo"
+      },
+      "release": {
+        "version": "1.1.0",
+        "published_at": "2026-03-26T20:38:26+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Add versioned repo-root output folders for repeated packaging runs.",
+          "Keep the marketplace-ready repo packaging workflow self-contained."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/show-my-repo/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "summary-my-repo",
+      "name": "Summary My Repo",
+      "path": "skills/summary-my-repo",
+      "summary": "Creates an internal repository summary pack with architecture, directory mapping, and core logic walkthroughs for fast collaborator onboarding.",
+      "tags": [
+        "repo-analysis",
+        "architecture",
+        "onboarding",
+        "documentation",
+        "engineering-summary"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/summary-my-repo"
+      },
+      "release": {
+        "version": "1.1.0",
+        "published_at": "2026-03-28T21:01:26+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Require code-evidence snippets for core architectural claims.",
+          "Strengthen internal repo summaries with auditable proof."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/summary-my-repo/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
+      "id": "dev-loop",
+      "name": "Dev Loop",
+      "path": "skills/dev-loop",
+      "summary": "Audits, prioritizes, optimizes, and protects software development feedback loops across builds, tests, CI gates, caches, environments, dependency structure, and coding-Agent execution without silently weakening required engineering evidence.",
+      "tags": [
+        "software-engineering",
+        "developer-experience",
+        "build",
+        "testing",
+        "ci-cd",
+        "cache",
+        "feedback-loop"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/dev-loop"
+      },
+      "release": {
+        "version": "1.1.0",
+        "published_at": "2026-07-31T09:16:00+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Add a hard P0-P5 priority ladder that separates trust failures, blocking no-evidence work, validation amplification, reuse problems, gate redesign, and architectural locality.",
+          "Add a staged governance sequence and same-tier opportunity ranking based on critical-path benefit, frequency, population, confidence, durability, effort, correctness risk, maintenance, and rollback difficulty.",
+          "Require every audit to select exactly one Next Best Intervention with expected benefit, evidence preservation, risk, rollback, validation, and a follow-up gate.",
+          "Add governance work-in-progress limits and stop conditions so feedback-loop governance does not become an unbounded engineering program."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/dev-loop/markets/openai-compatible.json"
+        }
+      }
+    }
+  ]
+}
