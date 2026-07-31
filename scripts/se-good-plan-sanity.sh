@@ -52,9 +52,13 @@ for needle in [
     "Change location:",
     "Target object:",
     "Concrete action:",
+    "Benefit:",
     "Use The Smallest Closed-Loop Engineering Unit",
     "one primary engineering objective or invariant",
     "one primary change axis",
+    "Make Every Unit's Benefit Understandable",
+    "Resulting Behavior",
+    "wider project",
     "Separate Plan Authoring From Execution Tracking",
     "Keep Artifact And Code Status Models Separate",
     "Prefer Concise Structure Over Template Ceremony",
@@ -67,7 +71,8 @@ for needle in [
 
 work_unit_header = (
     "| ID | Objective | Change Axis | Change Location | Target Object | "
-    "Concrete Action | Resulting Behavior | Verification | Safe Stop / Rollback | Plan Status |"
+    "Concrete Action | Resulting Behavior | Benefit | Verification | "
+    "Safe Stop / Rollback | Plan Status |"
 )
 for text, context in [
     (skill, "SKILL.md"),
@@ -78,17 +83,18 @@ for text, context in [
     require(text, work_unit_header, context)
 
 for needle in [
-    "planned",
-    "blocked-on-discovery",
-    "deferred",
-    "not-started",
-    "in-progress",
-    "verified",
-    "blocked",
-    "failed",
-    "rolled-back",
+    "planned", "blocked-on-discovery", "deferred", "not-started",
+    "in-progress", "verified", "blocked", "failed", "rolled-back",
 ]:
     require(combined, needle, "state model")
+
+for needle in [
+    "Benefit Communication Contract",
+    "Every work unit must contain a `Benefit` field.",
+    "not merely repeat `Resulting Behavior`",
+    "A Benefit may be qualitative.",
+]:
+    require(source_contract, needle, "benefit communication contract")
 
 for needle in [
     "Discovery and design artifacts use:",
@@ -100,6 +106,7 @@ for needle in [
 for needle in [
     "vague actions without concrete engineering mechanics",
     "multiple primary change axes or actions in one unit",
+    "missing, thin, generic, or behavior-duplicating benefits",
     "execution-complete states in a Plan Authoring document",
     "production-code states applied to discovery or design artifacts",
 ]:
@@ -118,6 +125,8 @@ for forbidden in [
 
 for needle in [
     "concrete change location, target object, engineering action",
+    "benefit is mandatory for every work unit",
+    "language understandable to wider project members",
     "smallest closed-loop engineering units",
     "Plan Authoring mode",
     "discovery and design artifact states separate",
