@@ -2,14 +2,15 @@
   "version": 1,
   "market": "openai-compatible",
   "display_name": "Three.js Game",
-  "description": "Routes three.js game-development tasks across runtime, assets, rendering, input, physics, animation, performance, networking, tooling, and XR tracks.",
+  "description": "Designs, builds, refactors, optimizes, tests, and releases maintainable three.js games across runtime architecture, assets, rendering, input, interaction, physics, animation, VFX, performance, persistence, networking, WebXR, and QA.",
   "release": {
-    "version": "1.0.0",
-    "published_at": "2026-04-23T22:54:12+08:00",
+    "version": "2.0.0",
+    "published_at": "2026-07-31T10:01:20+08:00",
     "publisher": "ceasarXuu",
     "changes": [
-      "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-      "Register the family router skill with OpenAI-compatible metadata and repository release metadata."
+      "Consolidate the threejs-game router and twelve installable child skills into one comprehensive skill.",
+      "Preserve runtime, assets, rendering, input, interaction, physics, animation, materials and VFX, performance, state and networking, XR, and QA as internal tracks.",
+      "Remove the legacy threejs-game-* child skill IDs and update repository discovery metadata."
     ]
   },
   "source": {
