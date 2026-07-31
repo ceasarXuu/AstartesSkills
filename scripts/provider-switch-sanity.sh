@@ -97,6 +97,12 @@ printf '%s\n' "$@"
 SH
 chmod 755 "$fake_bin/claude"
 
+cat > "$fake_bin/code" <<'SH'
+#!/bin/sh
+exit 0
+SH
+chmod 755 "$fake_bin/code"
+
 install_cmd=(
   python3 "$installer"
   --codex-home "$test_home"
@@ -190,12 +196,16 @@ claude_install_cmd=(
   --claude-home "$claude_home"
   --bin-dir "$claude_bin"
   --claude-command "$fake_bin/claude"
+  --no-open-editor
 )
 "${claude_install_cmd[@]}" > "$runtime_root/claude-first.log"
 claude_settings="$claude_home/provider-switch/deepseek.settings.json"
 [[ -f "$claude_settings" ]]
 [[ -x "$claude_bin/claude-ds" ]]
 rg -q '<YOUR_DEEPSEEK_API_KEY>' "$claude_settings"
+if rg -q '\[provider-switch\] editor ' "$runtime_root/claude-first.log"; then
+  fail "--no-open-editor unexpectedly launched an editor"
+fi
 [[ "$global_settings_hash" = "$(shasum -a 256 "$claude_home/settings.json" | awk '{print $1}')" ]]
 python3 - "$claude_settings" "$claude_bin/claude-ds" <<'PY'
 import stat
@@ -206,6 +216,23 @@ settings = Path(sys.argv[1])
 wrapper = Path(sys.argv[2])
 assert stat.S_IMODE(settings.stat().st_mode) == 0o600
 assert stat.S_IMODE(wrapper.stat().st_mode) == 0o755
+PY
+
+log "checking Claude Code default editor launch for a missing key"
+editor_home="$runtime_root/editor-home"
+editor_bin="$runtime_root/editor-bin"
+PATH="$fake_bin:$PATH" python3 "$claude_installer" --claude-home "$editor_home" --bin-dir "$editor_bin" --claude-command "$fake_bin/claude" > "$runtime_root/claude-editor.log"
+rg -q '\[provider-switch\] complete ' "$runtime_root/claude-editor.log"
+rg -q '\[provider-switch\] next add-provider-key=' "$runtime_root/claude-editor.log"
+rg -q '\[provider-switch\] editor target=.*deepseek.settings.json opener=code' "$runtime_root/claude-editor.log"
+python3 - "$runtime_root/claude-editor.log" <<'PY'
+import sys
+from pathlib import Path
+
+lines = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
+complete = next(index for index, line in enumerate(lines) if " complete " in line)
+editor = next(index for index, line in enumerate(lines) if " editor " in line)
+assert complete < editor
 PY
 
 log "checking Claude Code credential import, preservation, and idempotency"
@@ -220,6 +247,10 @@ rg -q '\[provider-switch\] preserve credential=existing-provider-token' "$runtim
 rg -q '\[provider-switch\] unchanged target=.*deepseek.settings.json' "$runtime_root/claude-second.log"
 if rg -q 'diagnostic-claude-token' "$runtime_root/claude-second.log"; then
   fail "Claude installer logged a preserved provider key"
+fi
+PATH="$fake_bin:$PATH" python3 "$claude_installer" --claude-home "$claude_home" --bin-dir "$claude_bin" --claude-command "$fake_bin/claude" > "$runtime_root/claude-existing-key-editor.log"
+if rg -q '\[provider-switch\] editor ' "$runtime_root/claude-existing-key-editor.log"; then
+  fail "existing provider key unexpectedly launched an editor"
 fi
 
 log "checking Claude Code changed-file backup"

@@ -8,7 +8,7 @@
 
 ## Requester Review Summary
 
-- Key decisions: 作为独立临时配置安装；通过专用 `--settings` 文件和 `claude-ds` 启动器生效；不修改 Claude Code 全局配置和登录状态。
+- Key decisions: 作为独立临时配置安装；通过专用 `--settings` 文件和 `claude-ds` 启动器生效；不修改 Claude Code 全局配置和登录状态；缺少 API Key 时安装完成后自动打开配置。
 - Important exceptions: 真实请求会向 DeepSeek 发送提示词并产生 Token 费用；默认测试先覆盖离线与本地 mock，真实烟测仅在本机已有凭据时执行最小请求。
 - Must-confirm before implementation: 无阻塞项；请求已明确指定官方方案、收纳位置和本机实测。
 - Status reason: 用户目标、范围、安全边界和验收方式均已明确。
@@ -49,7 +49,7 @@
 1. 用户选择 `claude-code-deepseek` 组合并阅读对应 reference。
 2. 用户运行确定性安装器。
 3. 安装器检查 Claude Code 版本，创建专用 settings 和 `claude-ds`，必要时备份旧文件并保留已有密钥。
-4. 用户填入或通过环境变量提供 DeepSeek API Key。
+4. 如果仍缺少 DeepSeek API Key，安装器自动打开专用配置，用户填入 Key；也可提前通过环境变量提供。
 5. 用户运行 `claude-ds`；普通 `claude` 仍使用原配置和登录。
 6. 用户可根据备份恢复或移走新增文件完成回滚。
 
@@ -65,6 +65,7 @@
 - 专用 credential 替代当前进程中的 claude.ai 订阅认证，但不得删除或改写已保存登录。
 - 更新托管文件前必须创建可恢复备份；同内容重复安装不得制造备份噪声。
 - 默认保留 Claude Code 权限提示，不自动启用危险跳过权限模式。
+- 专用配置仍含 Key 占位符时默认打开编辑器；已有真实 Key 时不打开；自动化可显式禁用打开动作。
 
 ## 8. Edge Cases, Errors, And Recovery
 
@@ -87,6 +88,8 @@
 - Given 已存在真实 DeepSeek Key，when 再次安装，then 密钥被保留且日志不包含密钥。
 - Given 安装输入不变，when 重复安装，then 文件报告 `unchanged` 且不创建新备份。
 - Given 启动器接收包含空格的参数，when 调用 `claude-ds`，then 参数边界和顺序保持不变。
+- Given 首次安装后配置仍是 Key 占位符，when 安装完成，then 自动打开专用配置文件，且 `complete` 日志先于打开动作。
+- Given 已有真实 Key 或传入 `--no-open-editor`，when 安装完成，then 不启动编辑器。
 - Given 本地 Anthropic 协议 mock，when Claude Code 发起最小请求，then mock 收到带认证的 Messages API 请求且响应成功。
 - Given 测试前存在 claude.ai OAuth 登录，when mock 和真实烟测结束，then `claude auth status` 仍为已登录且 provider 为 first-party。
 

@@ -40,7 +40,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--bin-dir", type=Path)
     parser.add_argument("--claude-command", default="claude")
     parser.add_argument("--api-key-env", default="DEEPSEEK_API_KEY")
-    parser.add_argument("--open-editor", action="store_true")
+    editor_group = parser.add_mutually_exclusive_group()
+    editor_group.add_argument("--open-editor", dest="open_editor", action="store_true")
+    editor_group.add_argument(
+        "--no-open-editor", dest="open_editor", action="store_false"
+    )
+    parser.set_defaults(open_editor=True)
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
 
@@ -175,13 +180,27 @@ def render_wrapper(settings_path: Path) -> bytes:
 def maybe_open_editor(settings_path: Path, requested: bool, dry_run: bool) -> None:
     if not requested:
         return
-    editor = shutil.which("code")
-    if not editor:
-        log("warning", f"VS Code CLI not found; edit={settings_path}")
+    command: list[str] | None = None
+    opener = ""
+    code = shutil.which("code")
+    if code:
+        command = [code, "--reuse-window", "--goto", f"{settings_path}:5"]
+        opener = "code"
+    elif sys.platform == "darwin" and shutil.which("open"):
+        command = [shutil.which("open") or "open", str(settings_path)]
+        opener = "open"
+    elif shutil.which("xdg-open"):
+        command = [shutil.which("xdg-open") or "xdg-open", str(settings_path)]
+        opener = "xdg-open"
+    if command is None:
+        log("warning", f"no editor opener found; edit={settings_path}")
         return
-    log("editor", f"target={settings_path}")
+    log("editor", f"target={settings_path} opener={opener}")
     if not dry_run:
-        subprocess.Popen([editor, "--reuse-window", "--goto", f"{settings_path}:5"])
+        try:
+            subprocess.Popen(command)
+        except OSError as exc:
+            log("warning", f"editor launch failed target={settings_path} error={exc}")
 
 
 def main() -> int:
@@ -212,15 +231,16 @@ def main() -> int:
             WRAPPER_NAME,
             args.dry_run,
         )
-        maybe_open_editor(settings_path, args.open_editor, args.dry_run)
+        needs_key = KEY_PLACEHOLDER.encode() in settings
         log(
             "complete",
             f"command={wrapper_path} profile=claude-code-deepseek dry_run={str(args.dry_run).lower()}",
         )
-        if KEY_PLACEHOLDER.encode() in settings:
+        if needs_key:
             log("next", f"add-provider-key={settings_path}")
         if backup.created:
             log("recovery", f"backup={backup.path}")
+        maybe_open_editor(settings_path, args.open_editor and needs_key, args.dry_run)
         return 0
     except (InstallError, OSError) as exc:
         log("ERROR", str(exc))

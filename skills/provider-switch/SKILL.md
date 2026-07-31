@@ -14,6 +14,7 @@ Manage Agent/Provider combinations as named, independently validated packages. P
 - Default to a temporary side-load, profile, or wrapper. Modify global defaults only when the user explicitly requests a persistent switch.
 - Keep provider credentials separate from the agent's own account login. Never add global login-policy fields to a provider profile merely to send a provider API key.
 - Preview all target files and behavioral effects before writing. Back up changed files, preserve existing non-placeholder secrets, and use atomic writes.
+- After a successful interactive install, open a dedicated provider config when its credential placeholder still needs user input. Do not open it when a real credential is already present, and provide an opt-out for automation.
 - Log stable action names, targets, modes, and validation results. Never log credential values or authorization headers.
 - Stop on unsupported protocols, invalid downloaded metadata, version incompatibility, or login-state regression. Do not add a silent compatibility fallback.
 

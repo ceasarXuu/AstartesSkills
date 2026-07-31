@@ -205,13 +205,13 @@
         "path": "skills/provider-switch"
       },
       "release": {
-        "version": "1.1.0",
-        "published_at": "2026-07-31T20:28:01+08:00",
+        "version": "1.1.1",
+        "published_at": "2026-07-31T20:56:31+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Add a Claude Code and DeepSeek package using a dedicated settings file and the claude-ds temporary launcher.",
-          "Preserve Claude Code global settings and claude.ai login while isolating the DeepSeek endpoint, token, model mapping, and nonessential traffic policy to the provider-switched process.",
-          "Add deterministic installation, secret preservation, recoverable backups, argument-forwarding checks, local mock coverage, and local-machine smoke-test guidance."
+          "Open the dedicated Claude Code and DeepSeek settings automatically after installation when the API key placeholder still needs user input.",
+          "Keep existing-key updates quiet and add --no-open-editor for automation and unattended installs.",
+          "Add regression coverage for default editor launch, opt-out behavior, existing-key behavior, and post-completion launch ordering."
         ]
       },
       "markets": {

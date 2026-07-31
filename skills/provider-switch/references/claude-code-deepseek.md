@@ -25,10 +25,10 @@ The installer does not modify `${HOME}/.claude/settings.json`, project settings,
 From the installed skill directory:
 
 ```bash
-python3 scripts/install_claude_deepseek.py --open-editor
+python3 scripts/install_claude_deepseek.py
 ```
 
-Replace `<YOUR_DEEPSEEK_API_KEY>` in the opened settings file. Alternatively, provide `DEEPSEEK_API_KEY` in the installer process environment; the installer writes it to the dedicated `0600` settings file without logging it. On later updates, an existing non-placeholder token takes precedence and is preserved.
+When the dedicated settings still contain `<YOUR_DEEPSEEK_API_KEY>`, the installer opens the file after installation so the user can fill it in. It prefers VS Code, then the macOS `open` command or Linux `xdg-open`. Use `--no-open-editor` in automation. Alternatively, provide `DEEPSEEK_API_KEY` in the installer process environment; the installer writes it to the dedicated `0600` settings file without logging it and does not open an editor. On later updates, an existing non-placeholder token takes precedence, is preserved, and does not trigger the editor.
 
 Launch with:
 

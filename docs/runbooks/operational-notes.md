@@ -178,4 +178,5 @@
 - 决策：把变量写入 `~/.claude/provider-switch/deepseek.settings.json`，通过 `claude --settings <专用文件>` 的 `claude-ds` 启动器临时加载；安装器只管理这个专用文件和启动器，更新时保留非占位 Key、备份旧文件并原子替换。
 - 本地验证：Claude Code `2.1.218` 的 loopback mock 请求成功携带 provider credential；`deepseek-v4-pro[1m]` 会在传输层解析为模型 `deepseek-v4-pro`，并在 Messages URL 上附带 `beta=true`。随后用 safe mode、无工具、单轮、无会话持久化和 `$0.05` 预算上限发送固定提示词，DeepSeek 真实端点返回 `DEEPSEEK_OK`。
 - 隔离证据：安装前后 `~/.claude/settings.json` 哈希一致；mock 和真实请求后 `claude auth status` 仍显示 `loggedIn=true`、`authMethod=oauth_token`、`apiProvider=firstParty`。
+- 首次配置体验：安装完成后若专用 settings 仍含 Key 占位符，默认按 VS Code、macOS `open`、Linux `xdg-open` 的顺序打开文件；已有 Key 时保持静默，自动化使用 `--no-open-editor`，避免 CI 意外拉起 GUI。
 - 复用方式：测试 Claude Code 的 Anthropic 兼容 Provider 时，先用专用 settings + loopback Messages mock 验证 path、模型解析和认证头，再在无业务目录中发送固定最小提示词做真实烟测；不要记录认证头内容，也不要用仓库源码充当测试提示词。

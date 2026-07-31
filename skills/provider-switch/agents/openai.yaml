@@ -1,4 +1,4 @@
 interface:
   display_name: "Provider Switch"
   short_description: "Safely manage agent and model provider configurations."
-  default_prompt: "Use $provider-switch to install or switch a cataloged agent/provider configuration such as Codex or Claude Code with DeepSeek, without changing the agent's default login."
+  default_prompt: "Use $provider-switch to install or switch a cataloged agent/provider configuration such as Codex or Claude Code with DeepSeek, preserve the agent's default login, and open the dedicated config when an API key still needs to be entered."
