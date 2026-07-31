@@ -2,16 +2,16 @@
   "version": 1,
   "market": "openai-compatible",
   "display_name": "Dev Loop",
-  "description": "Audits, optimizes, and protects software development feedback loops across builds, tests, CI gates, caches, environments, dependency structure, and coding-Agent execution without silently weakening required engineering evidence.",
+  "description": "Audits, prioritizes, optimizes, and protects software development feedback loops across builds, tests, CI gates, caches, environments, dependency structure, and coding-Agent execution without silently weakening required engineering evidence.",
   "release": {
-    "version": "1.0.0",
-    "published_at": "2026-07-31T08:24:00+08:00",
+    "version": "1.1.0",
+    "published_at": "2026-07-31T09:16:00+08:00",
     "publisher": "ceasarXuu",
     "changes": [
-      "Publish the initial dev-loop skill with Audit / Recovery and Guard / Prevention operating modes.",
-      "Define Time to Trusted Feedback and the Change, Evidence, Execution, and Critical Path graph model.",
-      "Add evidence-first audit guidance for builds, tests, CI gates, caches, environments, architecture, and coding-Agent execution.",
-      "Add daily guardrails for validation scope, incremental state, cache correctness, gate ownership, environment reuse, and feedback budgets."
+      "Add a hard P0-P5 priority ladder that separates trust failures, blocking no-evidence work, validation amplification, reuse problems, gate redesign, and architectural locality.",
+      "Add a staged governance sequence and same-tier opportunity ranking based on critical-path benefit, frequency, population, confidence, durability, effort, correctness risk, maintenance, and rollback difficulty.",
+      "Require every audit to select exactly one Next Best Intervention with expected benefit, evidence preservation, risk, rollback, validation, and a follow-up gate.",
+      "Add governance work-in-progress limits and stop conditions so feedback-loop governance does not become an unbounded engineering program."
     ]
   },
   "source": {
