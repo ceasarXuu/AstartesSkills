@@ -8,54 +8,30 @@ import sys
 from pathlib import Path
 
 ALLOWED_AXES = {
-    "discovery",
-    "design",
-    "internal",
-    "api",
-    "data",
-    "cache",
-    "client",
-    "deployment",
-    "observability",
-    "cleanup",
-    "security",
+    "discovery", "design", "internal", "api", "data", "cache", "client",
+    "deployment", "observability", "cleanup", "security",
 }
 PLANNING_STATUSES = {"planned", "blocked-on-discovery", "deferred"}
 ARTIFACT_KINDS = {"discovery", "design"}
 ARTIFACT_STATUSES = {"planned", "drafted", "reviewed", "verified"}
 ACTION_VERBS = {
-    "add",
-    "change",
-    "remove",
-    "replace",
-    "move",
-    "split",
-    "route",
-    "migrate",
-    "wire",
-    "validate",
-    "rename",
-    "introduce",
-    "update",
-    "create",
-    "delete",
-    "configure",
+    "add", "change", "remove", "replace", "move", "split", "route",
+    "migrate", "wire", "validate", "rename", "introduce", "update",
+    "create", "delete", "configure",
 }
 VAGUE_ACTIONS = {"refactor", "optimize", "improve", "handle", "support", "complete"}
 VAGUE_LOCATIONS = {"backend", "frontend", "system", "codebase", "service", "module", "several services"}
 VAGUE_OBJECTS = {"logic", "module", "flow", "system", "feature", "cache layer", "backend"}
+GENERIC_BENEFITS = {
+    "improves quality", "add value", "adds value", "helps the project",
+    "makes the system better", "better system", "improves maintainability",
+    "delivers the feature",
+}
 
 WORK_UNIT_HEADER = [
-    "ID",
-    "Objective",
-    "Change Axis",
-    "Change Location",
-    "Target Object",
-    "Concrete Action",
-    "Resulting Behavior",
-    "Verification",
-    "Safe Stop / Rollback",
-    "Plan Status",
+    "ID", "Objective", "Change Axis", "Change Location", "Target Object",
+    "Concrete Action", "Resulting Behavior", "Benefit", "Verification",
+    "Safe Stop / Rollback", "Plan Status",
 ]
 ARTIFACT_HEADER = ["Artifact", "Kind", "Expected Output", "Status"]
 
@@ -89,6 +65,10 @@ def count_action_verbs(action: str) -> int:
     return count
 
 
+def normalize_sentence(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", value.lower()).strip()
+
+
 def validate_work_units(text: str) -> None:
     header, rows = table_after_heading(text, "Work Units")
     if header != WORK_UNIT_HEADER:
@@ -99,16 +79,8 @@ def validate_work_units(text: str) -> None:
         if len(row) != len(WORK_UNIT_HEADER):
             raise PlanQualityError(f"work unit row {index} has {len(row)} cells, expected {len(WORK_UNIT_HEADER)}")
         (
-            unit_id,
-            objective,
-            axis,
-            location,
-            target,
-            action,
-            behavior,
-            verification,
-            safe_stop,
-            plan_status,
+            unit_id, objective, axis, location, target, action, behavior, benefit,
+            verification, safe_stop, plan_status,
         ) = row
 
         if not unit_id or unit_id in ids:
@@ -143,6 +115,12 @@ def validate_work_units(text: str) -> None:
 
         if len(behavior) < 10:
             raise PlanQualityError(f"{unit_id}: resulting behavior is too thin")
+
+        benefit_normalized = normalize_sentence(benefit)
+        if len(benefit) < 16 or benefit_normalized in GENERIC_BENEFITS:
+            raise PlanQualityError(f"{unit_id}: benefit is missing or too generic: {benefit}")
+        if benefit_normalized == normalize_sentence(behavior):
+            raise PlanQualityError(f"{unit_id}: benefit merely repeats resulting behavior")
 
         verification_normalized = verification.lower()
         if verification_normalized in {"run tests", "test", "verify", "check"} or len(verification) < 12:
