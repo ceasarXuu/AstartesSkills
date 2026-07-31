@@ -180,3 +180,11 @@
 - 隔离证据：安装前后 `~/.claude/settings.json` 哈希一致；mock 和真实请求后 `claude auth status` 仍显示 `loggedIn=true`、`authMethod=oauth_token`、`apiProvider=firstParty`。
 - 首次配置体验：安装完成后若专用 settings 仍含 Key 占位符，默认按 VS Code、macOS `open`、Linux `xdg-open` 的顺序打开文件；已有 Key 时保持静默，自动化使用 `--no-open-editor`，避免 CI 意外拉起 GUI。
 - 复用方式：测试 Claude Code 的 Anthropic 兼容 Provider 时，先用专用 settings + loopback Messages mock 验证 path、模型解析和认证头，再在无业务目录中发送固定最小提示词做真实烟测；不要记录认证头内容，也不要用仓库源码充当测试提示词。
+
+## 2026-07-31 Claude Code 全 Flash Profile 实测
+
+- 目标：在保留 `claude-ds` Pro/Flash 混合 profile 的同时，新增 `claude-ds-flash`，让主模型、Opus/Sonnet/Haiku 映射和子代理模型全部使用 `deepseek-v4-flash`。
+- 架构决策：两个 profile 使用声明式 settings 资产和同一安装核心；Flash 入口只负责选择 profile。目标 profile Key 优先，其次安全复用同一 DeepSeek Provider 的兄弟 profile Key，避免复制安装、备份和日志代码。
+- 协议发现：Claude Code `2.1.218` 对 Pro 和 Flash 请求都会在 Messages URL 带 `beta=true`，因此 URL query 不能作为 `[1m]` 判据；扩展上下文应通过非敏感的 `Anthropic-Beta` 能力头是否包含 `context-1m` 判断。
+- 验证：Pro mock 传输模型为 `deepseek-v4-pro` 且包含 `context-1m`；Flash mock 传输模型为 `deepseek-v4-flash` 且不包含 `context-1m`。全 Flash 真实最小请求返回 `FLASH_OK`，两个 profile 重复安装均为 `unchanged`，Claude OAuth 仍为 first-party。
+- 复用方式：同 Provider 多 profile 应共享安装机制而不是复制脚本；协议测试要把通用 transport 标记与模型特定 capability 分开断言，避免通过表面 URL 误判模型行为。

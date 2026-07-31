@@ -40,7 +40,9 @@ def parse_args() -> argparse.Namespace:
 class Capture:
     request: dict[str, Any] | None = None
     authorization_present = False
+    anthropic_beta = ""
     path: str | None = None
+    response_model = "deepseek-v4-pro"
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -56,6 +58,7 @@ class Handler(BaseHTTPRequestHandler):
         Capture.authorization_present = bool(
             self.headers.get("Authorization") or self.headers.get("X-Api-Key")
         )
+        Capture.anthropic_beta = self.headers.get("Anthropic-Beta", "")
         try:
             Capture.request = json.loads(payload)
         except json.JSONDecodeError:
@@ -72,7 +75,7 @@ class Handler(BaseHTTPRequestHandler):
             "id": "msg_provider_switch_mock",
             "type": "message",
             "role": "assistant",
-            "model": "deepseek-v4-pro[1m]",
+            "model": Capture.response_model,
             "content": [{"type": "text", "text": "MOCK_OK"}],
             "stop_reason": "end_turn",
             "stop_sequence": None,
@@ -95,7 +98,7 @@ class Handler(BaseHTTPRequestHandler):
                         "id": "msg_provider_switch_mock",
                         "type": "message",
                         "role": "assistant",
-                        "model": "deepseek-v4-pro[1m]",
+                        "model": Capture.response_model,
                         "content": [],
                         "stop_reason": None,
                         "stop_sequence": None,
@@ -163,6 +166,7 @@ def main() -> int:
 
     Capture.request = None
     Capture.authorization_present = False
+    Capture.anthropic_beta = ""
     Capture.path = None
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
     port = server.server_address[1]
@@ -175,6 +179,9 @@ def main() -> int:
             settings = load_mock_settings(
                 args.settings, f"http://127.0.0.1:{port}/anthropic"
             )
+            configured_model = str(settings["env"]["ANTHROPIC_MODEL"])
+            expected_model = configured_model.removesuffix("[1m]")
+            Capture.response_model = expected_model
             settings_path.write_text(
                 json.dumps(settings, ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
@@ -208,13 +215,17 @@ def main() -> int:
     request = Capture.request or {}
     prompt_dump = json.dumps(request.get("messages", []), ensure_ascii=False)
     parsed_path = urlsplit(Capture.path or "")
+    beta_query = parse_qs(parsed_path.query).get("beta") == ["true"]
+    extended_context = "context-1m" in Capture.anthropic_beta
+    expected_extended_context = configured_model.endswith("[1m]")
     checks = {
         "exit-zero": result.returncode == 0,
         "response": "MOCK_OK" in result.stdout,
         "messages-path": parsed_path.path.endswith("/v1/messages"),
-        "extended-context": parse_qs(parsed_path.query).get("beta") == ["true"],
+        "beta-query": beta_query,
+        "extended-context": extended_context == expected_extended_context,
         "authorization": Capture.authorization_present,
-        "model": request.get("model") == "deepseek-v4-pro",
+        "model": request.get("model") == expected_model,
         "prompt": "Reply with exactly: MOCK_OK" in prompt_dump,
     }
     for name, passed in checks.items():
@@ -222,13 +233,16 @@ def main() -> int:
     if not all(checks.values()):
         log(
             "diagnostic",
-            f"request-path={Capture.path or '<missing>'} model={request.get('model', '<missing>')}",
+            f"request-path={Capture.path or '<missing>'} model={request.get('model', '<missing>')} anthropic-beta={Capture.anthropic_beta or '<missing>'}",
         )
         sanitized_stderr = result.stderr.replace(DIAGNOSTIC_TOKEN, "<redacted>")
         if sanitized_stderr:
             log("diagnostic", sanitized_stderr.strip()[:2000])
         return 1
-    log("complete", "request=local-mock network=loopback credential=diagnostic")
+    log(
+        "complete",
+        f"request=local-mock network=loopback credential=diagnostic model={expected_model}",
+    )
     return 0
 
 

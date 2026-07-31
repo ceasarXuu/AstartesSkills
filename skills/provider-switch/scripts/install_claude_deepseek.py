@@ -12,16 +12,49 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 ASSETS = SKILL_ROOT / "assets"
-SETTINGS_NAME = "deepseek.settings.json"
-WRAPPER_NAME = "claude-ds"
 KEY_PLACEHOLDER = "<YOUR_DEEPSEEK_API_KEY>"
 MINIMUM_CLAUDE_VERSION = (2, 1, 218)
+DEFAULT_PROFILE = "claude-code-deepseek"
+
+
+@dataclass(frozen=True)
+class Profile:
+    id: str
+    settings_asset: str
+    settings_name: str
+    backup_name: str
+    wrapper_name: str
+    model: str
+    fast_model: str
+
+
+PROFILES = {
+    "claude-code-deepseek": Profile(
+        id="claude-code-deepseek",
+        settings_asset="claude-code-deepseek.settings.json",
+        settings_name="deepseek.settings.json",
+        backup_name="claude-deepseek.settings.json",
+        wrapper_name="claude-ds",
+        model="deepseek-v4-pro[1m]",
+        fast_model="deepseek-v4-flash",
+    ),
+    "claude-code-deepseek-flash": Profile(
+        id="claude-code-deepseek-flash",
+        settings_asset="claude-code-deepseek-flash.settings.json",
+        settings_name="deepseek-flash.settings.json",
+        backup_name="claude-deepseek-flash.settings.json",
+        wrapper_name="claude-ds-flash",
+        model="deepseek-v4-flash",
+        fast_model="deepseek-v4-flash",
+    ),
+}
 
 
 class InstallError(RuntimeError):
@@ -32,7 +65,7 @@ def log(event: str, message: str) -> None:
     print(f"[provider-switch] {event} {message}")
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(default_profile: str) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Install a temporary Claude Code profile for DeepSeek."
     )
@@ -40,6 +73,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--bin-dir", type=Path)
     parser.add_argument("--claude-command", default="claude")
     parser.add_argument("--api-key-env", default="DEEPSEEK_API_KEY")
+    parser.add_argument("--profile", choices=sorted(PROFILES), default=default_profile)
     editor_group = parser.add_mutually_exclusive_group()
     editor_group.add_argument("--open-editor", dest="open_editor", action="store_true")
     editor_group.add_argument(
@@ -79,8 +113,8 @@ def check_claude(command: str) -> str:
     return resolved
 
 
-def load_template() -> dict[str, object]:
-    path = ASSETS / "claude-code-deepseek.settings.json"
+def load_template(profile: Profile) -> dict[str, object]:
+    path = ASSETS / profile.settings_asset
     try:
         settings = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -91,7 +125,7 @@ def load_template() -> dict[str, object]:
     return settings
 
 
-def read_existing_key(path: Path) -> str | None:
+def read_existing_key(path: Path, log_preserve: bool = True) -> str | None:
     if not path.exists():
         return None
     try:
@@ -101,16 +135,28 @@ def read_existing_key(path: Path) -> str | None:
     env = existing.get("env")
     value = env.get("ANTHROPIC_AUTH_TOKEN") if isinstance(env, dict) else None
     if isinstance(value, str) and value and value != KEY_PLACEHOLDER:
-        log("preserve", "credential=existing-provider-token")
+        if log_preserve:
+            log("preserve", "credential=existing-provider-token")
         return value
     return None
 
 
-def render_settings(target: Path, api_key_env: str) -> bytes:
-    settings = load_template()
+def render_settings(
+    target: Path, claude_home: Path, api_key_env: str, profile: Profile
+) -> bytes:
+    settings = load_template(profile)
     env = settings["env"]
     assert isinstance(env, dict)
     credential = read_existing_key(target)
+    if credential is None:
+        for sibling in PROFILES.values():
+            sibling_path = claude_home / "provider-switch" / sibling.settings_name
+            if sibling.id == profile.id or not sibling_path.exists():
+                continue
+            credential = read_existing_key(sibling_path, log_preserve=False)
+            if credential is not None:
+                log("import", f"credential=sibling-profile profile={sibling.id}")
+                break
     if credential is None:
         candidate = os.environ.get(api_key_env)
         if candidate:
@@ -172,9 +218,14 @@ def install_bytes(
     return action
 
 
-def render_wrapper(settings_path: Path) -> bytes:
+def render_wrapper(settings_path: Path, profile: Profile) -> bytes:
     template = (ASSETS / "claude-ds").read_text(encoding="utf-8")
-    return template.replace("__SETTINGS_PATH__", shlex.quote(str(settings_path))).encode()
+    rendered = template.replace(
+        "__SETTINGS_PATH__", shlex.quote(str(settings_path))
+    )
+    rendered = rendered.replace("__MODEL__", profile.model)
+    rendered = rendered.replace("__FAST_MODEL__", profile.fast_model)
+    return rendered.encode()
 
 
 def maybe_open_editor(settings_path: Path, requested: bool, dry_run: bool) -> None:
@@ -203,16 +254,19 @@ def maybe_open_editor(settings_path: Path, requested: bool, dry_run: bool) -> No
             log("warning", f"editor launch failed target={settings_path} error={exc}")
 
 
-def main() -> int:
-    args = parse_args()
+def main(default_profile: str = DEFAULT_PROFILE) -> int:
+    args = parse_args(default_profile)
     try:
         check_claude(args.claude_command)
+        profile = PROFILES[args.profile]
         claude_home = (args.claude_home or Path("~/.claude")).expanduser()
         bin_dir = (args.bin_dir or Path("~/.local/bin")).expanduser()
-        settings_path = claude_home / "provider-switch" / SETTINGS_NAME
-        wrapper_path = bin_dir / WRAPPER_NAME
-        settings = render_settings(settings_path, args.api_key_env)
-        wrapper = render_wrapper(settings_path)
+        settings_path = claude_home / "provider-switch" / profile.settings_name
+        wrapper_path = bin_dir / profile.wrapper_name
+        settings = render_settings(
+            settings_path, claude_home, args.api_key_env, profile
+        )
+        wrapper = render_wrapper(settings_path, profile)
         backup = BackupStore(claude_home, args.dry_run)
 
         install_bytes(
@@ -220,7 +274,7 @@ def main() -> int:
             settings,
             0o600,
             backup,
-            "claude-deepseek.settings.json",
+            profile.backup_name,
             args.dry_run,
         )
         install_bytes(
@@ -228,13 +282,13 @@ def main() -> int:
             wrapper,
             0o755,
             backup,
-            WRAPPER_NAME,
+            profile.wrapper_name,
             args.dry_run,
         )
         needs_key = KEY_PLACEHOLDER.encode() in settings
         log(
             "complete",
-            f"command={wrapper_path} profile=claude-code-deepseek dry_run={str(args.dry_run).lower()}",
+            f"command={wrapper_path} profile={profile.id} dry_run={str(args.dry_run).lower()}",
         )
         if needs_key:
             log("next", f"add-provider-key={settings_path}")

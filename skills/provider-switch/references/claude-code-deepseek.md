@@ -38,6 +38,8 @@ claude-ds
 
 Additional arguments are forwarded unchanged. Unlike the bundled Codex wrapper, this launcher keeps Claude Code's default permission prompts and does not enable `--dangerously-skip-permissions`.
 
+For a separate profile that uses V4 Flash for the main model and every submodel, read [claude-code-deepseek-flash.md](claude-code-deepseek-flash.md) and install `claude-ds-flash`. The two profiles coexist and do not overwrite each other's settings.
+
 ## Effective provider configuration
 
 The dedicated settings file follows DeepSeek's documented environment mapping:
@@ -54,7 +56,7 @@ CLAUDE_CODE_EFFORT_LEVEL=max
 
 `ANTHROPIC_AUTH_TOKEN` holds the DeepSeek API key for this process. While that provider credential is active, the session does not use the saved claude.ai subscription credential. `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` prevents nonessential telemetry and error-reporting traffic from the provider-switched process.
 
-With Claude Code `2.1.218`, the `[1m]` suffix is interpreted client-side: the Messages request sends model `deepseek-v4-pro` and marks the extended-context request in the URL. The bundled mock validator checks this transport behavior so a future Claude Code change is visible.
+With Claude Code `2.1.218`, the `[1m]` suffix is interpreted client-side: the Messages request sends model `deepseek-v4-pro` and includes the `context-1m` Anthropic beta capability. The bundled mock validator checks this transport behavior so a future Claude Code change is visible.
 
 ## Validate
 

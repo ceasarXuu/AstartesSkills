@@ -6,10 +6,12 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 skill_dir="$repo_root/skills/provider-switch"
 installer="$skill_dir/scripts/install_codex_deepseek.py"
 claude_installer="$skill_dir/scripts/install_claude_deepseek.py"
+claude_flash_installer="$skill_dir/scripts/install_claude_deepseek_flash.py"
 catalog="$skill_dir/assets/providers.json"
 config_asset="$skill_dir/assets/codex-deepseek-flash.config.toml"
 wrapper_asset="$skill_dir/assets/codex-ds-flash"
 claude_settings_asset="$skill_dir/assets/claude-code-deepseek.settings.json"
+claude_flash_settings_asset="$skill_dir/assets/claude-code-deepseek-flash.settings.json"
 claude_wrapper_asset="$skill_dir/assets/claude-ds"
 fixture="$repo_root/tests/provider-switch/fixtures/codex-deepseek-setup.sh"
 
@@ -45,6 +47,7 @@ for item in data["providers"]:
 assert len(ids) == len(set(ids))
 assert "codex-deepseek-flash" in ids
 assert "claude-code-deepseek" in ids
+assert "claude-code-deepseek-flash" in ids
 PY
 
 if rg -q '^(preferred_auth_method|forced_login_method)[[:space:]]*=' "$config_asset"; then
@@ -56,11 +59,27 @@ python3 -m json.tool "$claude_settings_asset" >/dev/null
 rg -q 'https://api.deepseek.com/anthropic' "$claude_settings_asset"
 rg -q 'deepseek-v4-pro\[1m\]' "$claude_settings_asset"
 rg -q 'deepseek-v4-flash' "$claude_settings_asset"
+python3 -m json.tool "$claude_flash_settings_asset" >/dev/null
+python3 - "$claude_flash_settings_asset" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+env = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))["env"]
+model_fields = [
+    "ANTHROPIC_MODEL",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL",
+    "CLAUDE_CODE_SUBAGENT_MODEL",
+]
+assert all(env[field] == "deepseek-v4-flash" for field in model_fields)
+PY
 rg -q '^exec claude --settings "\$provider_switch_settings" "\$@"$' "$claude_wrapper_asset"
 if rg -q -- '--dangerously-skip-permissions' "$claude_wrapper_asset"; then
   fail "Claude wrapper must keep default permission prompts"
 fi
-python3 - "$installer" "$claude_installer" "$skill_dir/scripts/validate_claude_mock.py" <<'PY'
+python3 - "$installer" "$claude_installer" "$claude_flash_installer" "$skill_dir/scripts/validate_claude_mock.py" <<'PY'
 import ast
 import sys
 from pathlib import Path
@@ -251,6 +270,58 @@ fi
 PATH="$fake_bin:$PATH" python3 "$claude_installer" --claude-home "$claude_home" --bin-dir "$claude_bin" --claude-command "$fake_bin/claude" > "$runtime_root/claude-existing-key-editor.log"
 if rg -q '\[provider-switch\] editor ' "$runtime_root/claude-existing-key-editor.log"; then
   fail "existing provider key unexpectedly launched an editor"
+fi
+
+log "checking Claude Code all-Flash profile and sibling-key import"
+claude_flash_install_cmd=(
+  python3 "$claude_flash_installer"
+  --claude-home "$claude_home"
+  --bin-dir "$claude_bin"
+  --claude-command "$fake_bin/claude"
+  --no-open-editor
+)
+"${claude_flash_install_cmd[@]}" > "$runtime_root/claude-flash-first.log"
+claude_flash_settings="$claude_home/provider-switch/deepseek-flash.settings.json"
+[[ -f "$claude_flash_settings" ]]
+[[ -x "$claude_bin/claude-ds-flash" ]]
+rg -q 'diagnostic-claude-token' "$claude_flash_settings"
+rg -q '\[provider-switch\] import credential=sibling-profile profile=claude-code-deepseek' "$runtime_root/claude-flash-first.log"
+if rg -q 'diagnostic-claude-token' "$runtime_root/claude-flash-first.log"; then
+  fail "Flash installer logged an imported provider key"
+fi
+python3 - "$claude_flash_settings" "$claude_bin/claude-ds-flash" <<'PY'
+import json
+import stat
+import sys
+from pathlib import Path
+
+settings = Path(sys.argv[1])
+wrapper = Path(sys.argv[2])
+env = json.loads(settings.read_text(encoding="utf-8"))["env"]
+for field in (
+    "ANTHROPIC_MODEL",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL",
+    "CLAUDE_CODE_SUBAGENT_MODEL",
+):
+    assert env[field] == "deepseek-v4-flash"
+assert stat.S_IMODE(settings.stat().st_mode) == 0o600
+assert stat.S_IMODE(wrapper.stat().st_mode) == 0o755
+PY
+"${claude_flash_install_cmd[@]}" > "$runtime_root/claude-flash-second.log"
+rg -q '\[provider-switch\] preserve credential=existing-provider-token' "$runtime_root/claude-flash-second.log"
+rg -q '\[provider-switch\] unchanged target=.*deepseek-flash.settings.json' "$runtime_root/claude-flash-second.log"
+rg -q '\[provider-switch\] unchanged target=.*claude-ds-flash' "$runtime_root/claude-flash-second.log"
+
+log "checking Claude Code all-Flash wrapper model and argument forwarding"
+PATH="$fake_bin:$PATH" "$claude_bin/claude-ds-flash" --version 'flash argument with spaces' > "$runtime_root/claude-flash-wrapper.out" 2> "$runtime_root/claude-flash-wrapper.err"
+rg -q 'model=deepseek-v4-flash fast_model=deepseek-v4-flash' "$runtime_root/claude-flash-wrapper.err"
+rg -q '^--settings$' "$runtime_root/claude-flash-wrapper.out"
+rg -Fqx "$claude_flash_settings" "$runtime_root/claude-flash-wrapper.out"
+rg -q '^flash argument with spaces$' "$runtime_root/claude-flash-wrapper.out"
+if rg -q 'diagnostic-claude-token' "$runtime_root/claude-flash-wrapper.err"; then
+  fail "Flash wrapper logged a provider key"
 fi
 
 log "checking Claude Code changed-file backup"

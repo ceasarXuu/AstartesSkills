@@ -205,13 +205,13 @@
         "path": "skills/provider-switch"
       },
       "release": {
-        "version": "1.1.1",
-        "published_at": "2026-07-31T20:56:31+08:00",
+        "version": "1.2.0",
+        "published_at": "2026-07-31T21:06:14+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Open the dedicated Claude Code and DeepSeek settings automatically after installation when the API key placeholder still needs user input.",
-          "Keep existing-key updates quiet and add --no-open-editor for automation and unattended installs.",
-          "Add regression coverage for default editor launch, opt-out behavior, existing-key behavior, and post-completion launch ordering."
+          "Add an independent claude-ds-flash profile that routes the main model, all Claude model aliases, and subagents to deepseek-v4-flash.",
+          "Refactor Claude Code installation and local mock validation around shared declarative profiles while preserving existing claude-ds behavior and backup names.",
+          "Reuse same-provider credentials safely, keep both launchers isolated, and add install, idempotency, model-mapping, argument-forwarding, mock, and real-smoke coverage."
         ]
       },
       "markets": {
