@@ -1,0 +1,24 @@
+#!/bin/sh
+set -eu
+
+readonly provider_switch_codex_home="${CODEX_HOME:-$HOME/.codex}"
+readonly provider_switch_config="$provider_switch_codex_home/deepseek-flash.config.toml"
+readonly provider_switch_catalog="$provider_switch_codex_home/deepseek-models.json"
+
+if [ ! -r "$provider_switch_config" ] || [ ! -r "$provider_switch_catalog" ]; then
+  printf '%s\n' "[provider-switch] ERROR missing Codex DeepSeek side-load files" >&2
+  exit 78
+fi
+
+if grep -q '<YOUR_DEEPSEEK_API_KEY>' "$provider_switch_config"; then
+  printf '%s\n' "[provider-switch] ERROR add the DeepSeek API key to $provider_switch_config" >&2
+  exit 78
+fi
+
+if ! command -v codex >/dev/null 2>&1; then
+  printf '%s\n' "[provider-switch] ERROR codex is not available on PATH" >&2
+  exit 127
+fi
+
+printf '%s\n' "[provider-switch] launch agent=codex-cli provider=deepseek-api model=deepseek-v4-flash reasoning=high scope=temporary-profile mode=yolo auth=provider-bearer" >&2
+exec codex -p deepseek-flash --dangerously-bypass-approvals-and-sandbox "$@"

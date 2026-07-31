@@ -118,6 +118,7 @@ Reference:
 | `dev-loop` | Audit, optimize, and protect software development feedback loops across builds, tests, CI gates, caches, environments, dependency structure, and coding-Agent execution. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill dev-loop` |
 | `docs-manager` | Design, reorganize, audit, and maintain repository documentation systems with versioned PRDs, technical designs, engineering plans, link management, archive policy, and validation tooling. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill docs-manager` |
 | `frontend-refactoring` | Refactor legacy frontend surfaces by isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill frontend-refactoring` |
+| `provider-switch` | Manage safe, reversible coding-agent and model-provider configurations with cataloged install, validation, backup, and rollback workflows. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill provider-switch` |
 | `se-good-plan` | Write and review phased, executable, independently verifiable, reviewable, rollback-aware software engineering plans with strict phase gates, plan-to-code completeness, benefit validation, and chain-state logging evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill se-good-plan` |
 | `show-my-repo` | Turn a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill show-my-repo` |
 | `storybook-skills-standard` | Design and audit Storybook-driven component workflows, story coverage, mocks, docs, interaction tests, accessibility checks, and visual baselines. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill storybook-skills-standard` |
@@ -134,6 +135,7 @@ Reference:
 │   ├── dev-loop/                   # Development feedback-loop audit and governance skill
 │   ├── docs-manager/               # Versioned documentation governance skill
 │   ├── frontend-refactoring/       # Legacy frontend migration skill
+│   ├── provider-switch/             # Agent and model provider configuration skill
 │   ├── se-good-plan/               # Software engineering plan writing and review skill
 │   ├── show-my-repo/               # Repo packaging and presentation skill
 │   ├── storybook-skills-standard/  # Storybook component workflow governance skill

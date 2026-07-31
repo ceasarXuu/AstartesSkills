@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "providers": [
+    {
+      "id": "codex-deepseek-flash",
+      "agent": "codex-cli",
+      "provider": "deepseek-api",
+      "model": "deepseek-v4-flash",
+      "scope": "temporary-profile",
+      "command": "codex-ds-flash",
+      "minimum_agent_version": "0.144.0",
+      "reference": "references/codex-deepseek-flash.md",
+      "installer": "scripts/install_codex_deepseek.py"
+    }
+  ]
+}

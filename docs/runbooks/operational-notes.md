@@ -158,3 +158,16 @@
 - 决策：下线时同步移除 skill 包、`registry/skills.json` 条目、README 当前展示与安装入口、专项 sanity 脚本及其调用；历史计划、审查报告和构想文档保留，继续承担决策追溯作用。
 - 验证：运行 `./scripts/validate-repo.sh`，确认注册 skills 数与发现目录数一致；再运行默认冒烟和仍维护的专项回归测试。
 - 复用方式：若默认冒烟目标被下线，必须在同一次变更中切换到仍维护且具有代表性的 skill，避免无参数测试立即失效。
+
+## 2026-07-31 Provider Profile 与 Agent 登录状态隔离
+
+- 问题：把 `forced_login_method = "api"` 放进 Codex 的 DeepSeek 临时侧载配置，会让 Codex 把现有 ChatGPT 登录视为违反全局登录策略，并主动清除 `auth.json`。
+- 根因：Provider Bearer Token 与 Codex 自身登录是两条认证链；`forced_login_method` 约束后者，并不是发送自定义 Provider Key 的必要条件。
+- 决策：Provider profile 只配置 provider endpoint、Responses 协议、`requires_openai_auth = false` 和 provider bearer；禁止把全局登录策略写进临时 profile。安装器在更新时保留已有非占位 Key，并用本地 mock 验证请求头存在、运行前后登录状态不变。
+- 复用方式：新增任何 Agent/Provider 组合时，先画清 Agent 账号登录、Provider 鉴权、配置作用域三条边界；临时切换默认不得修改主配置或登录存储，真实 Provider 冒烟必须单独确认成本和远端数据影响。
+
+## 2026-07-31 Skill Creator 工具版本与本地目录残留
+
+- 问题：历史 runbook 记录的 `package_skill.py` 在当前系统 `skill-creator` 中已不存在，且本机 Three.js 合并后遗留只含 `.DS_Store` 的旧 skill 目录，导致全仓校验把它们识别为缺少 `SKILL.md` 的安装包。
+- 决策：以当前 `SKILL.md` 明示的 `init_skill.py`、`quick_validate.py` 为准；额外用仓库 market export 和临时安装 smoke 代替已移除的打包脚本。确认旧目录没有业务文件后移入回收站，再重跑全仓门禁。
+- 复用方式：不要把 runbook 中的工具清单当作永久 API；每次先枚举当前 system skill 的 scripts。合并或下线 macOS 目录后检查 `.DS_Store` 是否让本应消失的目录继续存在。

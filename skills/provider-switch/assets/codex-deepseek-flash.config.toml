@@ -1,0 +1,13 @@
+# Managed by provider-switch for `codex -p deepseek-flash`.
+# Replace only the API key placeholder below.
+model = "deepseek-v4-flash"
+model_provider = "deepseek"
+model_reasoning_effort = "high"
+model_catalog_json = __MODEL_CATALOG_PATH__
+
+[model_providers.deepseek]
+name = "deepseek"
+base_url = "https://api.deepseek.com/"
+wire_api = "responses"
+requires_openai_auth = false
+experimental_bearer_token = "<YOUR_DEEPSEEK_API_KEY>"

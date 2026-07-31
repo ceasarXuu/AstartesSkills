@@ -1,0 +1,4 @@
+interface:
+  display_name: "Provider Switch"
+  short_description: "Safely manage agent and model provider configurations."
+  default_prompt: "Use $provider-switch to install or switch an agent provider configuration safely."

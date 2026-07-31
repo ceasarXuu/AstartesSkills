@@ -77,7 +77,7 @@ log "checking skill registry coverage"
 "$repo_root/scripts/validate-skill-registry-coverage.py" "$registry_file" "$repo_root"
 
 log "checking skill-specific sanity scripts"
-for sanity_script in "$repo_root/scripts/bug-killer-sanity.sh" "$repo_root/scripts/clear-prd-sanity.sh" "$repo_root/scripts/plan-report-sanity.sh" "$repo_root/scripts/se-good-plan-sanity.sh"; do
+for sanity_script in "$repo_root/scripts/bug-killer-sanity.sh" "$repo_root/scripts/clear-prd-sanity.sh" "$repo_root/scripts/plan-report-sanity.sh" "$repo_root/scripts/provider-switch-sanity.sh" "$repo_root/scripts/se-good-plan-sanity.sh"; do
   [[ -x "$sanity_script" ]] || fail "missing executable sanity script: ${sanity_script#$repo_root/}"
   "$sanity_script"
 done

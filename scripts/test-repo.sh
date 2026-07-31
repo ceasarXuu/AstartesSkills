@@ -58,4 +58,9 @@ if [[ "$skill_id" == "se-good-plan" ]]; then
   "$repo_root/scripts/se-good-plan-sanity.sh"
 fi
 
+if [[ "$skill_id" == "provider-switch" ]]; then
+  log "checking provider-switch catalog and installer contract"
+  "$repo_root/scripts/provider-switch-sanity.sh"
+fi
+
 log "repository smoke test passed for $skill_id"
