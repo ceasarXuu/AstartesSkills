@@ -8,11 +8,7 @@
       "summary": "Debugs medium and large bugs with persistent /coe case tracking, independent multi-path root-cause investigation, and a diagnostic evidence gate before repair design.",
       "tags": ["debugging", "root-cause-analysis", "evidence", "observability", "multi-agent"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/bug-killer"
-      },
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/bug-killer"},
       "release": {
         "version": "1.0.0",
         "published_at": "2026-06-05T03:57:54+08:00",
@@ -25,14 +21,7 @@
           "Add case template, interaction fixtures, marketplace metadata, and validation coverage for evidence-gated repair behavior."
         ]
       },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/bug-killer/markets/openai-compatible.json"
-        }
-      }
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/bug-killer/markets/openai-compatible.json"}}
     },
     {
       "id": "clear-prd",
@@ -41,11 +30,7 @@
       "summary": "Clarifies product requirements through guided multi-round questions focused on product logic, user experience, interaction design, rules, edge cases, and acceptance criteria, then writes a Draft or Ready PRD.",
       "tags": ["prd", "requirements", "product-design", "ux", "clarification"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/clear-prd"
-      },
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/clear-prd"},
       "release": {
         "version": "1.0.0",
         "published_at": "2026-06-02T05:20:31+08:00",
@@ -56,14 +41,7 @@
           "Add an interaction fixture for partial and custom-answer behavior."
         ]
       },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/clear-prd/markets/openai-compatible.json"
-        }
-      }
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/clear-prd/markets/openai-compatible.json"}}
     },
     {
       "id": "docs-manager",
@@ -72,11 +50,7 @@
       "summary": "Designs, reorganizes, audits, and maintains repository documentation systems with versioned PRDs, technical designs, engineering plans, link management, archive policy, and validation tooling.",
       "tags": ["documentation", "docs-governance", "prd", "technical-design", "validation"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/docs-manager"
-      },
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/docs-manager"},
       "release": {
         "version": "1.0.0",
         "published_at": "2026-06-16T05:54:01+08:00",
@@ -86,14 +60,7 @@
           "Package version document templates and the docs governance validation script with OpenAI-compatible marketplace metadata."
         ]
       },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/docs-manager/markets/openai-compatible.json"
-        }
-      }
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/docs-manager/markets/openai-compatible.json"}}
     },
     {
       "id": "frontend-refactoring",
@@ -102,11 +69,7 @@
       "summary": "Refactors legacy frontend surfaces by inventorying structure first, isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems.",
       "tags": ["frontend", "css", "refactor", "ui-architecture", "migration"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/frontend-refactoring"
-      },
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/frontend-refactoring"},
       "release": {
         "version": "1.2.1",
         "published_at": "2026-04-23T00:00:00+08:00",
@@ -116,14 +79,7 @@
           "Record release metadata for the skill in the repository publishing flow."
         ]
       },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/frontend-refactoring/markets/openai-compatible.json"
-        }
-      }
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/frontend-refactoring/markets/openai-compatible.json"}}
     },
     {
       "id": "plan-report",
@@ -132,11 +88,7 @@
       "summary": "Reports plan implementation results with evidence-based overall, stage, and module completion percentages, goal alignment verification, concrete engineering benefit analysis, unfinished-work impact analysis, and concrete next actions.",
       "tags": ["reporting", "plan-review", "implementation-report", "evidence", "completion-tracking"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/plan-report"
-      },
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/plan-report"},
       "release": {
         "version": "1.0.1",
         "published_at": "2026-07-02T16:25:50+08:00",
@@ -147,14 +99,7 @@
           "Add quality-bar examples that reject generic benefit claims without measurable engineering effect."
         ]
       },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/plan-report/markets/openai-compatible.json"
-        }
-      }
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/plan-report/markets/openai-compatible.json"}}
     },
     {
       "id": "se-good-plan",
@@ -163,11 +108,7 @@
       "summary": "Writes and reviews phased, executable, independently verifiable, reviewable, rollback-aware software engineering plans with strict phase gates, plan-to-code completeness, benefit validation, and chain-state logging evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work.",
       "tags": ["software-engineering", "planning", "implementation-plan", "review", "rollout"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/se-good-plan"
-      },
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/se-good-plan"},
       "release": {
         "version": "1.4.0",
         "published_at": "2026-06-29T18:12:21+08:00",
@@ -179,14 +120,7 @@
           "Add strict phase-gate fixtures, exemplar coverage, and sanity checks."
         ]
       },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/se-good-plan/markets/openai-compatible.json"
-        }
-      }
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/se-good-plan/markets/openai-compatible.json"}}
     },
     {
       "id": "storybook-skills-standard",
@@ -195,11 +129,7 @@
       "summary": "Designs and audits Storybook-driven frontend component workflows, story coverage, mocks, docs, interaction tests, accessibility checks, and visual baselines.",
       "tags": ["storybook", "frontend", "design-system", "component-driven", "ui-testing"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/storybook-skills-standard"
-      },
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/storybook-skills-standard"},
       "release": {
         "version": "1.0.0",
         "published_at": "2026-04-23T22:50:00+08:00",
@@ -210,14 +140,7 @@
           "Normalize the project-level preview example to TSX when decorators use JSX."
         ]
       },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/storybook-skills-standard/markets/openai-compatible.json"
-        }
-      }
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/storybook-skills-standard/markets/openai-compatible.json"}}
     },
     {
       "id": "threejs-game",
@@ -226,28 +149,9 @@
       "summary": "Routes three.js game-development tasks across runtime, assets, rendering, input, physics, animation, performance, networking, tooling, and XR tracks.",
       "tags": ["threejs", "game-development", "webgl", "game-architecture", "routing"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/threejs-game"
-      },
-      "release": {
-        "version": "1.0.0",
-        "published_at": "2026-04-23T22:54:12+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-          "Register the family router skill with OpenAI-compatible metadata and repository release metadata."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/threejs-game/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/threejs-game"},
+      "release": {"version": "1.0.0", "published_at": "2026-04-23T22:54:12+08:00", "publisher": "ceasarXuu", "changes": ["Import the Three.js game skill family into AstartesSkills as managed installable skills.", "Register the family router skill with OpenAI-compatible metadata and repository release metadata."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/threejs-game/markets/openai-compatible.json"}}
     },
     {
       "id": "threejs-game-animation-character",
@@ -256,28 +160,9 @@
       "summary": "Builds maintainable three.js character-animation systems with state graphs, clip conventions, retargeting, skeletal reuse, and optional IK.",
       "tags": ["threejs", "game-development", "animation", "character", "ik"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/threejs-game-animation-character"
-      },
-      "release": {
-        "version": "1.0.0",
-        "published_at": "2026-04-23T22:54:12+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-          "Register the animation and character workflow skill with OpenAI-compatible metadata and repository release metadata."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/threejs-game-animation-character/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/threejs-game-animation-character"},
+      "release": {"version": "1.0.0", "published_at": "2026-04-23T22:54:12+08:00", "publisher": "ceasarXuu", "changes": ["Import the Three.js game skill family into AstartesSkills as managed installable skills.", "Register the animation and character workflow skill with OpenAI-compatible metadata and repository release metadata."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/threejs-game-animation-character/markets/openai-compatible.json"}}
     },
     {
       "id": "threejs-game-asset-pipeline",
@@ -286,28 +171,9 @@
       "summary": "Defines and enforces three.js game asset pipelines around glTF/GLB, compression, validation, naming conventions, runtime prefab assembly, and loader setup.",
       "tags": ["threejs", "game-development", "assets", "gltf", "glb"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/threejs-game-asset-pipeline"
-      },
-      "release": {
-        "version": "1.0.0",
-        "published_at": "2026-04-23T22:54:12+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-          "Register the asset pipeline skill with OpenAI-compatible metadata and repository release metadata."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/threejs-game-asset-pipeline/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/threejs-game-asset-pipeline"},
+      "release": {"version": "1.0.0", "published_at": "2026-04-23T22:54:12+08:00", "publisher": "ceasarXuu", "changes": ["Import the Three.js game skill family into AstartesSkills as managed installable skills.", "Register the asset pipeline skill with OpenAI-compatible metadata and repository release metadata."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/threejs-game-asset-pipeline/markets/openai-compatible.json"}}
     },
     {
       "id": "threejs-game-bootstrap-runtime",
@@ -316,28 +182,9 @@
       "summary": "Creates or refactors three.js game runtimes with renderer factories, game loops, resize flows, lifecycle hooks, and service boundaries.",
       "tags": ["threejs", "game-development", "runtime", "architecture", "game-loop"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/threejs-game-bootstrap-runtime"
-      },
-      "release": {
-        "version": "1.0.0",
-        "published_at": "2026-04-23T22:54:12+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-          "Register the runtime bootstrap skill with OpenAI-compatible metadata and repository release metadata."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/threejs-game-bootstrap-runtime/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/threejs-game-bootstrap-runtime"},
+      "release": {"version": "1.0.0", "published_at": "2026-04-23T22:54:12+08:00", "publisher": "ceasarXuu", "changes": ["Import the Three.js game skill family into AstartesSkills as managed installable skills.", "Register the runtime bootstrap skill with OpenAI-compatible metadata and repository release metadata."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/threejs-game-bootstrap-runtime/markets/openai-compatible.json"}}
     },
     {
       "id": "threejs-game-input-camera",
@@ -346,28 +193,9 @@
       "summary": "Designs device-agnostic input abstraction and camera-control baselines for three.js games across keyboard, mouse, pointer lock, gamepad, touch, and mode switching.",
       "tags": ["threejs", "game-development", "input", "camera", "controls"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/threejs-game-input-camera"
-      },
-      "release": {
-        "version": "1.0.0",
-        "published_at": "2026-04-23T22:54:12+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-          "Register the input and camera skill with OpenAI-compatible metadata and repository release metadata."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/threejs-game-input-camera/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/threejs-game-input-camera"},
+      "release": {"version": "1.0.0", "published_at": "2026-04-23T22:54:12+08:00", "publisher": "ceasarXuu", "changes": ["Import the Three.js game skill family into AstartesSkills as managed installable skills.", "Register the input and camera skill with OpenAI-compatible metadata and repository release metadata."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/threejs-game-input-camera/markets/openai-compatible.json"}}
     },
     {
       "id": "threejs-game-interaction-ui",
@@ -376,28 +204,9 @@
       "summary": "Implements world interaction, picking, triggers, HUD coordination, and world-space UI patterns for three.js games.",
       "tags": ["threejs", "game-development", "interaction", "hud", "ui"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/threejs-game-interaction-ui"
-      },
-      "release": {
-        "version": "1.0.0",
-        "published_at": "2026-04-23T22:54:12+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-          "Register the interaction and UI skill with OpenAI-compatible metadata and repository release metadata."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/threejs-game-interaction-ui/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/threejs-game-interaction-ui"},
+      "release": {"version": "1.0.0", "published_at": "2026-04-23T22:54:12+08:00", "publisher": "ceasarXuu", "changes": ["Import the Three.js game skill family into AstartesSkills as managed installable skills.", "Register the interaction and UI skill with OpenAI-compatible metadata and repository release metadata."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/threejs-game-interaction-ui/markets/openai-compatible.json"}}
     },
     {
       "id": "threejs-game-materials-tsl-vfx",
@@ -406,28 +215,9 @@
       "summary": "Implements custom materials, TSL, procedural shaders, particle systems, and advanced visual effects for three.js games while keeping WebGL and WebGPU paths explicit.",
       "tags": ["threejs", "game-development", "materials", "tsl", "vfx"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/threejs-game-materials-tsl-vfx"
-      },
-      "release": {
-        "version": "1.0.0",
-        "published_at": "2026-04-23T22:54:12+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-          "Register the materials, TSL, and VFX skill with OpenAI-compatible metadata and repository release metadata."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/threejs-game-materials-tsl-vfx/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/threejs-game-materials-tsl-vfx"},
+      "release": {"version": "1.0.0", "published_at": "2026-04-23T22:54:12+08:00", "publisher": "ceasarXuu", "changes": ["Import the Three.js game skill family into AstartesSkills as managed installable skills.", "Register the materials, TSL, and VFX skill with OpenAI-compatible metadata and repository release metadata."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/threejs-game-materials-tsl-vfx/markets/openai-compatible.json"}}
     },
     {
       "id": "threejs-game-performance-profiler",
@@ -436,28 +226,9 @@
       "summary": "Sets budgets and profiling workflows for three.js games, covering draw calls, memory, lifecycle cleanup, streaming, batching, and CPU/GPU bottlenecks.",
       "tags": ["threejs", "game-development", "performance", "profiling", "optimization"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/threejs-game-performance-profiler"
-      },
-      "release": {
-        "version": "1.0.0",
-        "published_at": "2026-04-23T22:54:12+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-          "Register the performance profiling skill with OpenAI-compatible metadata and repository release metadata."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/threejs-game-performance-profiler/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/threejs-game-performance-profiler"},
+      "release": {"version": "1.0.0", "published_at": "2026-04-23T22:54:12+08:00", "publisher": "ceasarXuu", "changes": ["Import the Three.js game skill family into AstartesSkills as managed installable skills.", "Register the performance profiling skill with OpenAI-compatible metadata and repository release metadata."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/threejs-game-performance-profiler/markets/openai-compatible.json"}}
     },
     {
       "id": "threejs-game-physics-collision",
@@ -466,28 +237,9 @@
       "summary": "Designs collision and physics layers for three.js games, including character movement, collision layers, scene queries, and engine-adapter boundaries.",
       "tags": ["threejs", "game-development", "physics", "collision", "character-controller"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/threejs-game-physics-collision"
-      },
-      "release": {
-        "version": "1.0.0",
-        "published_at": "2026-04-23T22:54:12+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-          "Register the physics and collision skill with OpenAI-compatible metadata and repository release metadata."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/threejs-game-physics-collision/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/threejs-game-physics-collision"},
+      "release": {"version": "1.0.0", "published_at": "2026-04-23T22:54:12+08:00", "publisher": "ceasarXuu", "changes": ["Import the Three.js game skill family into AstartesSkills as managed installable skills.", "Register the physics and collision skill with OpenAI-compatible metadata and repository release metadata."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/threejs-game-physics-collision/markets/openai-compatible.json"}}
     },
     {
       "id": "threejs-game-render-lighting",
@@ -496,28 +248,9 @@
       "summary": "Sets three.js game rendering baselines for color management, PBR, lighting, environment maps, shadows, transparency, and post-processing.",
       "tags": ["threejs", "game-development", "rendering", "lighting", "pbr"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/threejs-game-render-lighting"
-      },
-      "release": {
-        "version": "1.0.0",
-        "published_at": "2026-04-23T22:54:12+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-          "Register the rendering and lighting skill with OpenAI-compatible metadata and repository release metadata."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/threejs-game-render-lighting/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/threejs-game-render-lighting"},
+      "release": {"version": "1.0.0", "published_at": "2026-04-23T22:54:12+08:00", "publisher": "ceasarXuu", "changes": ["Import the Three.js game skill family into AstartesSkills as managed installable skills.", "Register the rendering and lighting skill with OpenAI-compatible metadata and repository release metadata."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/threejs-game-render-lighting/markets/openai-compatible.json"}}
     },
     {
       "id": "threejs-game-save-load-network",
@@ -526,28 +259,9 @@
       "summary": "Defines save/load, snapshot, replay, and networking boundaries for three.js games whose state must be serialized, restored, synchronized, or replayed.",
       "tags": ["threejs", "game-development", "save-load", "networking", "replay"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/threejs-game-save-load-network"
-      },
-      "release": {
-        "version": "1.0.0",
-        "published_at": "2026-04-23T22:54:12+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-          "Register the save, load, replay, and networking skill with OpenAI-compatible metadata and repository release metadata."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/threejs-game-save-load-network/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/threejs-game-save-load-network"},
+      "release": {"version": "1.0.0", "published_at": "2026-04-23T22:54:12+08:00", "publisher": "ceasarXuu", "changes": ["Import the Three.js game skill family into AstartesSkills as managed installable skills.", "Register the save, load, replay, and networking skill with OpenAI-compatible metadata and repository release metadata."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/threejs-game-save-load-network/markets/openai-compatible.json"}}
     },
     {
       "id": "threejs-game-tooling-qa-release",
@@ -556,28 +270,9 @@
       "summary": "Creates repeatable quality workflows for three.js games with tests, asset validation, visual regression, browser coverage, and release checklists.",
       "tags": ["threejs", "game-development", "qa", "testing", "release"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/threejs-game-tooling-qa-release"
-      },
-      "release": {
-        "version": "1.0.0",
-        "published_at": "2026-04-23T22:54:12+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-          "Register the tooling, QA, and release skill with OpenAI-compatible metadata and repository release metadata."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/threejs-game-tooling-qa-release/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/threejs-game-tooling-qa-release"},
+      "release": {"version": "1.0.0", "published_at": "2026-04-23T22:54:12+08:00", "publisher": "ceasarXuu", "changes": ["Import the Three.js game skill family into AstartesSkills as managed installable skills.", "Register the tooling, QA, and release skill with OpenAI-compatible metadata and repository release metadata."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/threejs-game-tooling-qa-release/markets/openai-compatible.json"}}
     },
     {
       "id": "threejs-game-xr-platform",
@@ -586,28 +281,9 @@
       "summary": "Adds WebXR support to three.js games with controller mapping, interaction design, comfort rules, and XR-specific rendering constraints.",
       "tags": ["threejs", "game-development", "webxr", "xr", "vr"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/threejs-game-xr-platform"
-      },
-      "release": {
-        "version": "1.0.0",
-        "published_at": "2026-04-23T22:54:12+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Import the Three.js game skill family into AstartesSkills as managed installable skills.",
-          "Register the XR platform skill with OpenAI-compatible metadata and repository release metadata."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/threejs-game-xr-platform/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/threejs-game-xr-platform"},
+      "release": {"version": "1.0.0", "published_at": "2026-04-23T22:54:12+08:00", "publisher": "ceasarXuu", "changes": ["Import the Three.js game skill family into AstartesSkills as managed installable skills.", "Register the XR platform skill with OpenAI-compatible metadata and repository release metadata."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/threejs-game-xr-platform/markets/openai-compatible.json"}}
     },
     {
       "id": "subagent-vs-review",
@@ -616,11 +292,7 @@
       "summary": "Runs independent adversarial review rounds with fresh internal subagents, or a user-approved local CLI fallback when internal subagents are unavailable, that attack artifact assumptions, happy paths, implementation completeness, target benefit realization, usability, ease of use, ease of understanding, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.",
       "tags": ["subagent", "review", "vibe-coding", "quality", "agent-workflow"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/subagent-vs-review"
-      },
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/subagent-vs-review"},
       "release": {
         "version": "1.8.1",
         "published_at": "2026-06-24T02:15:12+08:00",
@@ -632,14 +304,7 @@
           "Terminate the review workflow when no verified and approved reviewer is available."
         ]
       },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/subagent-vs-review/markets/openai-compatible.json"
-        }
-      }
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/subagent-vs-review/markets/openai-compatible.json"}}
     },
     {
       "id": "show-my-repo",
@@ -648,28 +313,9 @@
       "summary": "Turns a repository into an evidence-backed presentation pack for investors, users, demos, README upgrades, and landing pages.",
       "tags": ["repo-analysis", "product-packaging", "pitch", "go-to-market", "architecture"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/show-my-repo"
-      },
-      "release": {
-        "version": "1.1.0",
-        "published_at": "2026-03-26T20:38:26+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Add versioned repo-root output folders for repeated packaging runs.",
-          "Keep the marketplace-ready repo packaging workflow self-contained."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/show-my-repo/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/show-my-repo"},
+      "release": {"version": "1.1.0", "published_at": "2026-03-26T20:38:26+08:00", "publisher": "ceasarXuu", "changes": ["Add versioned repo-root output folders for repeated packaging runs.", "Keep the marketplace-ready repo packaging workflow self-contained."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/show-my-repo/markets/openai-compatible.json"}}
     },
     {
       "id": "summary-my-repo",
@@ -678,60 +324,30 @@
       "summary": "Creates an internal repository summary pack with architecture, directory mapping, and core logic walkthroughs for fast collaborator onboarding.",
       "tags": ["repo-analysis", "architecture", "onboarding", "documentation", "engineering-summary"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/summary-my-repo"
-      },
-      "release": {
-        "version": "1.1.0",
-        "published_at": "2026-03-28T21:01:26+08:00",
-        "publisher": "ceasarXuu",
-        "changes": [
-          "Require code-evidence snippets for core architectural claims.",
-          "Strengthen internal repo summaries with auditable proof."
-        ]
-      },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/summary-my-repo/markets/openai-compatible.json"
-        }
-      }
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/summary-my-repo"},
+      "release": {"version": "1.1.0", "published_at": "2026-03-28T21:01:26+08:00", "publisher": "ceasarXuu", "changes": ["Require code-evidence snippets for core architectural claims.", "Strengthen internal repo summaries with auditable proof."]},
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/summary-my-repo/markets/openai-compatible.json"}}
     },
     {
       "id": "dev-loop",
       "name": "Dev Loop",
       "path": "skills/dev-loop",
-      "summary": "Audits, optimizes, and protects software development feedback loops across builds, tests, CI gates, caches, environments, dependency structure, and coding-Agent execution without silently weakening required engineering evidence.",
+      "summary": "Audits, prioritizes, optimizes, and protects software development feedback loops across builds, tests, CI gates, caches, environments, dependency structure, and coding-Agent execution without silently weakening required engineering evidence.",
       "tags": ["software-engineering", "developer-experience", "build", "testing", "ci-cd", "cache", "feedback-loop"],
       "installable": true,
-      "source": {
-        "type": "github",
-        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/dev-loop"
-      },
+      "source": {"type": "github", "repo": "https://github.com/ceasarXuu/AstartesSkills.git", "path": "skills/dev-loop"},
       "release": {
-        "version": "1.0.0",
-        "published_at": "2026-07-31T08:24:00+08:00",
+        "version": "1.1.0",
+        "published_at": "2026-07-31T09:16:00+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Publish the initial dev-loop skill with Audit / Recovery and Guard / Prevention operating modes.",
-          "Define Time to Trusted Feedback and the Change, Evidence, Execution, and Critical Path graph model.",
-          "Add evidence-first audit guidance for builds, tests, CI gates, caches, environments, architecture, and coding-Agent execution.",
-          "Add daily guardrails for validation scope, incremental state, cache correctness, gate ownership, environment reuse, and feedback budgets."
+          "Add a hard P0-P5 priority ladder that separates trust failures, blocking no-evidence work, validation amplification, reuse problems, gate redesign, and architectural locality.",
+          "Add a staged governance sequence and same-tier opportunity ranking based on critical-path benefit, frequency, population, confidence, durability, effort, correctness risk, maintenance, and rollback difficulty.",
+          "Require every audit to select exactly one Next Best Intervention with expected benefit, evidence preservation, risk, rollback, validation, and a follow-up gate.",
+          "Add governance work-in-progress limits and stop conditions so feedback-loop governance does not become an unbounded engineering program."
         ]
       },
-      "markets": {
-        "github": {
-          "install_method": "copy"
-        },
-        "openai-compatible": {
-          "manifest": "skills/dev-loop/markets/openai-compatible.json"
-        }
-      }
+      "markets": {"github": {"install_method": "copy"}, "openai-compatible": {"manifest": "skills/dev-loop/markets/openai-compatible.json"}}
     }
   ]
 }
