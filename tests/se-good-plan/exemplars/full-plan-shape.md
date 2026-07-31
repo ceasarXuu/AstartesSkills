@@ -1,251 +1,76 @@
-# Example Critical API Migration Full Plan
+# Example High-Risk API Migration Plan
 
-- Created: 2026-06-04
-- Updated: 2026-06-04
-- Version: v0.1
-- Status: Draft
-- Owner / Responsible: Unknown
-- Related Systems: Unknown
-- Related Links: Unknown
-- Risk Level: Critical
-- Plan Type: Full
+- Mode: Plan Authoring
+- Plan Depth: Full
+- Risk: High
 
-## Background
+## Problem And Target
 
-The current API migration request affects a critical path, so the plan must be
-phased and review-gated.
+Migrate a production-facing account API while preserving old-client behavior.
+The current caller inventory and exact route ownership are unknown, so the plan
+starts with a bounded Discovery unit rather than claiming those facts are known.
 
-## Problem Definition
+## Technical Approach
 
-### Current Behavior
+Introduce a compatibility route, implement the new handler behind that route,
+move callers in separately observable groups, and remove the old path only after
+runtime evidence shows no remaining traffic. Data, API, rollout, and cleanup are
+kept as separate change axes.
 
-- Unknown until Discovery.
+## Work Units
 
-### Expected Behavior
+| ID | Objective | Change Axis | Change Location | Target Object | Concrete Action | Resulting Behavior | Benefit | Verification | Safe Stop / Rollback | Plan Status |
+|---|---|---|---|---|---|---|---|---|---|---|
+| W0 | Establish the caller baseline | discovery | services/account-api/routes/account.ts | account route callers | Validate the caller inventory from static references and request logs | The migration scope and unknown callers are documented before design closes | Prevents hidden callers from turning the migration into an unbounded compatibility incident | Compare repository references with a sampled production route report | Keep the migration blocked until the inventory is reviewed | blocked-on-discovery |
+| W1 | Preserve old-client routing | API | services/account-api/routes/account.ts | selectAccountHandler() | Add version-aware routing between the old and new handlers | Existing clients continue using the old handler while selected callers can use the new path | Allows migration to begin without forcing coordinated upgrades across existing clients | Run route contract tests for each supported client version | Route every request back to the old handler | planned |
+| W2 | Implement the new account behavior | internal | services/account-api/handlers/account_v2.ts | handleAccountV2() | Add the target account behavior behind the compatibility route | Requests selected for v2 execute the new behavior without changing v1 | Isolates the new capability behind a reversible boundary so defects do not affect all callers | Run handler unit tests and API integration tests through the v2 route | Disable v2 selection and retain the handler unused | planned |
+| W3 | Move one caller group | deployment | deploy/account-api/traffic-rules.yaml | account-v2 caller rule | Route the first named caller group to the v2 handler | Only the selected caller group uses the new path | Limits blast radius and makes production impact attributable to one caller group | Inspect route metrics and trace samples for the selected caller group | Restore the previous traffic rule | planned |
+| W4 | Remove the retired route | cleanup | services/account-api/routes/account.ts | handleAccountV1() | Remove the old route after zero-traffic evidence is approved | The codebase no longer maintains the retired path | Reduces long-term maintenance and compatibility cost after retirement is proven safe | Run compatibility tests and confirm the observation report shows no old-route traffic | Revert the cleanup commit while the compatibility contract remains available | deferred |
 
-- Unknown until Discovery.
+## Planning Artifacts
 
-### Gap
-
-- Unknown until Discovery.
-
-## Goals
-
-- [ ] Establish current-state evidence before implementation.
-- [ ] Define the expected benefit and how it will be measured.
-
-## Non-goals
-
-- This plan does not invent launch dates, staffing, or system facts.
-
-## Constraints And Assumptions
-
-| Assumption | Verification Method | If Assumption Fails |
-|---|---|---|
-| The API is production-facing. | Confirm routing and traffic. | Downgrade risk if false. |
-
-## Current State
-
-- Unknown until Discovery.
-
-## Complexity And Risk Assessment
-
-| Dimension | Level | Evidence |
-|---|---|---|
-| API compatibility | Critical | User stated API migration. |
-
-## Plan Summary
-
-| Item | Content |
-|---|---|
-| Plan Type | Full |
-| Risk Level | Critical |
-
-## Overall Technical Design
-
-- Define target API behavior only after Discovery.
-
-## Alternatives And Tradeoffs
-
-| Alternative | Pros | Cons | Decision |
+| Artifact | Kind | Expected Output | Status |
 |---|---|---|---|
-| Compatibility layer | Safer rollout | More temporary code | Pending |
+| Caller inventory | discovery | Named caller groups, client versions, and unknowns | planned |
+| Compatibility decision | design | Routing rule, fallback behavior, and removal criteria | planned |
 
-## Phased Execution Plan
+## Phases
 
-### Phase 0: Discovery
+### Phase 0: Bound The Migration
 
-#### Objective
+- Entry condition: repository and route telemetry are available
+- Work units: W0
+- Phase-local evidence: reviewed caller inventory
+- Next-phase condition: no unknown caller can silently bypass compatibility
 
-- Collect current architecture, API, traffic, owner, and rollback evidence.
+### Phase 1: Build A Reversible Path
 
-#### Entry Criteria
+- Entry condition: the compatibility decision is reviewed
+- Work units: W1, W2
+- Phase-local evidence: route contracts and v2 integration tests
+- Next-phase condition: rollback to v1 is proven without data repair
 
-- [ ] Request accepted for planning.
+### Phase 2: Move And Observe Traffic
 
-#### Entry Criteria Checks
+- Entry condition: v2 is deployable behind the route selector
+- Work units: W3
+- Phase-local evidence: caller-scoped metrics, traces, and failure reasons
+- Next-phase condition: the selected caller group meets the observation gate
 
-| Entry Criterion | Check Method | Evidence / Output | Owner |
-|---|---|---|---|
-| Repository access exists | Inspect repo | Module map | Unknown |
+### Phase 3: Cleanup
 
-#### Design Approach
+- Entry condition: all caller groups have completed migration and the old route
+  has zero traffic for the required observation window
+- Work units: W4
+- Phase-local evidence: compatibility regression tests and zero-traffic report
+- Next-phase condition: none
 
-- No implementation until current behavior is documented.
+## Verification And Release
 
-#### Implementation Tasks
-
-- [ ] Map current API callers.
-
-#### Deliverables
-
-- API inventory.
-
-#### Implementation Completeness Evidence
-
-| Plan Item | Production Code Path | Integration Entry | Test Evidence | Runtime / Log Evidence | Mock / Stub Exposure | Status |
-|---|---|---|---|---|---|---|
-| Current API inventory | n/a | n/a | n/a | Inventory artifact | none | landed |
-
-#### Logging And Observability Design
-
-| Change Link | Key State | Success Signal | Failure Signal | Failure Reason Field | Correlation / Trace Field | Log Level | Consumer |
-|---|---|---|---|---|---|---|---|
-| API ingress | request received | request accepted log | validation or auth failure log | error_code | request_id / trace_id | info / warn | on-call / dashboard |
-
-#### Testing And Validation
-
-| Validation Type | Validation Item | Method | Passing Standard |
-|---|---|---|---|
-| Correctness | Caller inventory | Static and log review | All known callers listed |
-| Observability | API ingress logging | Inspect sample logs or trace | Request state, success, failure, and failure reason are visible |
-
-#### Exit Criteria
-
-- [ ] Current API behavior is documented.
-
-#### Review Plan
-
-- Design review before Phase 1.
-
-#### Risks And Fallback
-
-| Risk | Impact | Trigger Signal | Mitigation | Fallback |
-|---|---|---|---|---|
-| Unknown caller | API breakage | New caller in logs | Extend inventory | Pause migration |
-
-#### Gate To Next Phase
-
-| Gate Condition | Verification Evidence | Completion Status | User Approval Required | Proceed Decision |
-|---|---|---|---|---|
-| Current API behavior is documented | API inventory and caller evidence reviewed in Phase 0 | complete | no | proceed |
-| No future-phase dependency closes Phase 0 | Phase 0 evidence does not depend on Phase 1 implementation | complete | no | proceed |
-
-## Phase Gate Overview
-
-| Phase | Independent Verification | Forbidden Future Dependency | Exit Evidence | Completion Required Before Next Phase | Proceed Decision |
-|---|---|---|---|---|---|
-| Phase 0 | API inventory and caller evidence available in Discovery | No Phase 1 design or implementation evidence is needed to close Phase 0 | Discovery artifact reviewed | 100% complete before Phase 1 | proceed |
-| Phase 1 | Target design review and compatibility evidence available before implementation | No Phase 2 implementation evidence can close Phase 1 | Pending | Pause until complete unless user approves residual risk | pause |
-
-## Implementation Completeness Matrix
-
-| Plan Item | Expected Behavior | Production Code Path | Integration Entry | Test Evidence | Runtime / Log Evidence | Mock / Stub Exposure | Status |
-|---|---|---|---|---|---|---|---|
-| API caller inventory | All known callers are mapped before design | n/a for discovery | n/a | Inventory review checklist | Discovery artifact | none | landed |
-| Target API implementation | New API behavior is implemented in production code | Unknown until Discovery | Unknown until Discovery | Contract tests | Runtime logs after canary | blocks completion until real path exists | planned |
-
-## Dependencies
-
-| Dependency | Type | Current Status | Blocking Risk | Handling Plan |
-|---|---|---|---|---|
-| API owner | person | Unknown | Approval blocked | Confirm in Phase 0 |
-
-## Risks, Dependencies, And Mitigations
-
-| Risk | Probability | Impact | Trigger Signal | Mitigation | Fallback |
-|---|---:|---:|---|---|---|
-| API incompatibility | Medium | High | Contract test failure | Compatibility layer | Keep old endpoint |
-
-## Data Migration Strategy
-
-- Not applicable unless Discovery finds data movement.
-
-## API / Compatibility Strategy
-
-- Preserve old API until compatibility tests and canary pass.
-
-## Testing And Validation Strategy
-
-| Validation Type | Test Type | Scope | Execution Method | Passing Standard |
-|---|---|---|---|---|
-| Correctness | Contract | API clients | Automated contract tests | No breaking changes |
-| Benefit | Success rate | API calls | Compare pre/post telemetry | Target improvement met or explicitly not met |
-
-## Benefit Validation Strategy
-
-| Benefit Hypothesis | Metric | Baseline | Target | Measurement Method | Data Source | Observation Window | Pass / Fail Threshold |
-|---|---|---:|---:|---|---|---|---|
-| Migration improves API success rate | Success rate | Unknown | Unknown | Compare before and after canary | Production telemetry | 24h | No claimed benefit until baseline and target are known |
-
-## Logging And Observability Design
-
-| Change Link | Key State | Success Signal | Failure Signal | Failure Reason Field | Correlation / Trace Field | Log Level | Consumer |
-|---|---|---|---|---|---|---|---|
-| API ingress | received / rejected | accepted request log | auth, validation, or routing failure log | error_code / reason | request_id / trace_id | info / warn | on-call / dashboard |
-| Compatibility route | old route / new route | routed to selected API version | fallback or route mismatch log | fallback_reason | request_id / release_id | info / warn | rollout owner |
-| Rollback | rollback started / completed | traffic restored to old API | rollback failure log | rollback_reason | release_id / trace_id | warn / error | on-call / incident lead |
-
-## Security And Permission Review
-
-- Confirm auth and authorization behavior before launch.
-
-## Release, Rollback, And Fallback Strategy
-
-### Release Strategy
-
-- Canary behind a feature flag if available.
-
-### Rollback Strategy
-
-- Route traffic back to old API.
-
-### Fallback / Degradation Strategy
-
-- Keep old endpoint available.
-
-## Observability And Success Metrics
-
-| Metric | Current Baseline | Target | Alert Threshold | Observation Window |
-|---|---:|---:|---:|---|
-| Error rate | Unknown | Not above baseline | Baseline + threshold | 24h |
-
-- Logs must show request state, selected route, fallback reason, rollback state,
-  and failure reason without exposing sensitive request payloads.
-
-## Post-release Verification And Cleanup
-
-- Remove old API only after observation and caller migration evidence.
-
-## Open Questions
-
-| Question | Impact | Needs Confirmation From | Blocking Phase | Handling |
-|---|---|---|---|---|
-| Who owns rollout approval? | Release gate | Stakeholder | Phase 0 | Confirm owner |
-
-## Decision Log
-
-| Time | Decision | Reason | Alternatives | Impact |
-|---|---|---|---|---|
-| 2026-06-04 | Draft only | Missing context | Direct implementation | Safer planning |
-
-## Change Log
-
-| Version | Time | Change | Author |
-|---|---|---|---|
-| v0.1 | 2026-06-04 | Initial exemplar | se-good-plan |
-
-## Plan Quality Checklist
-
-- [ ] No invented schedule, staffing, or launch date.
-- [ ] Phase gates include evidence.
+- Correctness: route contracts, handler tests, and API integration tests pass.
+- Compatibility: old clients remain on v1 until explicitly selected.
+- Observability: route selection, fallback, failure reason, client version, and
+  request correlation are visible.
+- Rollback: traffic rules return callers to v1 without removing v2 code.
+- Cleanup: W4 stays deferred until runtime evidence exists; this draft does not
+  mark the phase complete or proceed.
