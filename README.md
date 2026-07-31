@@ -115,6 +115,7 @@ Reference:
 | --- | --- | --- |
 | `bug-killer` | Debug medium and large bugs with `/coe` case tracking, independent research paths, and a diagnostic evidence gate before repair design. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill bug-killer` |
 | `clear-prd` | Clarify product requirements through guided multi-round questions focused on product logic, user experience, interaction design, rules, edge cases, and acceptance criteria, then write a Draft or Ready PRD. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill clear-prd` |
+| `dev-loop` | Audit, optimize, and protect software development feedback loops across builds, tests, CI gates, caches, environments, dependency structure, and coding-Agent execution. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill dev-loop` |
 | `docs-manager` | Design, reorganize, audit, and maintain repository documentation systems with versioned PRDs, technical designs, engineering plans, link management, archive policy, and validation tooling. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill docs-manager` |
 | `frontend-refactoring` | Refactor legacy frontend surfaces by isolating new UI, rebuilding the view layer when needed, and migrating safely away from polluted style systems. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill frontend-refactoring` |
 | `se-good-plan` | Write and review phased, executable, independently verifiable, reviewable, rollback-aware software engineering plans with strict phase gates, plan-to-code completeness, benefit validation, and chain-state logging evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill se-good-plan` |
@@ -142,6 +143,7 @@ Reference:
 ├── skills/                         # Standalone skills
 │   ├── _templates/                 # Reusable skill templates
 │   ├── clear-prd/                  # Product-first PRD clarification skill
+│   ├── dev-loop/                   # Development feedback-loop audit and governance skill
 │   ├── docs-manager/               # Versioned documentation governance skill
 │   ├── frontend-refactoring/       # Legacy frontend migration skill
 │   ├── se-good-plan/               # Software engineering plan writing and review skill
