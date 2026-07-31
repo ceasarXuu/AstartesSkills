@@ -3,6 +3,10 @@
 Use this reference for a repository-wide audit or a targeted investigation of a
 slow local, CI, test, build, environment, or coding-Agent feedback path.
 
+The audit is incomplete until it assigns hard priority classes, selects one Next
+Best Intervention, defines a validation gate, and states when the current
+governance cycle should stop.
+
 ## 1. Audit Scope
 
 Define one or more decision boundaries before measuring:
@@ -196,55 +200,164 @@ For every step, ask:
 Use one row per material finding:
 
 ```markdown
-| ID | Domain | Symptom | Root Cause | Evidence | Critical-Path Cost | Frequency | Confidence | Risk | Recommended Intervention |
-|---|---|---|---|---|---:|---:|---|---|---|
-| DL-01 | CI gates | ... | ... | file, log, run, measurement | ... | ... | high / medium / low | ... | ... |
+| ID | Domain | Priority Class | Symptom | Root Cause | Evidence | Critical-Path Cost | Frequency | Population | Confidence | Risk | Recommended Intervention |
+|---|---|---|---|---|---|---:|---:|---|---|---|---|
+| DL-01 | CI gates | P1 | ... | ... | file, log, run, measurement | ... | ... | ... | high / medium / low | ... | ... |
 ```
 
 Do not state a root cause when only a correlation is known. Mark it as a
 hypothesis and state the experiment needed to confirm it.
 
-## 7. Prioritization
+## 7. Hard Priority Ladder
 
-Use the following reasoning rather than a rigid score:
+Assign the priority class before calculating opportunity value.
+
+| Priority | Name | Qualification | Typical examples |
+| --- | --- | --- | --- |
+| P0 | Restore trust or availability | The result may be wrong, a material change may be silently unvalidated, or the loop cannot complete reliably | stale cache reuse, unsafe test selection, required-check flakiness, local/CI inconsistency, hanging workflow |
+| P1 | Remove blocking no-evidence work | The step blocks the decision but adds no distinct evidence | repeated dependency setup, unused artifact transfer, non-blocking packaging on PR path, duplicated Agent execution |
+| P2 | Reduce validation amplification | Actual scope is materially wider than sufficient risk-based scope | leaf change triggers repository-wide build or complete E2E matrix |
+| P3 | Improve reuse and incrementality | Necessary work is repeatedly recomputed | missing artifact reuse, poor cache scope, repeated cold environment, disabled daemon |
+| P4 | Redesign test and gate architecture | Evidence roles, ownership, or trigger layers are structurally duplicated or misplaced | every check required on every PR, giant test suite, no high-risk path separation |
+| P5 | Restore architectural locality | The architecture itself prevents local build or validation | giant shared module, global fixture, whole-system startup, unstable generation boundary |
+
+Rules:
+
+1. P0 must be restored or explicitly declared blocking before normal speed work.
+2. A high-value P3-P5 item cannot outrank an unresolved P0.
+3. When expected benefits are comparable, lower priority number wins.
+4. Select a lower-priority prerequisite first only when the dependency is
+   explicit and evidence-backed.
+5. Record every deviation from the normal ladder.
+
+## 8. Governance Stage Sequence
+
+Use the default sequence:
 
 ```text
-priority increases with:
+Stage 0: stabilize trust and availability
+Stage 1: remove blocking no-evidence waste
+Stage 2: reduce build and validation scope
+Stage 3: improve reuse, incrementality, and parallelism
+Stage 4: redesign test and gate responsibilities
+Stage 5: restore architectural locality
+```
+
+| Stage | Primary priorities | Exit evidence |
+| --- | --- | --- |
+| 0. Stabilize | P0 | outputs and validation decisions are trustworthy and the loop completes reliably |
+| 1. Remove waste | P1 | selected blocking work is removed, reused, or moved without losing evidence |
+| 2. Reduce scope | P2 | narrow changes use a smaller path and escalation cases still run broader validation |
+| 3. Improve reuse | P3 | repeated necessary work is reused correctly in warm and invalidating scenarios |
+| 4. Redesign gates | P4 | each test or gate has a distinct evidence role, trigger, owner, and budget |
+| 5. Restore locality | P5 | a local change can build and validate locally across the new boundary |
+
+Skip a stage only when evidence shows no applicable finding. Do not start a
+large structural stage while unresolved higher-priority work remains unless the
+structural change is a proven prerequisite.
+
+## 9. Same-Tier Opportunity Ranking
+
+Only compare opportunity value among findings in the same hard priority class.
+
+```text
+opportunity value increases with:
   critical-path time saved
   x frequency
+  x affected population
   x diagnostic confidence
-  x safety of the change
+  x benefit durability
 
-priority decreases with:
-  implementation effort
+opportunity value decreases with:
+  implementation and verification effort
   x correctness risk
   x maintenance burden
   x rollback difficulty
 ```
 
-Prioritize in this order when benefits are comparable:
-
-1. remove no-evidence waiting and duplicated work;
-2. narrow affected scope;
-3. reuse valid environment and task results;
-4. parallelize independent work;
-5. optimize slow remaining tasks;
-6. restructure architecture when tactical fixes cannot create locality;
-7. add compute capacity only after unnecessary work is controlled.
-
-## 8. Intervention Record
+Use this comparison table:
 
 ```markdown
-| Change | Finding Addressed | Expected Benefit | Evidence Preserved / Moved | Correctness Risk | Rollback | Validation Plan |
-|---|---|---|---|---|---|---|
-| ... | DL-01 | reduce PR critical path by ... | ... | ... | ... | ... |
+| Finding | Priority | Critical-Path Saving | Frequency | Population | Confidence | Durability | Effort | Correctness Risk | Maintenance | Rollback | Relative Rank |
+|---|---|---:|---:|---|---|---|---|---|---|---|---:|
+| DL-01 | P1 | ... | ... | ... | high | high | low | low | low | easy | 1 |
+```
+
+Do not invent precise numbers when evidence supports only qualitative ratings.
+An enabling intervention may rank first when it safely unlocks several higher-
+value P1 or P2 changes; record those dependencies.
+
+## 10. Next Best Intervention
+
+Every audit must select exactly one intervention to perform next.
+
+```markdown
+## Next Best Intervention
+
+| Field | Decision |
+|---|---|
+| Finding | DL-... |
+| Priority class | P0-P5 |
+| Why first | ... |
+| Expected critical-path benefit | per run and recurring estimate |
+| Scope | files, jobs, tests, environments, or Agents |
+| Effort | low / medium / high and rationale |
+| Correctness risk | low / medium / high and failure mode |
+| Evidence preserved or moved | ... |
+| Rollback | ... |
+| Validation | before/after plus invalidation or escalation test |
+| Follow-up gate | measured condition for retain / revise / rollback / next / stop |
+```
+
+The audit must also name the nearest deferred alternatives and explain why they
+are not first.
+
+If implementation choice is blocked by weak evidence, choose a bounded
+measurement intervention:
+
+- name the uncertain claim;
+- run or inspect a specific scenario;
+- define the expected observation;
+- state which priority or intervention decision the result will resolve.
+
+Do not use “collect more data” as an unbounded placeholder.
+
+## 11. Governance Work-In-Progress Limit
+
+Default limit outside a P0 incident:
+
+```text
+1 primary governance intervention
++
+1 directly associated regression guardrail
+```
+
+| Work type | Default concurrent limit |
+| --- | ---: |
+| P0 containment and trust restoration | parallel only when failures are independent and ownership is explicit |
+| P1 tactical removal | 1, or 2 only when attribution remains independent |
+| P2 selection or scope change | 1 |
+| P3 cache or incrementality change | 1 |
+| P4 test or gate redesign | 1 |
+| P5 structural locality change | 1 |
+| Guardrail | follows the selected intervention; it is not a separate program |
+
+Do not combine cache semantics, test selection, gate policy, and architecture in
+one experiment unless each result and rollback path is independently observable.
+
+## 12. Intervention Record
+
+```markdown
+| Change | Finding Addressed | Priority | Expected Benefit | Evidence Preserved / Moved | Correctness Risk | Rollback | Validation Plan | Follow-Up Gate |
+|---|---|---|---|---|---|---|---|---|
+| ... | DL-01 | P1 | reduce PR critical path by ... | ... | ... | ... | ... | ... |
 ```
 
 For selection or cache changes, include a deliberate invalidation or escalation
 test. For gate changes, prove where the removed or deferred evidence is
 recovered.
 
-## 9. Verification Matrix
+## 13. Verification Matrix
 
 ```markdown
 | Scenario | Before | After | Change | Required Evidence | Result | Notes |
@@ -260,9 +373,38 @@ Do not claim improvement when:
 - the before run was cold and the after run was warm without disclosure;
 - skipped tests or gates removed necessary evidence;
 - cache correctness was not tested;
-- the failure path became harder to reproduce or diagnose.
+- the failure path became harder to reproduce or diagnose;
+- several simultaneous changes make the benefit impossible to attribute.
 
-## 10. Audit Report Template
+## 14. Stop Conditions
+
+End or pause the current governance cycle when:
+
+- the target Time to Trusted Feedback is inside the agreed budget;
+- remaining findings do not materially block the target decision;
+- expected benefit is below implementation, verification, or maintenance cost;
+- remaining findings are low-frequency and affect few developers or Agents;
+- the next change is high-risk and structural but lacks a justified engineering
+  or business case;
+- timing variance is comparable to or larger than the expected saving;
+- an external dependency now dominates and cannot reasonably be controlled by
+  the project;
+- the Next Best Intervention failed its safety or benefit gate and requires a
+  new diagnosis.
+
+Record one of these decisions after verification:
+
+```text
+retain and guard
+revise and remeasure
+rollback and rediagnose
+select the next intervention
+stop: budget met
+stop: marginal value too low
+blocked: external or unresolved dependency
+```
+
+## 15. Audit Report Template
 
 ```markdown
 # Development Feedback Loop Audit
@@ -274,31 +416,59 @@ Do not claim improvement when:
 - Runtime evidence available:
 - Limitations:
 
-## Executive Findings
-1. ...
-2. ...
-
 ## Baseline And Critical Path
 | Boundary | Baseline | Blocking path | Main wait |
 |---|---:|---|---|
 
-## Findings
-| ID | Severity | Root Cause | Evidence | Impact |
-|---|---|---|---|---|
+## Executive Findings
+1. [P0-P5] ...
+2. [P0-P5] ...
 
-## Recommended Interventions
-| Priority | Intervention | Expected Benefit | Risk | Effort | Rollback |
+## Findings
+| ID | Priority | Domain | Root Cause | Evidence | Critical-Path Impact |
 |---|---|---|---|---|---|
 
-## Implemented Changes
+## Governance Stage
+- Current stage:
+- Higher-priority unresolved work:
+- Stage exit evidence:
+
+## Same-Tier Ranking
+| Rank | Finding | Priority | Expected Benefit | Confidence | Effort | Risk | Why this rank |
+|---:|---|---|---|---|---|---|---|
+
+## Next Best Intervention
+| Field | Decision |
+|---|---|
+| Finding | ... |
+| Priority class | ... |
+| Why first | ... |
+| Expected critical-path benefit | ... |
+| Scope | ... |
+| Effort | ... |
+| Correctness risk | ... |
+| Evidence preserved or moved | ... |
+| Rollback | ... |
+| Validation | ... |
+| Follow-up gate | ... |
+
+## Deferred Findings
+| Finding | Why not first | Reconsider when |
+|---|---|---|
+
+## Implemented Change
 - ...
 
 ## Verification
 | Scenario | Before | After | Evidence Result |
 |---|---:|---:|---|
 
-## Guardrails And Budgets
+## Guardrail
 - ...
+
+## Cycle Decision
+- retain / revise / rollback / next / stop / blocked:
+- stop condition or next trigger:
 
 ## Residual Risks And Open Questions
 - ...
