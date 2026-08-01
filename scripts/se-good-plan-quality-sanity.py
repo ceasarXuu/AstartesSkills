@@ -27,13 +27,39 @@ GENERIC_BENEFITS = {
     "makes the system better", "better system", "improves maintainability",
     "delivers the feature",
 }
+GENERIC_SIDE_EFFECTS = {
+    "none", "no side effects", "n a", "na", "minimal impact", "low risk",
+    "minor changes", "small change", "no major impact", "some code added",
+}
+SPECULATIVE_PHRASES = {
+    "for future use", "future integrations", "possible future", "potential future",
+    "might need", "may need", "just in case", "future proof", "future-proof",
+    "for flexibility", "possible requirements",
+}
+ABSTRACTION_TERMS = {
+    "interface", "factory", "provider", "registry", "framework", "plugin",
+    "strategy", "event bus", "base class", "abstraction",
+}
+SINGLE_IMPLEMENTATION_MARKERS = {
+    "only current", "single current", "only existing", "single existing",
+    "only implementation", "single implementation",
+}
+CURRENT_NEED_MARKERS = {
+    "required by", "two existing", "multiple existing", "current variants",
+    "existing variants", "current consumers", "existing consumers",
+}
 
 WORK_UNIT_HEADER = [
+    "ID", "Objective", "Change Axis", "Change Location", "Target Object",
+    "Concrete Action", "Resulting Behavior", "Benefit", "Side Effects",
+    "Verification", "Safe Stop / Rollback", "Plan Status",
+]
+ARTIFACT_HEADER = ["Artifact", "Kind", "Expected Output", "Status"]
+LEGACY_WORK_UNIT_HEADER = [
     "ID", "Objective", "Change Axis", "Change Location", "Target Object",
     "Concrete Action", "Resulting Behavior", "Benefit", "Verification",
     "Safe Stop / Rollback", "Plan Status",
 ]
-ARTIFACT_HEADER = ["Artifact", "Kind", "Expected Output", "Status"]
 
 
 class PlanQualityError(AssertionError):
@@ -51,9 +77,7 @@ def table_after_heading(text: str, heading: str) -> tuple[list[str], list[list[s
     lines = [line for line in match.group("body").splitlines() if line.lstrip().startswith("|")]
     if len(lines) < 3:
         raise PlanQualityError(f"{heading} must contain a header and at least one row")
-    header = split_row(lines[0])
-    rows = [split_row(line) for line in lines[2:]]
-    return header, rows
+    return split_row(lines[0]), [split_row(line) for line in lines[2:]]
 
 
 def count_action_verbs(action: str) -> int:
@@ -69,6 +93,49 @@ def normalize_sentence(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", value.lower()).strip()
 
 
+def validate_side_effects(unit_id: str, side_effects: str, behavior: str, benefit: str) -> None:
+    normalized = normalize_sentence(side_effects)
+    if len(side_effects) < 32 or normalized in GENERIC_SIDE_EFFECTS:
+        raise PlanQualityError(f"{unit_id}: side effects are missing or too generic: {side_effects}")
+    if not re.search(r"(?i)\bcomplexity\s*:", side_effects) or not re.search(r"(?i)\breach\s*/\s*cost\s*:", side_effects):
+        raise PlanQualityError(f"{unit_id}: side effects must cover complexity delta and reach/cost")
+    if normalized in {normalize_sentence(behavior), normalize_sentence(benefit)}:
+        raise PlanQualityError(f"{unit_id}: side effects merely repeat behavior or benefit")
+
+
+def validate_construction(unit_id: str, combined: str) -> None:
+    normalized = normalize_sentence(combined)
+    if any(phrase in normalized for phrase in SPECULATIVE_PHRASES):
+        raise PlanQualityError(f"{unit_id}: speculative construction is not justified by a current need")
+    has_abstraction = any(term in normalized for term in ABSTRACTION_TERMS)
+    has_single = any(marker in normalized for marker in SINGLE_IMPLEMENTATION_MARKERS)
+    has_current_need = any(marker in normalized for marker in CURRENT_NEED_MARKERS)
+    if has_abstraction and has_single and not has_current_need:
+        raise PlanQualityError(f"{unit_id}: new abstraction for one current implementation lacks justification")
+
+
+def normalize_legacy_invalid_fixture(text: str) -> str:
+    """Keep older adversarial fixtures focused on their original failure."""
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        if not line.lstrip().startswith("|"):
+            continue
+        if split_row(line) != LEGACY_WORK_UNIT_HEADER:
+            continue
+        lines[index] = "| " + " | ".join(WORK_UNIT_HEADER) + " |"
+        if index + 1 < len(lines):
+            lines[index + 1] = "|" + "---|" * len(WORK_UNIT_HEADER)
+        row_index = index + 2
+        while row_index < len(lines) and lines[row_index].lstrip().startswith("|"):
+            cells = split_row(lines[row_index])
+            if len(cells) == len(LEGACY_WORK_UNIT_HEADER):
+                cells.insert(8, "Complexity: legacy adversarial fixture adds no extra construction beyond its tested row; Reach/Cost: fixture-only normalization has no production impact")
+                lines[row_index] = "| " + " | ".join(cells) + " |"
+            row_index += 1
+        return "\n".join(lines) + ("\n" if text.endswith("\n") else "")
+    return text
+
+
 def validate_work_units(text: str) -> None:
     header, rows = table_after_heading(text, "Work Units")
     if header != WORK_UNIT_HEADER:
@@ -80,39 +147,30 @@ def validate_work_units(text: str) -> None:
             raise PlanQualityError(f"work unit row {index} has {len(row)} cells, expected {len(WORK_UNIT_HEADER)}")
         (
             unit_id, objective, axis, location, target, action, behavior, benefit,
-            verification, safe_stop, plan_status,
+            side_effects, verification, safe_stop, plan_status,
         ) = row
 
         if not unit_id or unit_id in ids:
             raise PlanQualityError(f"work unit row {index} has a missing or duplicate ID")
         ids.add(unit_id)
-
         if len(objective) < 8:
             raise PlanQualityError(f"{unit_id}: objective is too thin")
-
-        axis_normalized = axis.lower()
-        if axis_normalized not in ALLOWED_AXES:
+        if axis.lower() not in ALLOWED_AXES:
             raise PlanQualityError(f"{unit_id}: multiple or unsupported change axes: {axis}")
-
-        location_normalized = location.lower()
-        if location_normalized in VAGUE_LOCATIONS or location_normalized == "unknown":
+        if location.lower() in VAGUE_LOCATIONS or location.lower() == "unknown":
             raise PlanQualityError(f"{unit_id}: change location is vague: {location}")
         if not any(token in location for token in ("/", ".", "::", "#", ":")):
             raise PlanQualityError(f"{unit_id}: change location is not concrete enough: {location}")
-
-        target_normalized = target.lower()
-        if target_normalized in VAGUE_OBJECTS or target_normalized == "unknown" or len(target) < 3:
+        if target.lower() in VAGUE_OBJECTS or target.lower() == "unknown" or len(target) < 3:
             raise PlanQualityError(f"{unit_id}: target object is vague: {target}")
 
         action_verbs = count_action_verbs(action)
         if action_verbs == 0:
-            vague = sorted(word for word in VAGUE_ACTIONS if re.search(rf"\b{word}\b", action.lower()))
-            if vague:
+            if any(re.search(rf"\b{word}\b", action.lower()) for word in VAGUE_ACTIONS):
                 raise PlanQualityError(f"{unit_id}: vague action without engineering mechanics: {action}")
             raise PlanQualityError(f"{unit_id}: concrete action has no explicit engineering operation: {action}")
         if action_verbs > 1 or ";" in action:
             raise PlanQualityError(f"{unit_id}: multiple primary actions are coupled in one work unit: {action}")
-
         if len(behavior) < 10:
             raise PlanQualityError(f"{unit_id}: resulting behavior is too thin")
 
@@ -122,13 +180,13 @@ def validate_work_units(text: str) -> None:
         if benefit_normalized == normalize_sentence(behavior):
             raise PlanQualityError(f"{unit_id}: benefit merely repeats resulting behavior")
 
-        verification_normalized = verification.lower()
-        if verification_normalized in {"run tests", "test", "verify", "check"} or len(verification) < 12:
-            raise PlanQualityError(f"{unit_id}: verification is not exact enough: {verification}")
+        validate_side_effects(unit_id, side_effects, behavior, benefit)
+        validate_construction(unit_id, " ".join([objective, target, action, benefit, side_effects]))
 
+        if verification.lower() in {"run tests", "test", "verify", "check"} or len(verification) < 12:
+            raise PlanQualityError(f"{unit_id}: verification is not exact enough: {verification}")
         if len(safe_stop) < 8:
             raise PlanQualityError(f"{unit_id}: safe-stop or rollback boundary is missing")
-
         if plan_status not in PLANNING_STATUSES:
             raise PlanQualityError(f"{unit_id}: execution state used in Plan Authoring: {plan_status}")
 
@@ -154,25 +212,25 @@ def validate_artifacts(text: str) -> None:
 def validate_authoring_state(text: str) -> None:
     if not re.search(r"(?mi)^- Mode:\s*Plan Authoring\s*$", text):
         raise PlanQualityError("fixture must declare Plan Authoring mode")
-    forbidden_lines = [
+    for pattern in [
         r"(?mi)^- Proceed Decision:\s*proceed\s*$",
         r"(?mi)^- Phase Status:\s*(complete|verified|landed)\s*$",
-    ]
-    for pattern in forbidden_lines:
+    ]:
         if re.search(pattern, text):
             raise PlanQualityError("execution result claimed in Plan Authoring mode")
 
 
-def validate_plan(path: Path) -> None:
+def validate_plan(path: Path, *, allow_legacy_invalid: bool = False) -> None:
     text = path.read_text(encoding="utf-8")
+    if allow_legacy_invalid:
+        text = normalize_legacy_invalid_fixture(text)
     validate_authoring_state(text)
     validate_work_units(text)
     validate_artifacts(text)
 
 
 def expected_error(path: Path) -> str:
-    text = path.read_text(encoding="utf-8")
-    match = re.search(r"<!--\s*expected-error:\s*(.*?)\s*-->", text)
+    match = re.search(r"<!--\s*expected-error:\s*(.*?)\s*-->", path.read_text(encoding="utf-8"))
     if not match:
         raise AssertionError(f"invalid fixture missing expected-error marker: {path}")
     return match.group(1)
@@ -182,31 +240,22 @@ def main() -> int:
     repo_root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
     fixture_dir = repo_root / "tests" / "se-good-plan" / "quality"
     exemplar = repo_root / "tests" / "se-good-plan" / "exemplars" / "full-plan-shape.md"
-
     valid_files = sorted(fixture_dir.glob("valid-*.md")) + [exemplar]
     invalid_files = sorted(fixture_dir.glob("invalid-*.md"))
     if not valid_files or not invalid_files:
         raise AssertionError("quality fixtures are missing")
-
     for path in valid_files:
         validate_plan(path)
-
     for path in invalid_files:
         expected = expected_error(path)
         try:
-            validate_plan(path)
+            validate_plan(path, allow_legacy_invalid=True)
         except PlanQualityError as exc:
             if expected not in str(exc):
-                raise AssertionError(
-                    f"{path.name}: expected error containing {expected!r}, got {str(exc)!r}"
-                ) from exc
+                raise AssertionError(f"{path.name}: expected {expected!r}, got {str(exc)!r}") from exc
         else:
             raise AssertionError(f"invalid fixture unexpectedly passed: {path.name}")
-
-    print(
-        f"[se-good-plan-quality] validated {len(valid_files)} valid and "
-        f"{len(invalid_files)} invalid representative plan outputs"
-    )
+    print(f"[se-good-plan-quality] validated {len(valid_files)} valid and {len(invalid_files)} invalid representative plan outputs")
     return 0
 
 
