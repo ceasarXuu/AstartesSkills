@@ -1,6 +1,6 @@
 ---
 name: se-good-plan
-description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces concise, executable plans built from concrete engineering actions and small independently checkable work units whose benefits are understandable to the wider project team.
+description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces concise, executable plans built from minimum-necessary engineering changes and small independently checkable work units whose benefits and side effects are understandable to the wider project team.
 ---
 
 # SE Good Plan
@@ -9,19 +9,18 @@ description: Use when the user asks for a software engineering plan, implementat
 
 Use this skill to write or review software engineering plans that engineers can
 execute directly and wider project members can understand. Plans must make the
-intended change concrete, split work into small closed-loop engineering units,
-and explain the benefit of each unit without turning the document into a large
-ceremonial template.
+intended change concrete, minimize unnecessary construction, split work into
+small closed-loop engineering units, and explain both the benefit and side
+effects of each unit without turning the document into a ceremonial template.
 
 A good plan answers:
 
 - What exact engineering problem is being solved?
-- Where will the change happen?
-- Which concrete object will be changed?
-- What exact action will be performed?
-- What behavior will result?
-- What project, user, team, reliability, cost, delivery, or operational benefit
-  does this unit provide?
+- Where will the change happen, to which object, and through which action?
+- Is this the smallest necessary construction, or can existing logic be deleted,
+  changed, or reused instead?
+- What behavior and project benefit will result?
+- What complexity, affected surface, and continuing cost will the unit add?
 - How will the unit be verified and safely stopped or reverted?
 
 ## Use This Skill When
@@ -31,8 +30,8 @@ A good plan answers:
 - The user asks to split engineering work into phases or executable steps.
 - The user asks to make an existing plan more concrete, concise, reviewable, or
   ready for execution.
-- The user asks whether an engineering plan is too vague, too large, too
-  coupled, or unsafe to execute.
+- The user asks whether a plan is vague, oversized, over-engineered, too coupled,
+  or unsafe to execute.
 
 Do not use this skill for pure product requirement clarification unless the
 request is to convert requirements into engineering execution. Do not over-plan
@@ -42,11 +41,10 @@ tiny, low-risk edits.
 
 ### 1. Plans Must Be Executable
 
-A plan is not executable when it only says things such as "add an abstraction",
-"refactor the module", "optimize caching", "improve error handling", or
-"complete integration".
+A plan is not executable when it only says "add an abstraction", "refactor the
+module", "optimize caching", "improve error handling", or "complete integration".
 
-For every work unit, state when applicable:
+For every work unit, state:
 
 - **Change location:** module, file, component, service, configuration, schema,
   API, job, pipeline stage, command, or deployment surface.
@@ -54,212 +52,191 @@ For every work unit, state when applicable:
   handler, worker, workflow, rule, or other named engineering object.
 - **Concrete action:** add, change, remove, replace, move, split, route, migrate,
   wire, validate, rename, or another explicit operation.
-- **Resulting behavior:** the immediate technical behavior or invariant after
-  the change.
-- **Benefit:** why this unit matters to the project, users, delivery process,
-  reliability, maintainability, cost, risk, support, or operations, written so
-  project members outside the implementation area can understand it.
-- **Verification:** the test, command, review, artifact, log, trace, or metric
-  that proves the action worked.
+- **Resulting behavior:** the immediate technical behavior or invariant.
+- **Benefit:** why the unit matters to the project or its participants.
+- **Side Effects:** expected complexity, affected surface, and continuing cost
+  even when the implementation works as designed.
+- **Verification:** exact evidence that proves the action worked.
 
-Do not use abstract verbs as substitutes for an engineering design. If a
-location or object is unknown, mark it `Unknown` and add a concrete Discovery
-work unit instead of pretending the plan is implementation-ready.
+If a location or object is unknown, mark it `Unknown` and add a concrete
+Discovery unit instead of pretending the plan is implementation-ready.
 
 ### 2. Use The Smallest Closed-Loop Engineering Unit
 
 Decompose work into the smallest coherent unit that is independently:
 
 - executable
-- inspectable
-- reviewable and auditable
+- inspectable, reviewable, and auditable
 - verifiable
 - reversible, disableable, or safely stoppable
 
 Each unit should have one primary engineering objective or invariant, one
-primary change axis, one primary action, and one explicit benefit. Follow
-small-step delivery: execute one small, checkable piece, verify it, then move to
-the next piece.
+primary change axis, one primary action, one benefit, and one bounded side-effect
+profile. Execute one small, checkable piece, verify it, then move to the next.
 
-Split a unit when it couples independent axes such as:
+Split a unit when it couples independent API, data, internal implementation,
+cache, client, deployment, observability, security, or cleanup changes. A phase
+may sequence multiple units but must not hide their individual actions,
+benefits, side effects, evidence, status, or safe-stop boundaries.
 
-- public API behavior
-- persistent schema or data migration
-- internal implementation
-- cache or consistency behavior
-- client integration
-- deployment or traffic routing
-- old-path cleanup
+### 3. Prefer Minimum Necessary Construction
 
-A phase may group multiple work units for sequencing, but the phase must not
-hide a large undifferentiated change. Every unit inside the phase still needs
-its own concrete action, benefit, verification, status, and safe-stop boundary.
+Plan for the required behavior, not the largest complete-looking architecture.
+Use this preference order:
 
-### 3. Make Every Unit's Benefit Understandable
+```text
+delete or simplify existing logic
+  -> change an existing path
+  -> reuse an existing mechanism
+  -> add narrow local logic
+  -> add a new abstraction
+  -> add a new dependency or stateful infrastructure
+```
 
-`Resulting Behavior` and `Benefit` are different:
+The farther a proposal moves down this list, the stronger its proof burden.
+New interfaces, factories, providers, registries, configuration switches,
+states, runtime branches, caches, queues, jobs, dependencies, schemas, or
+frameworks must be justified by a current confirmed need or risk. A possible
+future requirement is not sufficient evidence.
 
-- `Resulting Behavior` explains what changes technically.
-- `Benefit` explains why that technical change is useful to the wider project.
+Preserve future decision space without implementing unconfirmed capabilities.
+Do not build a plugin system merely to avoid a local conditional, or a generic
+framework for one current implementation. Temporary compatibility or migration
+logic must have retirement criteria and a cleanup unit.
 
-A valid benefit names the affected audience or project outcome and is specific
-enough to distinguish the unit from neighboring units. Suitable benefit types
-include:
+Before accepting a construction-heavy unit, compare it with the smallest
+credible delete/change/reuse alternative. Listing side effects does not justify
+them; the unit's Benefit must outweigh its complexity and continuing cost.
 
-- reduced incident or compatibility risk
-- faster or safer delivery
-- lower operational or support effort
-- improved user capability or experience
-- clearer ownership or failure diagnosis
-- reduced maintenance or infrastructure cost
-- enabling a later unit without breaking the current path
+### 4. Make Every Unit's Benefit Understandable
+
+`Resulting Behavior` explains what changes technically. `Benefit` explains why
+that change is useful to the wider project.
+
+A valid Benefit names an affected audience or outcome, such as reduced incident
+risk, safer delivery, lower support effort, improved user capability, clearer
+failure diagnosis, lower cost, or enabling a later unit without breaking the
+current path.
 
 Do not use generic statements such as "improves quality", "adds value", or
-"makes the system better". Do not merely repeat the resulting behavior.
-Benefits may be qualitative. Add formal metrics, baselines, targets, and
-observation windows only when the benefit is measurable or decision-critical.
+"makes the system better". Do not repeat Resulting Behavior. Benefits may be
+qualitative; add metrics and baselines only when measurable or decision-critical.
 
-### 4. Separate Plan Authoring From Execution Tracking
+### 5. State Side Effects, Not Only Risks
 
-`Plan Authoring` is the default mode. It defines future work and required
-evidence. It must not claim that work has already completed.
+A Side Effect is an expected consequence or continuing obligation even when the
+change works correctly. A Risk is an uncertain adverse event. Rollback describes
+recovery. Do not merge these concepts.
 
-Allowed plan statuses:
+Every unit's Side Effects must cover two minimum dimensions:
 
-- `planned`
-- `blocked-on-discovery`
-- `deferred`
+- **Complexity:** net code and architecture delta, including added or removed
+  files, concepts, abstractions, states, branches, dependencies, configuration,
+  persistent structures, runtime paths, and temporary compatibility logic.
+- **Reach / cost:** affected modules, callers, clients, data, build/test scope,
+  CI latency, deployment coordination, CPU, memory, IO, storage, network,
+  third-party spend, security/privacy exposure, on-call, support, documentation,
+  ownership, cognitive load, and cleanup obligations when applicable.
 
-In Plan Authoring mode, do not use `complete`, `landed`, `verified`, `proceed`,
-or similar execution claims unless real execution evidence was supplied by the
-user or verified through tools.
+Use a compact form such as:
 
-Use `Execution Tracking` mode only when reviewing actual implementation
-progress. Allowed execution statuses are:
+```text
+Complexity: +1 routing branch, temporary until W4; Reach/Cost: account API,
+contract tests, and on-call route diagnosis are affected.
+```
 
-- `not-started`
-- `in-progress`
-- `verified`
-- `blocked`
-- `failed`
-- `rolled-back`
+`None`, `minimal impact`, `low risk`, or `N/A` are invalid. When no material
+side effect is expected, state why and name the unchanged dimensions.
 
-A proceed or pause decision belongs to Execution Tracking, not to an initial
-plan draft.
+### 6. Separate Plan Authoring From Execution Tracking
 
-### 5. Keep Artifact And Code Status Models Separate
+`Plan Authoring` is the default mode. Allowed plan statuses are `planned`,
+`blocked-on-discovery`, and `deferred`. Do not claim `complete`, `landed`,
+`verified`, or `proceed` without actual execution evidence.
 
-Discovery and design artifacts are not production code. Use artifact statuses:
+Use `Execution Tracking` only for actual progress. Allowed execution statuses
+are `not-started`, `in-progress`, `verified`, `blocked`, `failed`, and
+`rolled-back`. Proceed or pause decisions belong to Execution Tracking.
 
-- `planned`
-- `drafted`
-- `reviewed`
-- `verified`
+### 7. Keep Artifact And Code Status Models Separate
 
-Use code implementation statuses only for code-bearing work:
+Discovery and design artifacts use `planned`, `drafted`, `reviewed`, or
+`verified`. Code-bearing implementation uses `planned`, `implemented`,
+`integrated`, or `runtime-verified`.
 
-- `planned`
-- `implemented`
-- `integrated`
-- `runtime-verified`
+Do not apply production-code states to inventories, designs, decision records,
+or reviews. Interfaces, schemas, scaffolds, mocks, demos, and test-only wiring do
+not prove a production path is integrated or runtime-verified.
 
-Do not mark an inventory, design document, decision record, or review artifact
-as `landed`, `integrated`, or `runtime-verified`. Do not mark code complete
-because an interface, schema, scaffold, mock, fake-data path, demo, or test-only
-wiring exists without a real production integration path.
-
-### 6. Prefer Concise Structure Over Template Ceremony
+### 8. Prefer Concise Structure Over Template Ceremony
 
 Use the smallest document shape that preserves engineering clarity. Do not add
-sections or tables merely to fill a template. Avoid repeating the same risks,
-tests, logs, or status information globally and again inside every phase.
+sections or duplicate risks, tests, logs, benefits, or side effects merely to
+fill a template. Optional material belongs only when it changes a decision,
+execution order, validation method, safety boundary, or risk treatment.
 
-The plan should emphasize concrete engineering work. Optional material belongs
-only when it changes a decision, execution order, validation method, release
-safety, or risk treatment.
-
-### 7. Preserve Engineering Safety
+### 9. Preserve Engineering Safety
 
 - Separate facts, assumptions, constraints, risks, and open questions.
-- Do not invent architecture, services, databases, traffic, data scale,
-  business rules, schedules, staffing, deadlines, launch dates, or maintenance
-  windows.
+- Do not invent architecture, scale, schedules, staffing, deadlines, or release
+  commitments.
 - Move high-risk and high-uncertainty validation earlier.
-- Production-impacting work must include release, rollback or fallback,
-  observability, and post-release validation.
-- Data changes must include idempotency, retry or resume behavior, validation,
-  and rollback or compensation.
-- Security-sensitive work must include permission boundaries, sensitive-data
-  handling, abuse cases, audit logging, and security review.
-- Every work unit must state its benefit. Add formal benefit validation when the
-  claimed benefit is measurable or material to the decision.
-- Runtime-changing work must make important success, failure, and failure-reason
-  states observable.
+- Production work includes release, rollback/fallback, observability, and
+  post-release validation.
+- Data changes include idempotency, retry/resume, validation, and compensation.
+- Security changes include permission boundaries, sensitive-data handling,
+  abuse cases, audit logging, and review.
+- Runtime-changing work makes success, failure, and failure reasons observable.
 
 ## Generation Workflow
 
 ### 1. Classify Scope And Risk
 
-Classify the work type and risk before choosing plan depth. Read
-`references/plan-patterns.md` for task-specific additions.
+Read `references/plan-patterns.md` for task-specific additions.
 
 | Depth | Use when | Typical shape |
 |---|---|---|
 | Lightweight | narrow, low-risk, easy rollback | 1-3 work units |
-| Standard | several moving parts or controlled production risk | 2-5 phases, each with small work units |
-| Full | data, security, compatibility, cross-system, or hard rollback risk | only the additional safety sections that apply |
-
-Force Full depth for production data migration, auth or permission boundaries,
-payment or asset paths, core API compatibility risk, irreversible change,
-cross-system migration, or hard-to-rollback production change.
+| Standard | several moving parts or controlled production risk | 2-5 phases with small units |
+| Full | data, security, compatibility, cross-system, or hard rollback risk | Standard plus only relevant safety sections |
 
 ### 2. Define The Problem And Target
 
-State briefly:
+State current behavior, expected behavior, gap, affected surfaces, goals,
+non-goals, assumptions, and open questions briefly. Missing context becomes a
+bounded Discovery unit with an inspection location, method, evidence, unlocked
+decision, Benefit, and Side Effects.
 
-- current behavior
-- expected behavior
-- gap
-- affected surfaces
-- goals and non-goals
-- material assumptions or open questions
+### 3. Choose The Least-Construction Technical Approach
 
-If missing context blocks concrete planning, add a Discovery work unit with an
-explicit location to inspect, command to run, evidence to collect, decision the
-evidence will unlock, and benefit of removing that uncertainty.
-
-### 3. Describe The Technical Approach
-
-Explain the target control flow, data flow, compatibility approach, migration
-mechanism, or structural change at the level needed to understand the work
-units. Do not repeat the work-unit rows in prose.
+Describe the target control/data flow or structural change at the level needed
+to understand the units. State what existing logic is deleted, changed, or
+reused before proposing new structures. For a new abstraction or infrastructure,
+state the current concrete need and why a smaller alternative is insufficient.
 
 ### 4. Build Work Units
 
-Use this table as the primary execution representation:
+Use this as the primary execution representation:
 
 ```markdown
-| ID | Objective | Change Axis | Change Location | Target Object | Concrete Action | Resulting Behavior | Benefit | Verification | Safe Stop / Rollback | Plan Status |
-|---|---|---|---|---|---|---|---|---|---|---|
-| W1 | ... | internal / API / data / cache / client / deployment / observability / cleanup / security | path, module, service, config, schema, job, or command | named function, class, endpoint, field, key, workflow, or rule | one explicit engineering action | immediate technical effect or invariant | project, user, team, delivery, reliability, cost, support, or operational value | exact test, command, review, log, trace, metric, or artifact | ... | planned / blocked-on-discovery / deferred |
+| ID | Objective | Change Axis | Change Location | Target Object | Concrete Action | Resulting Behavior | Benefit | Side Effects | Verification | Safe Stop / Rollback | Plan Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| W1 | ... | internal / API / data / cache / client / deployment / observability / cleanup / security | path, module, service, config, schema, job, or command | named function, class, endpoint, field, key, workflow, or rule | one explicit engineering action | immediate technical effect | wider project value | Complexity: ...; Reach/Cost: ... | exact evidence | ... | planned / blocked-on-discovery / deferred |
 ```
 
 Rules:
 
 - One row is one smallest closed-loop engineering unit.
 - One row has one primary change axis and one primary action.
-- Every row has a specific Benefit understandable outside the implementation
-  area; it cannot be blank, generic, or a copy of Resulting Behavior.
-- Dependencies determine order; they do not justify combining unrelated work.
-- If a row cannot be verified or safely stopped independently, split it or
-  explain the unavoidable coupling.
-- A broad row such as "refactor backend and update API, cache, UI, deployment"
-  is invalid even if the whole phase has an end-to-end test.
+- Benefit cannot be blank, generic, or a copy of Resulting Behavior.
+- Side Effects must cover Complexity and Reach/Cost; generic claims are invalid.
+- Dependencies determine order; they do not justify coupling unrelated work.
+- Split any row that cannot be verified or safely stopped independently.
+- Reject speculative construction for possible future use without a current need.
 
 ### 5. Group Into Phases Only When Useful
 
-Use phases only to express sequencing, risk isolation, or release boundaries.
-A compact phase needs only:
+Use phases only for sequencing, risk isolation, or release boundaries:
 
 ```markdown
 ### Phase N: <Outcome>
@@ -267,68 +244,50 @@ A compact phase needs only:
 - Entry condition:
 - Work units: W1, W2
 - Phase-local evidence:
+- Cross-unit side effects:
 - Next-phase condition:
 ```
 
-A phase is not required for every low-risk plan. Do not force Discovery,
-Design, Foundation, Implementation, Integration, Validation, Release, and
-Cleanup into separate headings when a smaller structure is clearer.
-
-In Plan Authoring mode, phase evidence and next-phase conditions describe what
-will be required. They are not marked complete or proceed.
+`Cross-unit side effects` records only cumulative or interacting effects not
+already captured per unit. For a multi-unit phase, state them or explain why
+there are none beyond the unit-level effects.
 
 ### 6. Add Only Relevant Supporting Sections
 
-Add these only when applicable:
-
-- Verification strategy
-- Formal benefit validation
-- Release, rollback, and fallback
-- Data migration and compensation
-- API compatibility
-- Security and permission review
-- Observability and logging
-- Risks and dependencies
-- Alternatives and decisions
-- Open questions
-
-Use compact tables from `references/plan-patterns.md` rather than duplicating
-large per-phase templates.
+Add only applicable verification, formal benefit validation, release/rollback,
+data migration, compatibility, security, observability, risks/dependencies,
+alternatives/decisions, or open questions. Use compact structures from the
+reference instead of repeating large per-phase templates.
 
 ## Reviewing Existing Plans
 
 Lead with findings. Check for:
 
-- abstract actions without a concrete location, object, or operation
-- missing, generic, implementation-only, or duplicated unit benefits
-- work units that combine several independent change axes or actions
-- phases that hide a large undifferentiated implementation block
-- units that cannot be checked, audited, or stopped independently
-- plan drafts that claim `complete`, `landed`, `verified`, or `proceed` without
-  actual execution evidence
-- discovery or design artifacts using production-code statuses
-- excessive headings, repeated tables, and template filler that obscure the
-  engineering work
-- missing problem definition, scope control, verification, rollback,
-  observability, data safeguards, security review, or supported project facts
+- abstract actions without concrete locations, objects, or operations
+- speculative abstractions or infrastructure without a current proven need
+- missing consideration of delete/change/reuse alternatives
+- missing, generic, duplicated, or implementation-only Benefits
+- missing or generic Side Effects, especially hidden code/state/path growth
+- effects on other modules, validation scope, runtime cost, operations, support,
+  ownership, and cleanup that are omitted
+- oversized units, coupled axes, or broad phases hiding unreviewable work
+- temporary logic without retirement criteria
+- mixed planning/execution states or artifact/code statuses
+- template bloat, missing verification/rollback, or unsupported project facts
 
 Then provide a compact corrected outline or rewritten work-unit section.
 
 ## Output Quality Checklist
 
-Before final output, verify:
-
-- [ ] The plan states concrete change locations, target objects, and actions.
-- [ ] Abstract verbs are expanded into engineering mechanics.
-- [ ] Work is split into smallest closed-loop engineering units.
-- [ ] Each unit has one primary objective, change axis, and action.
-- [ ] Each unit states a specific benefit understandable to wider project members.
-- [ ] Resulting Behavior and Benefit are not duplicates.
-- [ ] Each unit is independently inspectable, verifiable, and safely stoppable.
-- [ ] Phases express sequencing rather than hiding oversized work.
-- [ ] Plan Authoring and Execution Tracking states are not mixed.
-- [ ] Artifact statuses and code statuses are not mixed.
-- [ ] The structure is concise and contains no empty ceremonial sections.
-- [ ] Relevant correctness, formal benefit validation, release, rollback,
-      observability, data, and security requirements are present.
-- [ ] The plan does not invent project facts, schedules, or commitments.
+- [ ] Locations, target objects, and actions are concrete.
+- [ ] Delete/change/reuse was considered before new construction.
+- [ ] Every new abstraction, state, dependency, or runtime path has current evidence.
+- [ ] Work is split into smallest closed-loop units with one primary axis/action.
+- [ ] Every unit has a specific Benefit understandable to wider project members.
+- [ ] Every unit states Complexity and Reach/Cost Side Effects.
+- [ ] Benefit is proportionate to the complexity and continuing cost introduced.
+- [ ] Temporary complexity has retirement criteria and a cleanup unit.
+- [ ] Units are independently inspectable, verifiable, and safely stoppable.
+- [ ] Phases expose cumulative cross-unit side effects when applicable.
+- [ ] Planning/execution states and artifact/code statuses are not mixed.
+- [ ] Structure is concise and relevant engineering safety is preserved.
