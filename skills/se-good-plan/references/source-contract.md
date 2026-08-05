@@ -2,104 +2,127 @@
 
 This file defines behavior that must remain stable across future edits.
 
-## Trigger Contract
+## Trigger And Honesty Contract
 
 The skill triggers for implementation, refactor, migration, rollout, bug-fix,
 performance, security, DevOps / CI/CD, release, technical execution, plan
-decomposition, over-engineering review, and existing-plan review requests.
+decomposition, over-engineering review, validation review, stale-plan review,
+and existing-plan review. It must not invent architecture, scale, schedules,
+staffing, deadlines, or release commitments.
 
-## Context Honesty Contract
+## Executable Closed-Loop Unit Contract
 
-The skill must not invent architecture, services, databases, scale, business
-rules, schedules, staffing, deadlines, release dates, or maintenance windows.
-Missing information becomes an assumption, open question, or Discovery unit.
-
-## Executable Specificity Contract
-
-Every work unit identifies a concrete change location, named target object, one
-explicit action, resulting behavior, specific Benefit, Side Effects, exact
-verification evidence, and a safe-stop or rollback boundary. Abstract statements
-do not satisfy this contract by themselves.
-
-## Smallest Closed-Loop Engineering Unit Contract
-
-Every unit has one primary objective/invariant, change axis, and action; a
-bounded change surface; explicit dependencies; independent verification; an
-independent safe-stop boundary; one Benefit; and one side-effect profile. Split
-independent API, data, implementation, cache, client, deployment, observability,
-security, or cleanup changes.
+Every work unit identifies a concrete location, named object, one action,
+resulting behavior, specific Benefit, Side Effects, exact verification, and a
+safe-stop boundary. Each unit has one primary objective and change axis and is
+independently inspectable, verifiable, and stoppable.
 
 ## Minimum Necessary Construction Contract
 
-Plans prefer, in order:
+Plans prefer delete/simplify, change, reuse, and narrow local logic before new
+abstractions, dependencies, state, or infrastructure. Current confirmed need or
+risk is required for interfaces, factories, providers, registries, switches,
+states, branches, caches, queues, jobs, schemas, dependencies, or frameworks.
+Speculative future use is insufficient. Temporary construction needs retirement
+criteria and cleanup.
 
-1. delete or simplify existing logic
-2. change an existing path
-3. reuse an existing mechanism
-4. add narrow local logic
-5. add a new abstraction
-6. add a new dependency or stateful infrastructure
+## Benefit And Side Effects Contract
 
-New interfaces, factories, providers, registries, configuration switches,
-states, runtime branches, caches, queues, jobs, dependencies, schemas, or
-frameworks require a current confirmed need or risk. Speculative future use is
-not sufficient. New abstractions for one current implementation require an
-explicit reason that a smaller alternative cannot satisfy.
+Benefit connects technical behavior to wider project value and cannot be generic
+or duplicate Resulting Behavior.
 
-Temporary compatibility or migration construction requires retirement criteria
-and a cleanup unit. A unit is invalid when its Benefit does not justify the
-complexity and continuing cost it introduces.
+Side Effects are expected costs even when work succeeds, distinct from uncertain
+Risks and recovery. Each unit covers:
 
-## Benefit Communication Contract
+- **Complexity:** code/files/concepts/abstractions/states/branches/dependencies/
+  configuration/schema/runtime paths/temporary logic added or removed.
+- **Reach / cost:** affected modules/callers/data/tests/builds/CI/deployment/
+  resources/security/operations/support/ownership/cognitive load/cleanup.
 
-Every unit contains a `Benefit` understandable beyond implementation details.
-It connects the technical change to a project, user, team, delivery,
-reliability, maintainability, cost, support, risk, or operational outcome. It is
-specific, distinguishes the unit from neighbors, and does not repeat Resulting
-Behavior. Generic claims are invalid. Formal metrics are conditional on the
-claim being measurable, disputed, or decision-critical.
+Generic no-impact wording is invalid.
 
-## Side Effects Contract
+## Minimum Sufficient Pre-Investment Validation Contract
 
-Every unit contains `Side Effects`. A side effect is an expected consequence or
-continuing obligation even when the change works correctly; it is not an
-uncertain Risk or a Rollback action.
+When a critical unknown could invalidate substantial later work, the plan must
+validate before expensive, broad, irreversible, or dependency-sensitive
+implementation. Already evidenced, narrow, reversible work does not require a
+ceremonial validation phase.
 
-The field covers two minimum dimensions:
+Validation proves only that the direction is sufficiently credible to justify
+formal investment. It does not prove complete implementation, full correctness,
+or production readiness.
 
-- **Complexity:** net additions/removals in code, files, concepts, abstractions,
-  states, branches, dependencies, configuration, persistent structures, runtime
-  paths, temporary compatibility logic, and cleanup obligations.
-- **Reach / cost:** affected modules, callers, clients, data, tests, builds, CI,
-  deployment, runtime resources, infrastructure spend, security/privacy,
-  operations, on-call, support, documentation, ownership, and cognitive load
-  when applicable.
+Each validation item states:
 
-`None`, `N/A`, `minimal impact`, `low risk`, or similarly generic wording is
-invalid. A no-material-effect claim must explain why and name unchanged
-relevant dimensions. Side Effects cannot merely repeat Resulting Behavior or
-Benefit.
+- critical assumption and decision unlocked;
+- cheapest credible method and evidence level: Static, Observed, Mock, Sandbox,
+  Prototype, or Production;
+- enough-evidence threshold and what remains intentionally unproven;
+- bounded budget, allowed artifacts, and forbidden production changes;
+- stop condition and cleanup or promotion path;
+- status: `planned`, `direction-supported`, `direction-rejected`, `inconclusive`,
+  or `budget-exhausted`.
 
-## Plan And Execution State Contract
+Validation must prefer existing/read-only evidence, then isolated scripts or
+sandbox spikes. It must not silently modify production entry points, schemas,
+defaults, deployment routes, long-lived configuration, or public abstractions.
+When credible validation approaches formal implementation cost or scope, it must
+be narrowed or reclassified as an implementation unit.
 
-Plan Authoring uses `planned`, `blocked-on-discovery`, or `deferred` and cannot
-claim completed execution without evidence. Execution Tracking uses
-`not-started`, `in-progress`, `verified`, `blocked`, `failed`, or `rolled-back`.
-Proceed/pause belongs to Execution Tracking.
+Mock, Sandbox, and Prototype evidence cannot satisfy production integration or
+runtime-verification status. `direction-supported` never means implemented.
 
-## Artifact And Code Status Contract
+## Evidence Supersedes Plan Contract
 
-Discovery/design artifacts use `planned`, `drafted`, `reviewed`, or `verified`.
-Code uses `planned`, `implemented`, `integrated`, or `runtime-verified`.
-Planning artifacts cannot use production-code states, and scaffolds/mocks do not
-prove production integration.
+Verified current code, tests, logs, data, dependency behavior, and runtime
+observations outrank plan assumptions and preplanned order. Material conflicts
+pause affected downstream work until reconciliation.
+
+## Phase Reconciliation Contract
+
+After every material phase in Execution Tracking and before the next phase, the
+plan must reconcile:
+
+- new evidence and evidence level;
+- affected assumptions and prior conclusions;
+- conclusion status: `current`, `qualified`, `superseded`, `invalidated`, or
+  `needs-revalidation`;
+- impact on Benefit, Side Effects, cost, risk, dependencies, and priority;
+- downstream work to continue, revise, split, remove, add, reorder, pause, or stop;
+- plan validity: `valid`, `valid-with-qualifications`, `needs-revision`, or
+  `invalidated`;
+- next action: `continue`, `revise`, `pause`, or `stop`.
+
+Phase completion does not imply downstream-plan validity. `needs-revision` or
+`invalidated` cannot continue unchanged. When no material evidence changed, the
+reconciliation may state that explicitly and continue.
+
+## Plan Revision Traceability Contract
+
+Plan updates preserve the prior conclusion and evidence history. The agent marks
+old conclusions qualified, superseded, invalidated, or needing revalidation and
+records the evidence and downstream changes. Silent history rewriting is invalid.
+
+## State Separation Contract
+
+- Plan Authoring: `planned`, `blocked-on-discovery`, `deferred`.
+- Pre-investment validation: `planned`, `direction-supported`,
+  `direction-rejected`, `inconclusive`, `budget-exhausted`.
+- Execution Tracking: `not-started`, `in-progress`, `verified`, `blocked`,
+  `failed`, `rolled-back`.
+- Plan validity: `valid`, `valid-with-qualifications`, `needs-revision`,
+  `invalidated`.
+- Discovery/design artifacts: `planned`, `drafted`, `reviewed`, `verified`.
+- Code implementation: `planned`, `implemented`, `integrated`,
+  `runtime-verified`.
+
+These models must not be mixed.
 
 ## Proportional Output Contract
 
-Use the smallest document shape preserving clarity. Lightweight plans use 1-3
-units. Standard plans add concise approach and useful phases. Full plans add only
-risk-relevant data, compatibility, security, release, observability,
-alternative, or decision material. Do not restore fixed oversized templates.
+Use the smallest shape preserving clarity. Pre-investment validation appears
+only for material uncertainty. Reconciliation appears only in Execution Tracking
+for material phases. Do not restore fixed oversized templates.
 
 ## Work Unit Contract
 
@@ -108,46 +131,39 @@ alternative, or decision material. Do not restore fixed oversized templates.
 |---|---|---|---|---|---|---|---|---|---|---|---|
 ```
 
-A valid row has one primary axis/action, a specific Benefit, and Side Effects
-covering Complexity and Reach/Cost. Dependencies set order but do not justify
-coupling unrelated changes.
+## Pre-Investment Validation Contract Shape
 
-## Phase Contract
+```markdown
+| ID | Critical Assumption | Decision Unlocked | Cheapest Credible Method | Enough Evidence / Not Proven | Budget / Isolation | Stop / Cleanup | Status |
+|---|---|---|---|---|---|---|---|
+```
 
-Phases are optional sequencing/risk containers. They state entry condition,
-work units, phase-local evidence, cross-unit side effects, and next-phase
-condition. Cross-unit side effects capture cumulative/interacting effects or
-explain why none exist beyond unit-level effects. Plan Authoring does not mark
-phase evidence complete or decide proceed.
+## Phase Reconciliation Contract Shape
+
+```markdown
+| Phase | New Evidence | Affected Assumption / Prior Conclusion | Conclusion Update | Downstream Plan Change | Plan Validity | Next Action |
+|---|---|---|---|---|---|---|
+```
 
 ## Engineering Safety Contract
 
 Production work includes release, rollback/fallback, observability, and
-post-release validation. Data changes include idempotency, retry/resume,
-validation, and compensation. Security changes include permission boundaries,
+post-release validation. Data work includes idempotency, retry/resume,
+validation, and compensation. Security work includes permissions,
 sensitive-data handling, abuse cases, audit logging, and review.
-
-## Existing Plan Review Contract
-
-Review leads with findings and checks vague actions, speculative construction,
-missing delete/change/reuse alternatives, missing/generic Benefits or Side
-Effects, hidden code/state/path growth, affected modules and costs, oversized
-units, temporary logic without cleanup, mixed statuses, template bloat, missing
-verification/rollback, and unsupported facts.
 
 ## Behavioral Validation Contract
 
-Tests validate representative outputs, not only keywords. The quality validator
-rejects at least:
+Tests validate representative outputs, not only keywords. The validator rejects:
 
-- vague actions
-- multiple primary axes/actions
-- missing/generic/duplicated Benefits
-- missing/generic/incomplete Side Effects
-- speculative construction without a current need
-- an abstraction around one current implementation without justification
-- execution-complete states in Plan Authoring
-- production-code states on planning artifacts
+- vague or coupled work units, generic Benefits, or incomplete Side Effects;
+- speculative construction without current need;
+- material uncertainty with no pre-investment validation;
+- heavy, unbounded, production-polluting, or implementation-status validation;
+- completed material execution with no reconciliation;
+- continuing unchanged when plan validity needs revision or is invalidated;
+- conclusion updates without traceable validity status;
+- mixed plan, validation, execution, artifact, and code states.
 
-It accepts concise, concrete, minimum-necessary, independently verifiable units
-with specific Benefits and explicit Complexity plus Reach/Cost Side Effects.
+It accepts concise authoring plans with bounded sufficient validation and concise
+execution reports whose next actions follow current evidence.
