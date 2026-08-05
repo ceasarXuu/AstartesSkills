@@ -12,8 +12,24 @@ ALLOWED_AXES = {
     "deployment", "observability", "cleanup", "security",
 }
 PLANNING_STATUSES = {"planned", "blocked-on-discovery", "deferred"}
+VALIDATION_STATUSES = {
+    "planned", "direction-supported", "direction-rejected", "inconclusive",
+    "budget-exhausted",
+}
+EXECUTION_STATUSES = {
+    "not-started", "in-progress", "verified", "blocked", "failed", "rolled-back",
+}
+PLAN_VALIDITIES = {"valid", "valid-with-qualifications", "needs-revision", "invalidated"}
+NEXT_ACTIONS = {"continue", "revise", "pause", "stop"}
+CONCLUSION_PREFIXES = {
+    "current", "qualified", "superseded", "invalidated", "needs-revalidation",
+}
 ARTIFACT_KINDS = {"discovery", "design"}
 ARTIFACT_STATUSES = {"planned", "drafted", "reviewed", "verified"}
+EVIDENCE_LEVELS = {
+    "Static Evidence", "Observed Evidence", "Mock Evidence", "Sandbox Evidence",
+    "Prototype Evidence", "Production Evidence",
+}
 ACTION_VERBS = {
     "add", "change", "remove", "replace", "move", "split", "route",
     "migrate", "wire", "validate", "rename", "introduce", "update",
@@ -48,17 +64,39 @@ CURRENT_NEED_MARKERS = {
     "required by", "two existing", "multiple existing", "current variants",
     "existing variants", "current consumers", "existing consumers",
 }
+HEAVY_VALIDATION_PHRASES = {
+    "full production integration", "complete production integration",
+    "production-ready implementation", "implement all error paths",
+    "implement all edge cases", "full compatibility matrix",
+    "deploy the completed feature", "production schema migration",
+    "complete observability stack", "build the full solution",
+}
+UNBOUNDED_BUDGET_PHRASES = {
+    "as needed", "unlimited", "until complete", "whatever it takes",
+    "no limit", "no restrictions",
+}
 
 WORK_UNIT_HEADER = [
     "ID", "Objective", "Change Axis", "Change Location", "Target Object",
     "Concrete Action", "Resulting Behavior", "Benefit", "Side Effects",
     "Verification", "Safe Stop / Rollback", "Plan Status",
 ]
-ARTIFACT_HEADER = ["Artifact", "Kind", "Expected Output", "Status"]
 LEGACY_WORK_UNIT_HEADER = [
     "ID", "Objective", "Change Axis", "Change Location", "Target Object",
     "Concrete Action", "Resulting Behavior", "Benefit", "Verification",
     "Safe Stop / Rollback", "Plan Status",
+]
+ARTIFACT_HEADER = ["Artifact", "Kind", "Expected Output", "Status"]
+VALIDATION_HEADER = [
+    "ID", "Critical Assumption", "Decision Unlocked", "Cheapest Credible Method",
+    "Enough Evidence / Not Proven", "Budget / Isolation", "Stop / Cleanup", "Status",
+]
+EXECUTION_HEADER = [
+    "Work Unit", "Execution Status", "Evidence", "Missing Evidence", "Decision",
+]
+RECONCILIATION_HEADER = [
+    "Phase", "New Evidence", "Affected Assumption / Prior Conclusion",
+    "Conclusion Update", "Downstream Plan Change", "Plan Validity", "Next Action",
 ]
 
 
@@ -78,6 +116,13 @@ def table_after_heading(text: str, heading: str) -> tuple[list[str], list[list[s
     if len(lines) < 3:
         raise PlanQualityError(f"{heading} must contain a header and at least one row")
     return split_row(lines[0]), [split_row(line) for line in lines[2:]]
+
+
+def declared_mode(text: str) -> str:
+    match = re.search(r"(?mi)^- Mode:\s*(Plan Authoring|Execution Tracking)\s*$", text)
+    if not match:
+        raise PlanQualityError("document must declare Plan Authoring or Execution Tracking mode")
+    return match.group(1)
 
 
 def count_action_verbs(action: str) -> int:
@@ -118,9 +163,7 @@ def normalize_legacy_invalid_fixture(text: str) -> str:
     """Keep older adversarial fixtures focused on their original failure."""
     lines = text.splitlines()
     for index, line in enumerate(lines):
-        if not line.lstrip().startswith("|"):
-            continue
-        if split_row(line) != LEGACY_WORK_UNIT_HEADER:
+        if not line.lstrip().startswith("|") or split_row(line) != LEGACY_WORK_UNIT_HEADER:
             continue
         lines[index] = "| " + " | ".join(WORK_UNIT_HEADER) + " |"
         if index + 1 < len(lines):
@@ -209,9 +252,45 @@ def validate_artifacts(text: str) -> None:
             raise PlanQualityError(f"artifact row {index}: production-code state applied to planning artifact: {status}")
 
 
+def validate_preinvestment(text: str) -> None:
+    material = bool(re.search(r"(?mi)^- Material Uncertainty:\s*yes\s*$", text))
+    has_section = "## Pre-Investment Validation" in text
+    if material and not has_section:
+        raise PlanQualityError("material uncertainty requires bounded pre-investment validation")
+    if not has_section:
+        return
+
+    header, rows = table_after_heading(text, "Pre-Investment Validation")
+    if header != VALIDATION_HEADER:
+        raise PlanQualityError("pre-investment validation table header is invalid")
+
+    for index, row in enumerate(rows, start=1):
+        if len(row) != len(VALIDATION_HEADER):
+            raise PlanQualityError(f"validation row {index} has invalid cell count")
+        item_id, assumption, decision, method, threshold, budget, stop, status = row
+        if len(assumption) < 16 or len(decision) < 12:
+            raise PlanQualityError(f"{item_id}: validation assumption or decision is too thin")
+        if not any(level.lower() in method.lower() for level in EVIDENCE_LEVELS):
+            raise PlanQualityError(f"{item_id}: validation method must name an evidence level")
+        method_normalized = normalize_sentence(method)
+        if any(phrase in method_normalized for phrase in HEAVY_VALIDATION_PHRASES):
+            raise PlanQualityError(f"{item_id}: validation method is shadow implementation rather than minimum sufficient evidence")
+        if not re.search(r"(?i)\benough\s*:", threshold) or not re.search(r"(?i)\bnot proven\s*:", threshold):
+            raise PlanQualityError(f"{item_id}: validation must state enough evidence and what remains unproven")
+        if not all(re.search(rf"(?i)\b{label}\s*:", budget) for label in ("Budget", "Allowed", "Forbidden")):
+            raise PlanQualityError(f"{item_id}: validation budget/isolation must state Budget, Allowed, and Forbidden")
+        budget_normalized = normalize_sentence(budget)
+        if any(phrase in budget_normalized for phrase in UNBOUNDED_BUDGET_PHRASES):
+            raise PlanQualityError(f"{item_id}: validation budget or isolation is unbounded")
+        if re.search(r"(?i)\bforbidden\s*:\s*(none|nothing|n/a|na)\b", budget):
+            raise PlanQualityError(f"{item_id}: validation must forbid production-changing scope")
+        if not re.search(r"(?i)\bstop\s*:", stop) or not re.search(r"(?i)\bcleanup\s*/\s*promotion\s*:", stop):
+            raise PlanQualityError(f"{item_id}: validation must state stop and cleanup/promotion")
+        if status not in VALIDATION_STATUSES:
+            raise PlanQualityError(f"{item_id}: invalid validation state or implementation evidence claim: {status}")
+
+
 def validate_authoring_state(text: str) -> None:
-    if not re.search(r"(?mi)^- Mode:\s*Plan Authoring\s*$", text):
-        raise PlanQualityError("fixture must declare Plan Authoring mode")
     for pattern in [
         r"(?mi)^- Proceed Decision:\s*proceed\s*$",
         r"(?mi)^- Phase Status:\s*(complete|verified|landed)\s*$",
@@ -220,13 +299,77 @@ def validate_authoring_state(text: str) -> None:
             raise PlanQualityError("execution result claimed in Plan Authoring mode")
 
 
+def validate_execution_tracking(text: str) -> bool:
+    header, rows = table_after_heading(text, "Execution Tracking")
+    if header != EXECUTION_HEADER:
+        raise PlanQualityError("execution tracking table header is invalid")
+    verified = False
+    for index, row in enumerate(rows, start=1):
+        if len(row) != len(EXECUTION_HEADER):
+            raise PlanQualityError(f"execution row {index} has invalid cell count")
+        unit, status, evidence, missing, decision = row
+        if not unit or status not in EXECUTION_STATUSES:
+            raise PlanQualityError(f"execution row {index} has invalid work unit or status")
+        if status == "verified":
+            verified = True
+            if len(evidence) < 16 or normalize_sentence(evidence) in {"tests pass", "verified", "done"}:
+                raise PlanQualityError(f"{unit}: verified execution needs specific evidence")
+        if decision not in {"proceed", "pause", "n/a"}:
+            raise PlanQualityError(f"{unit}: invalid execution decision: {decision}")
+        if status in {"blocked", "failed"} and decision == "proceed":
+            raise PlanQualityError(f"{unit}: blocked or failed execution cannot proceed")
+    return verified
+
+
+def validate_reconciliation(text: str, *, required: bool) -> None:
+    has_section = "## Phase Reconciliation" in text
+    if required and not has_section:
+        raise PlanQualityError("verified material phase requires evidence reconciliation before continuing")
+    if not has_section:
+        return
+
+    header, rows = table_after_heading(text, "Phase Reconciliation")
+    if header != RECONCILIATION_HEADER:
+        raise PlanQualityError("phase reconciliation table header is invalid")
+
+    for index, row in enumerate(rows, start=1):
+        if len(row) != len(RECONCILIATION_HEADER):
+            raise PlanQualityError(f"reconciliation row {index} has invalid cell count")
+        phase, evidence, affected, update, downstream, validity, action = row
+        if not phase or len(evidence) < 16:
+            raise PlanQualityError(f"reconciliation row {index} has thin phase evidence")
+        no_delta = "no material evidence delta" in evidence.lower()
+        if not no_delta and len(affected) < 12:
+            raise PlanQualityError(f"{phase}: affected assumption or prior conclusion is not traceable")
+        prefix_match = re.match(r"(?i)^([a-z-]+)\s*:", update)
+        if not prefix_match or prefix_match.group(1).lower() not in CONCLUSION_PREFIXES:
+            raise PlanQualityError(f"{phase}: conclusion update must preserve a recognized validity status")
+        conclusion_status = prefix_match.group(1).lower()
+        if validity not in PLAN_VALIDITIES or action not in NEXT_ACTIONS:
+            raise PlanQualityError(f"{phase}: invalid plan validity or next action")
+        if len(downstream) < 4:
+            raise PlanQualityError(f"{phase}: downstream plan change is missing")
+        if validity in {"needs-revision", "invalidated"} and action == "continue":
+            raise PlanQualityError(f"{phase}: stale downstream plan cannot continue after material invalidating evidence")
+        if conclusion_status in {"superseded", "invalidated", "needs-revalidation"} and action == "continue":
+            raise PlanQualityError(f"{phase}: changed prior conclusion requires revision, pause, or stop")
+        if no_delta and validity != "valid":
+            raise PlanQualityError(f"{phase}: no material evidence delta should not invalidate the plan")
+
+
 def validate_plan(path: Path, *, allow_legacy_invalid: bool = False) -> None:
     text = path.read_text(encoding="utf-8")
     if allow_legacy_invalid:
         text = normalize_legacy_invalid_fixture(text)
-    validate_authoring_state(text)
-    validate_work_units(text)
-    validate_artifacts(text)
+    mode = declared_mode(text)
+    if mode == "Plan Authoring":
+        validate_authoring_state(text)
+        validate_work_units(text)
+        validate_artifacts(text)
+        validate_preinvestment(text)
+    else:
+        verified = validate_execution_tracking(text)
+        validate_reconciliation(text, required=verified)
 
 
 def expected_error(path: Path) -> str:
