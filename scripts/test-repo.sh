@@ -39,6 +39,8 @@ log "checking exported artifact"
 if [[ "$skill_id" == "subagent-vs-review" ]]; then
   log "checking subagent-vs-review effectiveness benchmark asset sanity"
   "$repo_root/scripts/vs-review-effectiveness-sanity.sh"
+  log "checking subagent-vs-review convergence governor contract"
+  python3 "$repo_root/scripts/vs-review-convergence-sanity.py"
   log "checking subagent-vs-review timeout validator fixtures"
   "$repo_root/scripts/vs-review-timeout-validator-fixtures.sh"
 fi
