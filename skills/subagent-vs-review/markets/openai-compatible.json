@@ -2,7 +2,7 @@
   "version": 1,
   "market": "openai-compatible",
   "display_name": "Subagent VS Review",
-  "description": "Runs independent adversarial review rounds with fresh internal subagents, or a user-approved local CLI fallback when internal subagents are unavailable, that attack artifact assumptions, happy paths, implementation completeness, target benefit realization, usability, ease of use, ease of understanding, failure scenarios, and evidence gaps through formal /vs_review/ reports and mandatory response closure.",
+  "description": "Runs bounded, evidence-grounded adversarial reviews with fresh internal subagents, or a user-approved local CLI fallback when internal subagents are unavailable. It freezes the original objective and scope, limits automatic review to an initial round plus one focused closure round, detects scope drift and non-convergence, and restores user control before additional review or repair work.",
   "release": {
     "version": "1.8.1",
     "published_at": "2026-06-24T02:15:12+08:00",
