@@ -2,7 +2,7 @@
 
 set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-echo "[se-good-plan-sanity] checking minimum-construction and side-effect contract"
+echo "[se-good-plan-sanity] checking bounded-validation and evidence-reconciliation contract"
 
 python3 - <<'PY' "$repo_root"
 import re
@@ -38,28 +38,39 @@ if len(texts["skill"].splitlines()) > 380:
 
 for needle in [
     "Plans Must Be Executable", "Use The Smallest Closed-Loop Engineering Unit",
-    "Prefer Minimum Necessary Construction", "delete or simplify existing logic",
-    "A possible future requirement is not sufficient evidence",
-    "Make Every Unit's Benefit Understandable", "State Side Effects, Not Only Risks",
-    "Complexity:", "Reach / cost:", "expected consequence or continuing obligation",
-    "Cross-unit side effects", "Separate Plan Authoring From Execution Tracking",
-    "Keep Artifact And Code Status Models Separate", "Prefer Concise Structure",
+    "Prefer Minimum Necessary Construction", "Make Benefit And Side Effects Explicit",
+    "Use Minimum Sufficient Pre-Investment Validation", "Evidence Supersedes The Plan",
+    "cheapest credible evidence ladder", "what is intentionally not proven",
+    "Validation is not a shadow implementation", "After every material phase",
+    "Preserve old conclusions", "needs-revision", "direction-supported",
+    "Prefer Concise Structure",
 ]:
     require(combined, needle, "core contract")
 
-header = (
+work_header = (
     "| ID | Objective | Change Axis | Change Location | Target Object | "
     "Concrete Action | Resulting Behavior | Benefit | Side Effects | Verification | "
     "Safe Stop / Rollback | Plan Status |"
 )
+validation_header = (
+    "| ID | Critical Assumption | Decision Unlocked | Cheapest Credible Method | "
+    "Enough Evidence / Not Proven | Budget / Isolation | Stop / Cleanup | Status |"
+)
+reconciliation_header = (
+    "| Phase | New Evidence | Affected Assumption / Prior Conclusion | Conclusion Update | "
+    "Downstream Plan Change | Plan Validity | Next Action |"
+)
 for name in ["skill", "patterns", "contract", "exemplar"]:
-    require(texts[name], header, name)
+    require(texts[name], work_header, name)
+    require(texts[name], validation_header, name)
+for name in ["skill", "patterns", "contract"]:
+    require(texts[name], reconciliation_header, name)
 
 for needle in [
-    "Minimum Necessary Construction Contract", "Side Effects Contract",
-    "speculative construction without a current need",
-    "missing/generic/incomplete Side Effects",
-    "an abstraction around one current implementation without justification",
+    "Minimum Sufficient Pre-Investment Validation Contract",
+    "Evidence Supersedes Plan Contract", "Phase Reconciliation Contract",
+    "Plan Revision Traceability Contract", "heavy, unbounded, production-polluting",
+    "continuing unchanged when plan validity needs revision",
 ]:
     require(texts["contract"], needle, "source contract")
 
@@ -71,9 +82,9 @@ for forbidden in [
         fail(f"oversized legacy template remains: {forbidden}")
 
 for needle in [
-    "Prefer deleting, changing, or reusing existing logic",
-    "Side Effects must state both Complexity delta", "smallest closed-loop units",
-    "Plan Authoring separate from Execution Tracking",
+    "minimum-sufficient pre-investment validation", "what remains unproven",
+    "Do not turn validation into shadow implementation", "reconcile evidence after each material phase",
+    "current verified facts outrank the old plan", "Keep the document concise",
 ]:
     require(texts["agent"], needle, "agents/openai.yaml")
 
