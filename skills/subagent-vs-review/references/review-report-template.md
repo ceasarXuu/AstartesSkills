@@ -1,26 +1,89 @@
 # Review Report Template
 
-Use this structure for every subagent-vs-review report. A report may contain
-multiple rounds for the same task.
+Use this structure for every subagent-vs-review report. A report may contain at
+most two automatic completed rounds. A third or later round requires explicit
+user approval recorded before that round begins.
 
 ```markdown
 # Subagent VS Review: <topic>
 
 - Created: <ISO 8601 local time>
 - Updated: <ISO 8601 local time>
-- Report schema: adversarial-v1
+- Report schema: adversarial-v2
 - Task: <user or product goal>
 - Report path: `vs_review/YYYY-MM-DD-<topic>-review.md`
 - Review mode: fresh internal subagents | approved_external_cli_substitute | blocked_due_to_review_unavailable
 - Source session policy: no inherited main-agent context; approved CLI substitutes receive only the review packet
 - Status: open | passed | blocked | accepted-risk
+- Control outcome: none | non-convergent | scope-drift-detected | evidence-insufficient | goal-redefinition-required | user-decision-required
+- Automatic round budget: 2
+- Completed rounds: <0 | 1 | 2 | user-approved number>
+- Last known-good checkpoint: <revision, commit, tag, snapshot, or n/a>
+
+## Review Control Contract
+
+### Frozen Objective
+<Original user or product objective.>
+
+### Acceptance Criteria
+- <observable success condition>
+
+### Explicit Non-goals
+- <work that must not be silently added>
+
+### Frozen Target Locations
+- `<path, module, document, command, or bounded surface>`
+
+### Allowed Change Categories
+- <implementation, tests, docs, configuration, or other authorized category>
+
+### Approval-required Changes
+- new top-level module
+- new external dependency
+- public API change
+- persistent data or schema change
+- new cross-module abstraction
+- change outside frozen target locations
+
+### Authoritative Sources
+
+| Authority | Source | What It Controls |
+|---|---|---|
+| E0 | <user instruction or confirmation> | <goal, scope, tradeoff, risk acceptance> |
+| E1 | <PRD, issue, plan, ADR, policy, project document> | <project intent or constraint> |
+| E2 | <runtime, test, log, production path, observed failure> | <actual behavior> |
+| E3 | <official docs, standard, protocol, authoritative source> | <external fact or platform constraint> |
+| E4 | <reviewer or main-agent reasoning> | hypothesis only |
+
+### Baseline And Rollback
+- Baseline revision: <revision or artifact state>
+- Rollback checkpoint: <revision, commit, tag, snapshot, or command>
+- Expected benefit: <measurable benefit>
+- Acceptable side effects: <bounded side effects>
+- Automatic round budget: 2
 
 ## Round 1: <short round purpose>
+
+### Round Control
+
+- Round type: initial | closure | user-approved-extra
+- Round number: <N>
+- Completed automatic rounds before launch: <number>
+- User approval for this round: <n/a for Round 1-2 | exact approval evidence>
+- Closure finding IDs: <ids or n/a>
+- Permitted closure relation: original-blocker-open | fix-regression | direct-adjacent-objective-failure | n/a
+- Target scope delta allowed: <none or explicitly authorized delta>
 
 ### Review Input
 
 #### Objective
-<The user or product goal.>
+<The frozen user or product goal.>
+
+#### Acceptance Criteria
+- <observable success condition>
+
+#### Explicit Non-goals
+- <frozen non-goal>
 
 #### Review Target
 <Design, implementation, test plan, release process, document, skill, or workflow.>
@@ -28,6 +91,10 @@ multiple rounds for the same task.
 #### Target Locations
 - `<path or command>`
 - `<path or command>`
+
+#### Baseline And Rollback Checkpoint
+- Baseline: <revision or artifact state>
+- Rollback checkpoint: <revision, commit, tag, snapshot, or command>
 
 #### Change Introduction
 <Neutral description of the proposed or implemented direction.>
@@ -44,6 +111,11 @@ multiple rounds for the same task.
 #### Target Benefit Focus
 - <claimed speed, accuracy, cost, reliability, throughput, quality, conversion, usability, or operational benefit to challenge, including baseline, target, measurement method, comparison evidence, or regression risk>
 
+#### Evidence Sources And Gaps
+- E0-E3 source: <source and relevance>
+- E4 hypothesis: <claim requiring validation>
+- Known evidence gap: <gap or none>
+
 #### Assumptions To Attack
 - <input, state, dependency, permission, timing, user behavior, or invariant>
 
@@ -59,6 +131,10 @@ multiple rounds for the same task.
 - Read target files directly.
 - Do not modify files.
 - Cite evidence paths and line numbers when possible.
+- Classify blocking and scope-expanding claims as E0, E1, E2, E3, or E4.
+- For closure rounds, classify each finding relation as
+  `original-blocker-open`, `fix-regression`,
+  `direct-adjacent-objective-failure`, or `unrelated-existing-risk`.
 - If internal subagents are unavailable, use an approved local CLI substitute
   only after explicit user approval for the exact command.
 
@@ -89,7 +165,8 @@ multiple rounds for the same task.
 |---|---:|---:|---:|---|
 | simple / normal / complex / high-risk | <duration> | <none or bounded extension> | 2 | cannot pass if review is unavailable |
 
-This section is required for current reports.
+This section is required for current reports. Attempts are not rounds; a
+completed reviewer result consumes one review round.
 
 ### Reviewer Selection
 
@@ -128,7 +205,11 @@ This section is required for current reports.
   - Failure scenario: <how the artifact fails>
   - Trigger condition: <input, state, timing, permission, or misuse case>
   - Impact: <user, data, security, maintenance, or operational blast radius>
-  - Proof needed: <test, log, runtime check, or product decision>
+  - Proof needed: <test, log, runtime check, official source, or product decision>
+  - Evidence authority: <E0 | E1 | E2 | E3 | E4>
+  - Evidence source: <path:line, test/log, user confirmation, or official source>
+  - Closure relation: <original-blocker-open | fix-regression | direct-adjacent-objective-failure | unrelated-existing-risk | n/a>
+  - Scope effect: <none or proposed expansion>
 
 ##### Non-blocking Risks
 - <risk, or "none">
@@ -137,6 +218,8 @@ This section is required for current reports.
   - Trigger condition: <condition that exposes the risk>
   - Impact: <likely effect>
   - Proof needed: <evidence that would close or downgrade the risk>
+  - Evidence authority: <E0 | E1 | E2 | E3 | E4>
+  - Closure relation: <unrelated-existing-risk | n/a>
 
 ##### User-Perspective Checks
 - Usability: <pass, risk, or finding already listed above> - Evidence or link: <path:line or finding id>
@@ -184,13 +267,70 @@ Use `none` or flush-left single-line `- ` items in these three buckets.
 Concrete bullet items must also appear in the main-agent response table.
 
 ##### Evidence
-- `<path>:<line>` - <evidence>
+- `<path>:<line>` - <evidence and E0-E4 authority>
 
 ### Main Agent Response
 
-| Reviewer | Finding | Broken Assumption / Failure Scenario | Severity | Decision | Evidence / Reason | Action Taken | Follow-up |
-|---|---|---|---|---|---|---|---|
-| <reviewer> | <finding> | <counterexample being handled or rejected> | blocking | accept / reject / defer | <evidence> | <action> | <follow-up> |
+| Reviewer | Finding | Broken Assumption / Failure Scenario | Severity | Decision | Authority | Closure Relation | Evidence / Reason | Scope Effect | Side Effects | Action Taken | Follow-up |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| <reviewer> | <finding> | <counterexample being handled or rejected> | blocking | accept / reject / defer | E0-E4 | <relation or n/a> | <evidence> | <files/modules/APIs/dependencies/data> | <cost, regression, maintenance, operations> | <action or stopped> | <follow-up> |
+
+### Review Governor
+
+- Completed rounds before decision: <number>
+- Automatic round budget: 2
+- Unresolved blockers before round: <number>
+- Unresolved blockers after round: <number>
+- Blockers closed: <ids or none>
+- New blocker classes: <classes or none>
+- Repeated failure class: yes / no - <class or n/a>
+- Closure findings admissible: yes / no / n/a
+- Scope expansion proposed: yes / no
+- Scope expansion authority: <E0-E3 source or E4-only>
+- New top-level modules: <none or list>
+- New dependencies: <none or list>
+- Public API or persistent data changes: <none or list>
+- New cross-module abstractions: <none or list>
+- Cumulative scope and complexity growth: <summary>
+- Benefit versus side effects: <net positive, unclear, or negative with evidence>
+- Rollback evaluation required: yes / no
+- Governor decision: continue-current-round | start-closure-round | pass | stop-scope-drift | stop-evidence-insufficient | stop-non-convergent | rollback-evaluation-required | user-decision-required
+- Decision reason: <bounded evidence-based explanation>
+
+### Convergence Reflection
+
+Required when blockers remain after Round 2, a failure class repeats, blockers
+do not decrease, scope drifts, evidence is insufficient, or rollback may be
+safer.
+
+- Original objective:
+- Acceptance criteria:
+- Explicit non-goals:
+- Completed rounds versus budget:
+- Findings closed:
+- Findings repeated:
+- Findings newly introduced:
+- Evidence inventory by E0-E4:
+- Newly touched files and modules:
+- New APIs, dependencies, data, operations, or abstractions:
+- Cumulative code and complexity growth:
+- Benefits actually achieved:
+- Side effects and regressions:
+- Risk direction: decreasing | moving | expanding | unclear
+- Last known-good checkpoint:
+- Rollback options:
+- Recommended bounded choices:
+
+### User Decision
+
+Required before any third or later round or after a governor stop.
+
+- Decision requested: accept risk | narrow scope | redefine goal | approve one additional round | change solution path | roll back
+- Options and consequences:
+  - <option and consequence>
+- User decision: <exact decision or pending>
+- Approval evidence: <quote, message reference, or n/a>
+- Authorized next scope: <bounded scope or none>
 
 ### Closure Status
 
@@ -206,24 +346,39 @@ Concrete bullet items must also appear in the main-agent response table.
 - Deferred findings documented: yes / no / n/a
 - Implementation completeness gaps resolved or accepted by user: yes / no / n/a
 - Target benefit warnings recorded: yes / no / n/a
+- Automatic round budget respected: yes / no
+- Third-or-later round explicitly user-approved before launch: yes / no / n/a
+- Scope drift detected: yes / no
+- Evidence sufficient for scope-expanding actions: yes / no / n/a
+- Convergence reflection required and recorded: yes / no / n/a
+- Control outcome: none | non-convergent | scope-drift-detected | evidence-insufficient | goal-redefinition-required | user-decision-required
 - Blocked reason: <reason or n/a>
 - Allowed to proceed: yes / no
 
 ## Final Conclusion
 
-<Whether the task may proceed, requires more work, is blocked, or is accepted
-by explicit user risk acceptance.>
+<Whether the task may proceed, requires more work, is blocked, is accepted by
+explicit user risk acceptance, or requires a bounded user decision.>
 ```
 
 ## Report Rules
 
+- Record the review control contract before Round 1.
 - Record the review input before or at the time reviewers are spawned.
 - Record reviewer launch records before adding reviewer outputs.
 - Append reviewer outputs without rewriting them into a softer summary.
 - Preserve the adversarial framing: findings should target assumptions,
   counterexamples, failure paths, and evidence gaps, not the author.
 - Add main-agent response only after reading the reviewer outputs.
-- If a new round is needed, append `## Round 2`, `## Round 3`, and so on.
-- Each accepted blocking finding must link to a follow-up round and launch
-  record before the report can be marked `passed`.
+- Record one review-governor decision after each completed round and before any
+  modification or next round.
+- The default automatic budget is two completed rounds.
+- Round 2 must be a focused closure review, not another full-system review.
+- A third or later round requires explicit user approval recorded before launch.
+- If blockers remain after Round 2, stop automatic work and write the convergence
+  reflection and user decision section.
+- E4 reasoning alone must not authorize scope expansion.
+- Unrelated closure findings must not trigger automatic repair.
+- Each accepted blocking finding must link to an authorized follow-up round and
+  launch record before the report can be marked `passed`.
 - Keep the report in `/vs_review/` and commit it with the related work.
