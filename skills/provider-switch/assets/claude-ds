@@ -18,5 +18,5 @@ if ! command -v claude >/dev/null 2>&1; then
   exit 127
 fi
 
-printf '%s\n' "[provider-switch] launch agent=claude-code provider=deepseek-api model=__MODEL__ fast_model=__FAST_MODEL__ scope=temporary-profile mode=default-permissions auth=provider-token" >&2
-exec claude --settings "$provider_switch_settings" "$@"
+printf '%s\n' "[provider-switch] launch agent=claude-code provider=deepseek-api model=__MODEL__ fast_model=__FAST_MODEL__ scope=temporary-profile mode=yolo auth=provider-token" >&2
+exec claude --settings "$provider_switch_settings" --dangerously-skip-permissions "$@"

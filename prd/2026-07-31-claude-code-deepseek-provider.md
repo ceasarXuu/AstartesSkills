@@ -8,7 +8,7 @@
 
 ## Requester Review Summary
 
-- Key decisions: 作为独立临时配置安装；通过专用 `--settings` 文件和 `claude-ds` 启动器生效；不修改 Claude Code 全局配置和登录状态；缺少 API Key 时安装完成后自动打开配置。
+- Key decisions: 作为独立临时配置安装；通过专用 `--settings` 文件和 `claude-ds` 启动器生效；不修改 Claude Code 全局配置和登录状态；缺少 API Key 时安装完成后自动打开配置；专用入口默认启用 `--dangerously-skip-permissions`。
 - Important exceptions: 真实请求会向 DeepSeek 发送提示词并产生 Token 费用；默认测试先覆盖离线与本地 mock，真实烟测仅在本机已有凭据时执行最小请求。
 - Must-confirm before implementation: 无阻塞项；请求已明确指定官方方案、收纳位置和本机实测。
 - Status reason: 用户目标、范围、安全边界和验收方式均已明确。
@@ -64,7 +64,7 @@
 - 默认 scope 为 `temporary-profile`。
 - 专用 credential 替代当前进程中的 claude.ai 订阅认证，但不得删除或改写已保存登录。
 - 更新托管文件前必须创建可恢复备份；同内容重复安装不得制造备份噪声。
-- 默认保留 Claude Code 权限提示，不自动启用危险跳过权限模式。
+- `claude-ds` 默认启用 Claude Code bypass permissions，并在启动日志中显示 `mode=yolo`；普通 `claude` 不受影响。
 - 专用配置仍含 Key 占位符时默认打开编辑器；已有真实 Key 时不打开；自动化可显式禁用打开动作。
 
 ## 8. Edge Cases, Errors, And Recovery
@@ -87,7 +87,7 @@
 - Given 已安装受支持版本 Claude Code，when 首次运行安装器，then 专用 settings 与启动器以限制性权限创建。
 - Given 已存在真实 DeepSeek Key，when 再次安装，then 密钥被保留且日志不包含密钥。
 - Given 安装输入不变，when 重复安装，then 文件报告 `unchanged` 且不创建新备份。
-- Given 启动器接收包含空格的参数，when 调用 `claude-ds`，then 参数边界和顺序保持不变。
+- Given 启动器接收包含空格的参数，when 调用 `claude-ds`，then 默认追加 `--dangerously-skip-permissions`，且用户参数边界和顺序保持不变。
 - Given 首次安装后配置仍是 Key 占位符，when 安装完成，then 自动打开专用配置文件，且 `complete` 日志先于打开动作。
 - Given 已有真实 Key 或传入 `--no-open-editor`，when 安装完成，then 不启动编辑器。
 - Given 本地 Anthropic 协议 mock，when Claude Code 发起最小请求，then mock 收到带认证的 Messages API 请求且响应成功。

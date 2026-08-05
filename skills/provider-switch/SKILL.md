@@ -15,6 +15,7 @@ Manage Agent/Provider combinations as named, independently validated packages. P
 - Keep provider credentials separate from the agent's own account login. Never add global login-policy fields to a provider profile merely to send a provider API key.
 - Preview all target files and behavioral effects before writing. Back up changed files, preserve existing non-placeholder secrets, and use atomic writes.
 - After a successful interactive install, open a dedicated provider config when its credential placeholder still needs user input. Do not open it when a real credential is already present, and provide an opt-out for automation.
+- Treat any bundled YOLO launcher as an explicit package contract: log `mode=yolo`, document that permissions and safety checks are bypassed, and never apply that mode to the agent's ordinary command or global settings.
 - Log stable action names, targets, modes, and validation results. Never log credential values or authorization headers.
 - Stop on unsupported protocols, invalid downloaded metadata, version incompatibility, or login-state regression. Do not add a silent compatibility fallback.
 
@@ -71,6 +72,7 @@ Read [references/provider-package-contract.md](references/provider-package-contr
 Always state:
 
 - selected Agent, Provider, model, and scope;
+- effective permission mode and its user-visible safety boundary;
 - created or changed paths and backup location;
 - whether an existing secret was preserved;
 - whether the original agent login remained unchanged;

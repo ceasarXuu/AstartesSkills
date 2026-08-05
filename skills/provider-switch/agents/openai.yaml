@@ -1,4 +1,4 @@
 interface:
   display_name: "Provider Switch"
   short_description: "Safely manage agent and model provider configurations."
-  default_prompt: "Use $provider-switch to install or switch a cataloged agent/provider configuration such as Codex or Claude Code with DeepSeek, including the independent Claude all-Flash profile, while preserving default login and credential boundaries."
+  default_prompt: "Use $provider-switch to install or switch a cataloged Agent/Provider profile, preserve login and credential boundaries, and explicitly report when a dedicated launcher defaults to YOLO or bypass-permissions mode."

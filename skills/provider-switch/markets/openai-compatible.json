@@ -4,13 +4,13 @@
   "display_name": "Provider Switch",
   "description": "Safely manage reversible coding-agent and model-provider configurations.",
   "release": {
-    "version": "1.2.0",
-    "published_at": "2026-07-31T21:06:14+08:00",
+    "version": "1.3.0",
+    "published_at": "2026-08-06T04:47:34+08:00",
     "publisher": "ceasarXuu",
     "changes": [
-      "Add an independent claude-ds-flash profile that routes the main model, all Claude model aliases, and subagents to deepseek-v4-flash.",
-      "Refactor Claude Code installation and local mock validation around shared declarative profiles while preserving existing claude-ds behavior and backup names.",
-      "Reuse same-provider credentials safely, keep both launchers isolated, and add install, idempotency, model-mapping, argument-forwarding, mock, and real-smoke coverage."
+      "Default both claude-ds and claude-ds-flash launchers to Claude Code bypassPermissions through --dangerously-skip-permissions.",
+      "Expose the high-risk mode as mode=yolo while keeping ordinary claude, global settings, provider credentials, and saved login unchanged.",
+      "Add test-first wrapper coverage plus bounded Claude version detection and an explicit separately-verified version path for transient CLI startup hangs."
     ]
   },
   "source": {

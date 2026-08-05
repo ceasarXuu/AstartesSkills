@@ -8,7 +8,7 @@
 
 ## Requester Review Summary
 
-- Key decisions: 保留现有 `claude-ds`；新增独立 `claude-ds-flash`；所有 Claude 模型映射和子代理模型均为 `deepseek-v4-flash`。
+- Key decisions: 保留现有 `claude-ds`；新增独立 `claude-ds-flash`；所有 Claude 模型映射和子代理模型均为 `deepseek-v4-flash`；两个 DeepSeek 专用入口默认启用 `--dangerously-skip-permissions`。
 - Important exceptions: 该 profile 是用户指定的全 Flash 变体，不替代 DeepSeek 官方推荐的 Pro 主模型配置。
 - Must-confirm before implementation: 无阻塞项。
 - Status reason: 命令名、模型选择、共存关系和本机实测目标均已明确。
@@ -55,7 +55,7 @@
 
 ## 6. Interaction And Information Design
 
-- 启动日志明确显示 `model=deepseek-v4-flash` 和 `fast_model=deepseek-v4-flash`。
+- 启动日志明确显示 `model=deepseek-v4-flash`、`fast_model=deepseek-v4-flash` 和 `mode=yolo`。
 - 安装日志区分 `import credential=sibling-profile`、`preserve`、`create`、`unchanged` 和 `backup`，不输出凭据。
 - 缺 Key 时自动打开对应 Flash settings；自动化可禁用编辑器。
 
@@ -87,7 +87,7 @@
 - Given 已有 `claude-ds`，when 安装 Flash profile，then 原命令和 settings 不变，新命令与新 settings 被创建。
 - Given Pro profile 存在真实 Key，when 首次安装 Flash profile，then Key 被安全复用且日志不含其值。
 - Given 执行 `claude-ds-flash`，when Claude Code 发起请求，then传输模型为 `deepseek-v4-flash`，且不请求扩展上下文 beta。
-- Given 参数包含空格，when 通过 Flash launcher 传递，then 参数边界和顺序不变。
+- Given 参数包含空格，when 通过 Flash launcher 传递，then 默认追加 `--dangerously-skip-permissions`，且参数边界和顺序不变。
 - Given mock 与真实最小请求结束，when 查询 `claude auth status`，then claude.ai OAuth 仍为 first-party。
 
 ## 11. Review Checklist And Sign-off Questions

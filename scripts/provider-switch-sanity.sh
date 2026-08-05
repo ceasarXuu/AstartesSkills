@@ -75,10 +75,8 @@ model_fields = [
 ]
 assert all(env[field] == "deepseek-v4-flash" for field in model_fields)
 PY
-rg -q '^exec claude --settings "\$provider_switch_settings" "\$@"$' "$claude_wrapper_asset"
-if rg -q -- '--dangerously-skip-permissions' "$claude_wrapper_asset"; then
-  fail "Claude wrapper must keep default permission prompts"
-fi
+rg -q '^exec claude --settings "\$provider_switch_settings" --dangerously-skip-permissions "\$@"$' "$claude_wrapper_asset"
+rg -q 'mode=yolo' "$claude_wrapper_asset"
 python3 - "$installer" "$claude_installer" "$claude_flash_installer" "$skill_dir/scripts/validate_claude_mock.py" <<'PY'
 import ast
 import sys
@@ -116,11 +114,36 @@ printf '%s\n' "$@"
 SH
 chmod 755 "$fake_bin/claude"
 
+cat > "$fake_bin/slow-claude" <<'SH'
+#!/bin/sh
+if [ "${1:-}" = "--version" ]; then
+  sleep 2
+  printf '%s\n' '2.1.218 (Claude Code)'
+  exit 0
+fi
+exit 0
+SH
+chmod 755 "$fake_bin/slow-claude"
+
 cat > "$fake_bin/code" <<'SH'
 #!/bin/sh
 exit 0
 SH
 chmod 755 "$fake_bin/code"
+
+log "checking bounded Claude version detection"
+slow_home="$runtime_root/slow-claude-home"
+if python3 "$claude_installer" --claude-home "$slow_home" --bin-dir "$runtime_root/slow-bin" --claude-command "$fake_bin/slow-claude" --version-timeout 0.1 --no-open-editor > "$runtime_root/slow-claude.log" 2>&1; then
+  fail "slow Claude version detection unexpectedly succeeded"
+fi
+rg -q '\[provider-switch\] ERROR Claude version check timed out after 0.1s' "$runtime_root/slow-claude.log"
+[[ ! -e "$slow_home/provider-switch/deepseek.settings.json" ]] || fail "version timeout created partial Claude settings"
+
+log "checking explicit verified Claude version override"
+verified_home="$runtime_root/verified-claude-home"
+python3 "$claude_installer" --claude-home "$verified_home" --bin-dir "$runtime_root/verified-bin" --claude-command "$fake_bin/slow-claude" --verified-claude-version 2.1.218 --no-open-editor > "$runtime_root/verified-claude.log"
+rg -q '\[provider-switch\] validate claude=2.1.218 command=.*slow-claude version_source=provided' "$runtime_root/verified-claude.log"
+[[ -f "$verified_home/provider-switch/deepseek.settings.json" ]]
 
 install_cmd=(
   python3 "$installer"
@@ -319,6 +342,7 @@ PATH="$fake_bin:$PATH" "$claude_bin/claude-ds-flash" --version 'flash argument w
 rg -q 'model=deepseek-v4-flash fast_model=deepseek-v4-flash' "$runtime_root/claude-flash-wrapper.err"
 rg -q '^--settings$' "$runtime_root/claude-flash-wrapper.out"
 rg -Fqx "$claude_flash_settings" "$runtime_root/claude-flash-wrapper.out"
+rg -q '^--dangerously-skip-permissions$' "$runtime_root/claude-flash-wrapper.out"
 rg -q '^flash argument with spaces$' "$runtime_root/claude-flash-wrapper.out"
 if rg -q 'diagnostic-claude-token' "$runtime_root/claude-flash-wrapper.err"; then
   fail "Flash wrapper logged a provider key"
@@ -356,6 +380,7 @@ PATH="$fake_bin:$PATH" "$claude_bin/claude-ds" --version 'argument with spaces' 
 rg -q 'auth=provider-token' "$runtime_root/claude-wrapper.err"
 rg -q '^--settings$' "$runtime_root/claude-wrapper.out"
 rg -Fqx "$claude_settings" "$runtime_root/claude-wrapper.out"
+rg -q '^--dangerously-skip-permissions$' "$runtime_root/claude-wrapper.out"
 rg -q '^argument with spaces$' "$runtime_root/claude-wrapper.out"
 if rg -q 'diagnostic-claude-token' "$runtime_root/claude-wrapper.err"; then
   fail "Claude wrapper logged a provider key"

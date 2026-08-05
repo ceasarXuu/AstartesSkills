@@ -72,6 +72,8 @@ def parse_args(default_profile: str) -> argparse.Namespace:
     parser.add_argument("--claude-home", type=Path)
     parser.add_argument("--bin-dir", type=Path)
     parser.add_argument("--claude-command", default="claude")
+    parser.add_argument("--version-timeout", type=float, default=10.0)
+    parser.add_argument("--verified-claude-version")
     parser.add_argument("--api-key-env", default="DEEPSEEK_API_KEY")
     parser.add_argument("--profile", choices=sorted(PROFILES), default=default_profile)
     editor_group = parser.add_mutually_exclusive_group()
@@ -96,20 +98,41 @@ def resolve_command(command: str) -> str:
     return resolved
 
 
-def check_claude(command: str) -> str:
+def check_claude(
+    command: str, timeout: float, verified_version: str | None = None
+) -> str:
+    if timeout <= 0:
+        raise InstallError("Claude version timeout must be greater than zero")
     resolved = resolve_command(command)
-    result = subprocess.run(
-        [resolved, "--version"], capture_output=True, text=True, check=False
-    )
-    output = f"{result.stdout}\n{result.stderr}"
+    source = "provided" if verified_version else "command"
+    result: subprocess.CompletedProcess[str] | None = None
+    if verified_version:
+        output = verified_version
+    else:
+        try:
+            result = subprocess.run(
+                [resolved, "--version"],
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=timeout,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise InstallError(
+                f"Claude version check timed out after {timeout:g}s"
+            ) from exc
+        output = f"{result.stdout}\n{result.stderr}"
     match = re.search(r"(\d+)\.(\d+)\.(\d+)", output)
-    if result.returncode != 0 or not match:
+    if (result is not None and result.returncode != 0) or not match:
         raise InstallError(f"Could not read Claude Code version from: {resolved}")
     version = tuple(int(part) for part in match.groups())
     if version < MINIMUM_CLAUDE_VERSION:
         minimum = ".".join(str(part) for part in MINIMUM_CLAUDE_VERSION)
         raise InstallError(f"Claude Code {match.group(0)} is older than verified {minimum}")
-    log("validate", f"claude={match.group(0)} command={resolved}")
+    log(
+        "validate",
+        f"claude={match.group(0)} command={resolved} version_source={source}",
+    )
     return resolved
 
 
@@ -257,7 +280,11 @@ def maybe_open_editor(settings_path: Path, requested: bool, dry_run: bool) -> No
 def main(default_profile: str = DEFAULT_PROFILE) -> int:
     args = parse_args(default_profile)
     try:
-        check_claude(args.claude_command)
+        check_claude(
+            args.claude_command,
+            args.version_timeout,
+            args.verified_claude_version,
+        )
         profile = PROFILES[args.profile]
         claude_home = (args.claude_home or Path("~/.claude")).expanduser()
         bin_dir = (args.bin_dir or Path("~/.local/bin")).expanduser()

@@ -8,6 +8,7 @@ Use this package to add a temporary `claude-ds` entry while preserving Claude Co
 - Claude Code gateway connection: <https://code.claude.com/docs/en/llm-gateway>
 - Claude Code settings: <https://code.claude.com/docs/en/settings>
 - Claude Code CLI reference: <https://code.claude.com/docs/en/cli-reference>
+- Claude Code permission modes: <https://code.claude.com/docs/en/permission-modes>
 
 The package was initially verified with Claude Code `2.1.218`, which is therefore the minimum declared version until an older release is tested. DeepSeek documents an Anthropic-compatible endpoint, but Anthropic does not support routing Claude Code to non-Claude models. Treat this combination as DeepSeek-supported compatibility rather than Anthropic-supported model behavior.
 
@@ -30,13 +31,15 @@ python3 scripts/install_claude_deepseek.py
 
 When the dedicated settings still contain `<YOUR_DEEPSEEK_API_KEY>`, the installer opens the file after installation so the user can fill it in. It prefers VS Code, then the macOS `open` command or Linux `xdg-open`. Use `--no-open-editor` in automation. Alternatively, provide `DEEPSEEK_API_KEY` in the installer process environment; the installer writes it to the dedicated `0600` settings file without logging it and does not open an editor. On later updates, an existing non-placeholder token takes precedence, is preserved, and does not trigger the editor.
 
+The installer bounds `claude --version` detection to 10 seconds. If the CLI startup path is temporarily stuck but its version was already obtained separately, pass `--verified-claude-version <version>`; the installer still checks the declared minimum and logs `version_source=provided` without starting a second version process. Do not provide a guessed version.
+
 Launch with:
 
 ```bash
 claude-ds
 ```
 
-Additional arguments are forwarded unchanged. Unlike the bundled Codex wrapper, this launcher keeps Claude Code's default permission prompts and does not enable `--dangerously-skip-permissions`.
+Additional arguments are forwarded unchanged after the wrapper's built-in `--dangerously-skip-permissions` flag. Every `claude-ds` session therefore starts in `bypassPermissions` mode, logs `mode=yolo`, and executes tool calls without permission prompts or normal safety checks. Use this dedicated command only in trusted workspaces or isolated containers/VMs. Ordinary `claude` remains unchanged. Claude Code may reject bypass mode under root/sudo or when organization managed settings disable it; the wrapper does not silently fall back.
 
 For a separate profile that uses V4 Flash for the main model and every submodel, read [claude-code-deepseek-flash.md](claude-code-deepseek-flash.md) and install `claude-ds-flash`. The two profiles coexist and do not overwrite each other's settings.
 
@@ -65,6 +68,7 @@ Run static checks without spending provider tokens:
 ```bash
 python3 -m json.tool "${HOME}/.claude/provider-switch/deepseek.settings.json" >/dev/null
 sh -n "${HOME}/.local/bin/claude-ds"
+rg -q -- '--dangerously-skip-permissions' "${HOME}/.local/bin/claude-ds"
 claude auth status
 ```
 

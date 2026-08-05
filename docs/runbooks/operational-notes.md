@@ -188,3 +188,12 @@
 - 协议发现：Claude Code `2.1.218` 对 Pro 和 Flash 请求都会在 Messages URL 带 `beta=true`，因此 URL query 不能作为 `[1m]` 判据；扩展上下文应通过非敏感的 `Anthropic-Beta` 能力头是否包含 `context-1m` 判断。
 - 验证：Pro mock 传输模型为 `deepseek-v4-pro` 且包含 `context-1m`；Flash mock 传输模型为 `deepseek-v4-flash` 且不包含 `context-1m`。全 Flash 真实最小请求返回 `FLASH_OK`，两个 profile 重复安装均为 `unchanged`，Claude OAuth 仍为 first-party。
 - 复用方式：同 Provider 多 profile 应共享安装机制而不是复制脚本；协议测试要把通用 transport 标记与模型特定 capability 分开断言，避免通过表面 URL 误判模型行为。
+
+## 2026-08-06 Claude DeepSeek 专用入口默认 Bypass Permissions
+
+- 需求：让 `claude-ds` 与 `claude-ds-flash` 像 `codex-ds-flash` 一样默认进入 YOLO，自动携带 `--dangerously-skip-permissions`。
+- 决策：只修改两个 profile 共用的 launcher 模板，生成后的专用命令统一追加参数并记录 `mode=yolo`；普通 `claude`、全局 settings、Provider settings、API Key 和 OAuth 存储保持不变。
+- 风险：该参数等价于 `bypassPermissions`，会跳过权限提示和安全检查，也会放开对 `.git`、`.claude` 等受保护路径的常规保护，不能防御 prompt injection；Claude Code 可能在 root/sudo 或组织 managed settings 禁用 bypass 时拒绝启动。
+- 验证结果：先让专项 sanity 因缺少参数失败，再修改共享模板使 Pro/Flash 两个 fake wrapper 都出现该参数；本机重装后两个 launcher 均包含危险参数，settings 哈希保持不变。真实 `--version` 曾在有界探测中返回 `2.1.218`，但随后 `claude auth status` 未能在超时内完成，因此本次不能宣称登录状态回归已验证。
+- 本机异常：Claude Code `2.1.218` 的 `--version` 与 `auth status` 偶发长时间挂起。安装器因此新增默认 10 秒版本探测超时；仅在版本已通过独立有界探测获得时，允许用 `--verified-claude-version` 提供该值，继续执行最低版本校验并记录 `version_source=provided`。不得用猜测版本绕过兼容门禁。
+- 复用方式：危险默认行为必须在命令名、启动日志、reference 和 handoff 中同时可见；不得把专用 wrapper 的 YOLO 扩散到普通 Agent 命令，也不得添加静默降级掩盖组织策略拒绝。
