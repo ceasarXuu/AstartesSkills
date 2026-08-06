@@ -1,5 +1,9 @@
 # Example High-Risk API Migration Plan
 
+- Release Version: v1.2.3
+- Topic Directory: docs/releases/v1.2.3/account-api-migration
+- Decision Baseline: ./decisions.md
+- Applicable Decisions: D1, D2
 - Mode: Plan Authoring
 - Plan Depth: Full
 - Risk: High
@@ -11,11 +15,13 @@ Migrate a production-facing account API while preserving old-client behavior.
 Caller inventory and version-routing feasibility are not yet proven, so formal
 implementation is gated by bounded evidence rather than a broad prototype.
 
-## Technical Approach
+## Design
 
 Reuse the existing route file, add one compatibility branch and one v2 handler,
 move callers in observable groups, then remove the old path after zero-traffic
-evidence. No provider registry, event bus, or new dependency is introduced.
+evidence. D1 requires old-client compatibility and D2 forbids a coordinated
+all-client cutover. No provider registry, event bus, or new dependency is
+introduced.
 
 ## Pre-Investment Validation
 
@@ -38,13 +44,14 @@ evidence. No provider registry, event bus, or new dependency is introduced.
 | Artifact | Kind | Expected Output | Status |
 |---|---|---|---|
 | Caller inventory | discovery | Named caller groups, versions, and unknowns | planned |
-| Compatibility decision | design | Routing rule, fallback, and removal criteria | planned |
+| Compatibility design note | design | Routing rule, fallback, and removal criteria | planned |
 
 ## Phases
 
 ### Phase 0: Bound The Migration
 
 - Entry condition: V1 is direction-supported and repository plus route telemetry are available
+- Applicable decisions: D1, D2
 - Work units: W0
 - Phase-local evidence: reviewed caller inventory
 - Cross-unit side effects: none beyond W0 because this phase changes no runtime code, dependency, configuration, or infrastructure
@@ -52,7 +59,8 @@ evidence. No provider registry, event bus, or new dependency is introduced.
 
 ### Phase 1: Build A Reversible Path
 
-- Entry condition: compatibility decision is reviewed
+- Entry condition: compatibility design is reviewed
+- Applicable decisions: D1, D2
 - Work units: W1, W2
 - Phase-local evidence: route contracts and v2 integration tests
 - Cross-unit side effects: v1 and v2 coexistence temporarily increases runtime paths, regression scope, monitoring, and maintenance until W4 removes v1
@@ -60,7 +68,8 @@ evidence. No provider registry, event bus, or new dependency is introduced.
 
 ### Phase 2: Move And Observe Traffic
 
-- Entry condition: reconciled evidence still supports v2 rollout
+- Entry condition: reconciled evidence still supports v2 rollout and remains aligned with D1 and D2
+- Applicable decisions: D1, D2
 - Work units: W3
 - Phase-local evidence: caller-scoped metrics, traces, and failure reasons
 - Cross-unit side effects: dual-path operational burden continues and release plus on-call coordination increases for the observation window
@@ -69,6 +78,7 @@ evidence. No provider registry, event bus, or new dependency is introduced.
 ### Phase 3: Cleanup
 
 - Entry condition: reconciled evidence shows all callers migrated and old route has zero traffic for the required window
+- Applicable decisions: D1
 - Work units: W4
 - Phase-local evidence: compatibility tests and zero-traffic report
 - Cross-unit side effects: cumulative complexity decreases; rollback temporarily depends on prior artifact retention
