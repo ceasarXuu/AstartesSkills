@@ -60,12 +60,11 @@ rg -q 'https://api.deepseek.com/anthropic' "$claude_settings_asset"
 rg -q 'deepseek-v4-pro\[1m\]' "$claude_settings_asset"
 rg -q 'deepseek-v4-flash' "$claude_settings_asset"
 python3 -m json.tool "$claude_flash_settings_asset" >/dev/null
-python3 - "$claude_flash_settings_asset" <<'PY'
+python3 - "$claude_settings_asset" "$claude_flash_settings_asset" <<'PY'
 import json
 import sys
 from pathlib import Path
 
-env = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))["env"]
 model_fields = [
     "ANTHROPIC_MODEL",
     "ANTHROPIC_DEFAULT_OPUS_MODEL",
@@ -73,7 +72,12 @@ model_fields = [
     "ANTHROPIC_DEFAULT_HAIKU_MODEL",
     "CLAUDE_CODE_SUBAGENT_MODEL",
 ]
-assert all(env[field] == "deepseek-v4-flash" for field in model_fields)
+for settings_path in sys.argv[1:]:
+    env = json.loads(Path(settings_path).read_text(encoding="utf-8"))["env"]
+    assert env["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] == "1"
+    assert env["CLAUDE_CODE_AUTO_COMPACT_WINDOW"] == "700000"
+    if settings_path.endswith("-flash.settings.json"):
+        assert all(env[field] == "deepseek-v4-flash" for field in model_fields)
 PY
 rg -q '^exec claude --settings "\$provider_switch_settings" --dangerously-skip-permissions "\$@"$' "$claude_wrapper_asset"
 rg -q 'mode=yolo' "$claude_wrapper_asset"
@@ -250,12 +254,16 @@ if rg -q '\[provider-switch\] editor ' "$runtime_root/claude-first.log"; then
 fi
 [[ "$global_settings_hash" = "$(shasum -a 256 "$claude_home/settings.json" | awk '{print $1}')" ]]
 python3 - "$claude_settings" "$claude_bin/claude-ds" <<'PY'
+import json
 import stat
 import sys
 from pathlib import Path
 
 settings = Path(sys.argv[1])
 wrapper = Path(sys.argv[2])
+env = json.loads(settings.read_text(encoding="utf-8"))["env"]
+assert env["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] == "1"
+assert env["CLAUDE_CODE_AUTO_COMPACT_WINDOW"] == "700000"
 assert stat.S_IMODE(settings.stat().st_mode) == 0o600
 assert stat.S_IMODE(wrapper.stat().st_mode) == 0o755
 PY
@@ -321,6 +329,8 @@ from pathlib import Path
 settings = Path(sys.argv[1])
 wrapper = Path(sys.argv[2])
 env = json.loads(settings.read_text(encoding="utf-8"))["env"]
+assert env["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] == "1"
+assert env["CLAUDE_CODE_AUTO_COMPACT_WINDOW"] == "700000"
 for field in (
     "ANTHROPIC_MODEL",
     "ANTHROPIC_DEFAULT_OPUS_MODEL",

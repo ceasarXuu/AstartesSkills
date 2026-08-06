@@ -197,3 +197,12 @@
 - 验证结果：先让专项 sanity 因缺少参数失败，再修改共享模板使 Pro/Flash 两个 fake wrapper 都出现该参数；本机重装后两个 launcher 均包含危险参数，settings 哈希保持不变。真实 `--version` 曾在有界探测中返回 `2.1.218`，但随后 `claude auth status` 未能在超时内完成，因此本次不能宣称登录状态回归已验证。
 - 本机异常：Claude Code `2.1.218` 的 `--version` 与 `auth status` 偶发长时间挂起。安装器因此新增默认 10 秒版本探测超时；仅在版本已通过独立有界探测获得时，允许用 `--verified-claude-version` 提供该值，继续执行最低版本校验并记录 `version_source=provided`。不得用猜测版本绕过兼容门禁。
 - 复用方式：危险默认行为必须在命令名、启动日志、reference 和 handoff 中同时可见；不得把专用 wrapper 的 YOLO 扩散到普通 Agent 命令，也不得添加静默降级掩盖组织策略拒绝。
+
+## 2026-08-07 Claude DeepSeek 长会话上下文保护
+
+- 现象与目标：1M 上下文 session 在接近硬上限时若自动压缩触发过晚，可能出现 `Prompt is too long` 或压缩失败，导致当前 session 难以继续。
+- 官方语义：`CLAUDE_CODE_AUTO_COMPACT_WINDOW` 控制自动压缩计算使用的上下文容量，且不超过模型真实窗口；`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` 等价于同时关闭自动更新、反馈、错误报告和遥测。
+- 落地：`claude-ds` 与 `claude-ds-flash` 的独立 settings 均固定写入 `CLAUDE_CODE_AUTO_COMPACT_WINDOW=700000` 和 `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`，普通 `claude` 与全局 settings 不变。
+- 边界：70 万窗口会让 1M 会话更早为压缩预留空间，但不能消除超大提示、附件、工具输出或压缩本身失败导致的上下文错误；失败后仍应使用 `/compact`、回退消息或新建 session 恢复。
+- 验证：测试先因缺少自动压缩变量产生 `KeyError`，再更新两个资产恢复绿色；安装回归必须同时验证固定值、凭据保留、幂等更新与全局配置隔离。
+- 本机结果：Claude Code `2.1.218` 版本探测正常；两个 profile 均完成更新，API Key 摘要保持一致、全局 settings 哈希未变，新变量准确落盘。Pro 备份位于 `~/.claude/provider-switch-backups/20260807-001636-475022/`，Flash 备份位于 `~/.claude/provider-switch-backups/20260807-001636-705360/`。

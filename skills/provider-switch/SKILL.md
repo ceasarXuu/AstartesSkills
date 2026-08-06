@@ -16,6 +16,7 @@ Manage Agent/Provider combinations as named, independently validated packages. P
 - Preview all target files and behavioral effects before writing. Back up changed files, preserve existing non-placeholder secrets, and use atomic writes.
 - After a successful interactive install, open a dedicated provider config when its credential placeholder still needs user input. Do not open it when a real credential is already present, and provide an opt-out for automation.
 - Treat any bundled YOLO launcher as an explicit package contract: log `mode=yolo`, document that permissions and safety checks are bypassed, and never apply that mode to the agent's ordinary command or global settings.
+- Keep Claude provider context guardrails explicit in dedicated settings: disable nonessential traffic and set the auto-compaction calculation window when the cataloged profile requires it. Document the exact values, scope, and residual context-overflow risk.
 - Log stable action names, targets, modes, and validation results. Never log credential values or authorization headers.
 - Stop on unsupported protocols, invalid downloaded metadata, version incompatibility, or login-state regression. Do not add a silent compatibility fallback.
 

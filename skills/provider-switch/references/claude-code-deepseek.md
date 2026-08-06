@@ -7,6 +7,7 @@ Use this package to add a temporary `claude-ds` entry while preserving Claude Co
 - DeepSeek Claude Code integration: <https://api-docs.deepseek.com/zh-cn/quick_start/agent_integrations/claude_code>
 - Claude Code gateway connection: <https://code.claude.com/docs/en/llm-gateway>
 - Claude Code settings: <https://code.claude.com/docs/en/settings>
+- Claude Code environment variables: <https://code.claude.com/docs/en/env-vars>
 - Claude Code CLI reference: <https://code.claude.com/docs/en/cli-reference>
 - Claude Code permission modes: <https://code.claude.com/docs/en/permission-modes>
 
@@ -55,9 +56,11 @@ ANTHROPIC_DEFAULT_SONNET_MODEL=deepseek-v4-pro[1m]
 ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-v4-flash
 CLAUDE_CODE_SUBAGENT_MODEL=deepseek-v4-flash
 CLAUDE_CODE_EFFORT_LEVEL=max
+CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+CLAUDE_CODE_AUTO_COMPACT_WINDOW=700000
 ```
 
-`ANTHROPIC_AUTH_TOKEN` holds the DeepSeek API key for this process. While that provider credential is active, the session does not use the saved claude.ai subscription credential. `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` prevents nonessential telemetry and error-reporting traffic from the provider-switched process.
+`ANTHROPIC_AUTH_TOKEN` holds the DeepSeek API key for this process. While that provider credential is active, the session does not use the saved claude.ai subscription credential. `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` disables auto-update, feedback, error-reporting, and telemetry traffic for the provider-switched process. `CLAUDE_CODE_AUTO_COMPACT_WINDOW=700000` makes auto-compaction calculations treat the context capacity as 700,000 tokens, reserving more room before a 1M session reaches its hard limit; Claude Code caps this value at the model's actual context window. This reduces but cannot eliminate context-overflow or compaction-failure risk from oversized prompts, attachments, or tool output.
 
 With Claude Code `2.1.218`, the `[1m]` suffix is interpreted client-side: the Messages request sends model `deepseek-v4-pro` and includes the `context-1m` Anthropic beta capability. The bundled mock validator checks this transport behavior so a future Claude Code change is visible.
 

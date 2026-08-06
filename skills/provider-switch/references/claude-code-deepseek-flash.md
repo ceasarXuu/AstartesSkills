@@ -7,6 +7,7 @@ Use this package to add an independent `claude-ds-flash` entry where the main mo
 - DeepSeek Claude Code integration: <https://api-docs.deepseek.com/zh-cn/quick_start/agent_integrations/claude_code>
 - Claude Code gateway connection: <https://code.claude.com/docs/en/llm-gateway>
 - Claude Code settings: <https://code.claude.com/docs/en/settings>
+- Claude Code environment variables: <https://code.claude.com/docs/en/env-vars>
 - Claude Code permission modes: <https://code.claude.com/docs/en/permission-modes>
 
 DeepSeek's official example uses V4 Pro for the main model and V4 Flash for Haiku and subagents. This all-Flash profile is an explicit user-selected variant built from the documented `deepseek-v4-flash` model, not the official recommended quality mix.
@@ -46,7 +47,12 @@ ANTHROPIC_DEFAULT_OPUS_MODEL=deepseek-v4-flash
 ANTHROPIC_DEFAULT_SONNET_MODEL=deepseek-v4-flash
 ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-v4-flash
 CLAUDE_CODE_SUBAGENT_MODEL=deepseek-v4-flash
+CLAUDE_CODE_EFFORT_LEVEL=max
+CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+CLAUDE_CODE_AUTO_COMPACT_WINDOW=700000
 ```
+
+The last two values are profile-scoped guardrails. Nonessential update, feedback, error-reporting, and telemetry traffic is disabled, while auto-compaction calculations use an effective 700,000-token capacity so a long 1M session reserves more room before the hard limit. Claude Code caps the configured capacity at the model's actual context window. This reduces but does not eliminate context-overflow risk from oversized prompts, attachments, or tool output.
 
 ## Validate
 

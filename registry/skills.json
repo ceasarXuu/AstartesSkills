@@ -205,13 +205,13 @@
         "path": "skills/provider-switch"
       },
       "release": {
-        "version": "1.3.0",
-        "published_at": "2026-08-06T04:47:34+08:00",
+        "version": "1.4.0",
+        "published_at": "2026-08-07T00:14:13+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Default both claude-ds and claude-ds-flash launchers to Claude Code bypassPermissions through --dangerously-skip-permissions.",
-          "Expose the high-risk mode as mode=yolo while keeping ordinary claude, global settings, provider credentials, and saved login unchanged.",
-          "Add test-first wrapper coverage plus bounded Claude version detection and an explicit separately-verified version path for transient CLI startup hangs."
+          "Set CLAUDE_CODE_AUTO_COMPACT_WINDOW=700000 in both Claude DeepSeek profiles so long sessions reserve room for auto-compaction before the 1M hard limit.",
+          "Explicitly retain CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 in both dedicated settings while leaving ordinary Claude and global settings unchanged.",
+          "Add test-first configuration coverage and document the effective scope, official semantics, recovery path, and residual context-overflow risk."
         ]
       },
       "markets": {

@@ -2,13 +2,13 @@
 
 - Status: Ready for implementation
 - Created: 2026-07-31
-- Updated: 2026-07-31
+- Updated: 2026-08-07
 - Owner / requester: ceasarXuu
 - Source request: 新增 `claude-ds-flash`，将 Claude Code 主模型和子代理模型全部切换为 DeepSeek V4 Flash。
 
 ## Requester Review Summary
 
-- Key decisions: 保留现有 `claude-ds`；新增独立 `claude-ds-flash`；所有 Claude 模型映射和子代理模型均为 `deepseek-v4-flash`；两个 DeepSeek 专用入口默认启用 `--dangerously-skip-permissions`。
+- Key decisions: 保留现有 `claude-ds`；新增独立 `claude-ds-flash`；所有 Claude 模型映射和子代理模型均为 `deepseek-v4-flash`；两个 DeepSeek 专用入口默认启用 `--dangerously-skip-permissions`，并固定关闭非必要流量、按 70 万 token 有效窗口计算自动压缩。
 - Important exceptions: 该 profile 是用户指定的全 Flash 变体，不替代 DeepSeek 官方推荐的 Pro 主模型配置。
 - Must-confirm before implementation: 无阻塞项。
 - Status reason: 命令名、模型选择、共存关系和本机实测目标均已明确。
@@ -65,6 +65,7 @@
 - settings：`~/.claude/provider-switch/deepseek-flash.settings.json`。
 - launcher：`~/.local/bin/claude-ds-flash`。
 - 所有 `ANTHROPIC_*_MODEL` 和 `CLAUDE_CODE_SUBAGENT_MODEL` 均为 `deepseek-v4-flash`。
+- 专用 settings 固定包含 `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` 与 `CLAUDE_CODE_AUTO_COMPACT_WINDOW=700000`。
 - 目标 profile 已有 Key 优先，其次复用同 Provider 兄弟 profile Key，再次读取显式环境变量，最后保留占位符。
 
 ## 8. Edge Cases, Errors, And Recovery
@@ -88,6 +89,7 @@
 - Given Pro profile 存在真实 Key，when 首次安装 Flash profile，then Key 被安全复用且日志不含其值。
 - Given 执行 `claude-ds-flash`，when Claude Code 发起请求，then传输模型为 `deepseek-v4-flash`，且不请求扩展上下文 beta。
 - Given 参数包含空格，when 通过 Flash launcher 传递，then 默认追加 `--dangerously-skip-permissions`，且参数边界和顺序不变。
+- Given 安装或升级 Flash profile，when 读取其 settings，then 两个上下文保护变量均以指定字符串值存在。
 - Given mock 与真实最小请求结束，when 查询 `claude auth status`，then claude.ai OAuth 仍为 first-party。
 
 ## 11. Review Checklist And Sign-off Questions
@@ -103,6 +105,7 @@
 | 共存关系 | 新增命令，不替换旧命令 | 用户明确要求“新建” | 初始请求 |
 | 模型范围 | 主模型与所有子/别名模型均为 Flash | 用户明确要求全部改为 V4 Flash | 初始请求 |
 | Credential | 复用同 Provider 已有 Key | 减少重复配置且不扩大 Provider 边界 | 实现前需求固化 |
+| 上下文保护 | 非必要流量设为 `1`，自动压缩有效窗口设为 `700000` | 降低长会话接近上下文上限时的不可用风险 | 2026-08-07 追加需求 |
 
 ## 13. Open Questions And Risks
 
