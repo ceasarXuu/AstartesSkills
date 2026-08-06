@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate representative se-good-plan outputs against behavioral quality rules."""
+"""Validate representative se-good-plan outputs and required topic artifacts."""
 
 from __future__ import annotations
 
@@ -24,6 +24,10 @@ NEXT_ACTIONS = {"continue", "revise", "pause", "stop"}
 CONCLUSION_PREFIXES = {
     "current", "qualified", "superseded", "invalidated", "needs-revalidation",
 }
+DECISION_IMPACTS = {
+    "aligned", "conflict-found", "change-proposed", "re-confirmation-required",
+}
+DECISION_STATUSES = {"proposed", "active", "superseded"}
 ARTIFACT_KINDS = {"discovery", "design"}
 ARTIFACT_STATUSES = {"planned", "drafted", "reviewed", "verified"}
 EVIDENCE_LEVELS = {
@@ -96,8 +100,21 @@ EXECUTION_HEADER = [
 ]
 RECONCILIATION_HEADER = [
     "Phase", "New Evidence", "Affected Assumption / Prior Conclusion",
-    "Conclusion Update", "Downstream Plan Change", "Plan Validity", "Next Action",
+    "Decision Baseline Impact", "Conclusion Update", "Downstream Plan Change",
+    "Plan Validity", "Next Action",
 ]
+DECISION_HEADER = [
+    "ID", "Confirmed Decision", "Must Do", "Must Not Do", "Rationale",
+    "Violation Signal", "Confirmation", "Status",
+]
+
+ARTIFACT_CASE_ERRORS = {
+    "invalid-missing-decisions": "requires independent decisions.md and plan.md",
+    "invalid-wrong-path": "must use docs/releases/<confirmed-version>/<topic-slug>",
+    "invalid-unconfirmed-active": "active decision must be user-confirmed",
+    "invalid-plan-missing-design": "plan.md must contain Design and Work Units",
+    "invalid-merged-baseline": "product decision baseline must remain in independent decisions.md",
+}
 
 
 class PlanQualityError(AssertionError):
@@ -116,6 +133,20 @@ def table_after_heading(text: str, heading: str) -> tuple[list[str], list[list[s
     if len(lines) < 3:
         raise PlanQualityError(f"{heading} must contain a header and at least one row")
     return split_row(lines[0]), [split_row(line) for line in lines[2:]]
+
+
+def first_table(text: str) -> tuple[list[str], list[list[str]]]:
+    lines = [line for line in text.splitlines() if line.lstrip().startswith("|")]
+    if len(lines) < 3:
+        raise PlanQualityError("decision baseline must contain a decision table")
+    return split_row(lines[0]), [split_row(line) for line in lines[2:]]
+
+
+def metadata_value(text: str, label: str) -> str:
+    match = re.search(rf"(?mi)^- {re.escape(label)}:\s*(.*?)\s*$", text)
+    if not match:
+        raise PlanQualityError(f"missing metadata: {label}")
+    return match.group(1).strip()
 
 
 def declared_mode(text: str) -> str:
@@ -335,12 +366,14 @@ def validate_reconciliation(text: str, *, required: bool) -> None:
     for index, row in enumerate(rows, start=1):
         if len(row) != len(RECONCILIATION_HEADER):
             raise PlanQualityError(f"reconciliation row {index} has invalid cell count")
-        phase, evidence, affected, update, downstream, validity, action = row
+        phase, evidence, affected, baseline_impact, update, downstream, validity, action = row
         if not phase or len(evidence) < 16:
             raise PlanQualityError(f"reconciliation row {index} has thin phase evidence")
         no_delta = "no material evidence delta" in evidence.lower()
         if not no_delta and len(affected) < 12:
             raise PlanQualityError(f"{phase}: affected assumption or prior conclusion is not traceable")
+        if baseline_impact not in DECISION_IMPACTS:
+            raise PlanQualityError(f"{phase}: invalid decision baseline impact")
         prefix_match = re.match(r"(?i)^([a-z-]+)\s*:", update)
         if not prefix_match or prefix_match.group(1).lower() not in CONCLUSION_PREFIXES:
             raise PlanQualityError(f"{phase}: conclusion update must preserve a recognized validity status")
@@ -349,6 +382,8 @@ def validate_reconciliation(text: str, *, required: bool) -> None:
             raise PlanQualityError(f"{phase}: invalid plan validity or next action")
         if len(downstream) < 4:
             raise PlanQualityError(f"{phase}: downstream plan change is missing")
+        if baseline_impact in {"conflict-found", "change-proposed", "re-confirmation-required"} and action == "continue":
+            raise PlanQualityError(f"{phase}: decision baseline conflict cannot continue without user confirmation")
         if validity in {"needs-revision", "invalidated"} and action == "continue":
             raise PlanQualityError(f"{phase}: stale downstream plan cannot continue after material invalidating evidence")
         if conclusion_status in {"superseded", "invalidated", "needs-revalidation"} and action == "continue":
@@ -372,6 +407,101 @@ def validate_plan(path: Path, *, allow_legacy_invalid: bool = False) -> None:
         validate_reconciliation(text, required=verified)
 
 
+def parse_applicable_decisions(plan_text: str) -> set[str]:
+    value = metadata_value(plan_text, "Applicable Decisions")
+    if normalize_sentence(value) in {"none", "n a", "na"}:
+        return set()
+    return {item.strip().strip("`") for item in value.split(",") if item.strip()}
+
+
+def validate_topic_artifact_bundle(case_root: Path) -> None:
+    plan_files = sorted(case_root.rglob("plan.md"))
+    decision_files = sorted(case_root.rglob("decisions.md"))
+    if len(plan_files) != 1 or len(decision_files) != 1:
+        raise PlanQualityError("topic artifact bundle requires independent decisions.md and plan.md")
+
+    plan_path = plan_files[0]
+    decisions_path = decision_files[0]
+    if plan_path.parent != decisions_path.parent:
+        raise PlanQualityError("decisions.md and plan.md must share one topic directory")
+
+    try:
+        relative_dir = plan_path.parent.relative_to(case_root)
+    except ValueError as exc:
+        raise PlanQualityError("topic artifacts must use docs/releases/<confirmed-version>/<topic-slug>") from exc
+
+    parts = relative_dir.parts
+    if len(parts) != 4 or parts[:2] != ("docs", "releases"):
+        raise PlanQualityError("topic artifacts must use docs/releases/<confirmed-version>/<topic-slug>")
+
+    version, topic = parts[2], parts[3]
+    if normalize_sentence(version) in {"confirmed version", "unknown", "tbd"}:
+        raise PlanQualityError("topic artifact release version must be confirmed, not invented or unresolved")
+    if not re.fullmatch(r"[a-z0-9][a-z0-9._-]*", topic):
+        raise PlanQualityError("topic slug must be stable lowercase text")
+
+    parallel = [
+        path for path in case_root.rglob("*.md")
+        if re.fullmatch(r"(?:plan|decisions)[-_].+\.md", path.name)
+    ]
+    if parallel:
+        raise PlanQualityError("topic artifact bundle must update canonical files instead of parallel copies")
+
+    plan_text = plan_path.read_text(encoding="utf-8")
+    decisions_text = decisions_path.read_text(encoding="utf-8")
+
+    expected_dir = relative_dir.as_posix()
+    if metadata_value(plan_text, "Release Version") != version:
+        raise PlanQualityError("plan.md release version must match its topic directory")
+    if metadata_value(plan_text, "Topic Directory") != expected_dir:
+        raise PlanQualityError("plan.md topic directory metadata must match its repository path")
+    if metadata_value(plan_text, "Decision Baseline") != "./decisions.md":
+        raise PlanQualityError("plan.md must link ./decisions.md")
+    if metadata_value(decisions_text, "Release Version") != version:
+        raise PlanQualityError("decisions.md release version must match its topic directory")
+    if metadata_value(decisions_text, "Topic") != topic:
+        raise PlanQualityError("decisions.md topic must match its topic directory")
+    if metadata_value(decisions_text, "Plan") != "./plan.md":
+        raise PlanQualityError("decisions.md must link ./plan.md")
+
+    if "## Design" not in plan_text or "## Work Units" not in plan_text:
+        raise PlanQualityError("plan.md must contain Design and Work Units")
+    if re.search(r"(?mi)^# Product Decision Baseline\s*$", plan_text) or "| Confirmed Decision | Must Do |" in plan_text:
+        raise PlanQualityError("product decision baseline must remain in independent decisions.md")
+    if not re.search(r"(?mi)^# Product Decision Baseline\s*$", decisions_text):
+        raise PlanQualityError("decisions.md must be the Product Decision Baseline")
+    if "## Work Units" in decisions_text or "## Design" in decisions_text:
+        raise PlanQualityError("decisions.md must not absorb the engineering plan")
+
+    header, rows = first_table(decisions_text)
+    if header != DECISION_HEADER:
+        raise PlanQualityError("product decision baseline table header is invalid")
+
+    active_ids: set[str] = set()
+    seen_ids: set[str] = set()
+    for index, row in enumerate(rows, start=1):
+        if len(row) != len(DECISION_HEADER):
+            raise PlanQualityError(f"decision row {index} has invalid cell count")
+        decision_id, decision, must_do, must_not, rationale, signal, confirmation, status = row
+        if not decision_id or decision_id in seen_ids:
+            raise PlanQualityError(f"decision row {index} has missing or duplicate ID")
+        seen_ids.add(decision_id)
+        if status not in DECISION_STATUSES:
+            raise PlanQualityError(f"{decision_id}: invalid product decision state")
+        if min(len(decision), len(must_do), len(must_not), len(rationale), len(signal)) < 8:
+            raise PlanQualityError(f"{decision_id}: product decision baseline row is too thin")
+        if status == "active":
+            if "user confirmed" not in normalize_sentence(confirmation):
+                raise PlanQualityError(f"{decision_id}: active decision must be user-confirmed")
+            active_ids.add(decision_id)
+
+    applicable = parse_applicable_decisions(plan_text)
+    if not applicable.issubset(active_ids):
+        raise PlanQualityError("plan.md may reference only active user-confirmed decision IDs")
+
+    validate_plan(plan_path)
+
+
 def expected_error(path: Path) -> str:
     match = re.search(r"<!--\s*expected-error:\s*(.*?)\s*-->", path.read_text(encoding="utf-8"))
     if not match:
@@ -387,6 +517,7 @@ def main() -> int:
     invalid_files = sorted(fixture_dir.glob("invalid-*.md"))
     if not valid_files or not invalid_files:
         raise AssertionError("quality fixtures are missing")
+
     for path in valid_files:
         validate_plan(path)
     for path in invalid_files:
@@ -398,7 +529,32 @@ def main() -> int:
                 raise AssertionError(f"{path.name}: expected {expected!r}, got {str(exc)!r}") from exc
         else:
             raise AssertionError(f"invalid fixture unexpectedly passed: {path.name}")
-    print(f"[se-good-plan-quality] validated {len(valid_files)} valid and {len(invalid_files)} invalid representative plan outputs")
+
+    artifact_root = repo_root / "tests" / "se-good-plan" / "artifact-bundles"
+    valid_cases = sorted(path for path in artifact_root.glob("valid-*") if path.is_dir())
+    invalid_cases = sorted(path for path in artifact_root.glob("invalid-*") if path.is_dir())
+    if not valid_cases or not invalid_cases:
+        raise AssertionError("topic artifact bundle fixtures are missing")
+
+    for case in valid_cases:
+        validate_topic_artifact_bundle(case)
+    for case in invalid_cases:
+        expected = ARTIFACT_CASE_ERRORS.get(case.name)
+        if not expected:
+            raise AssertionError(f"missing expected error mapping for artifact case: {case.name}")
+        try:
+            validate_topic_artifact_bundle(case)
+        except PlanQualityError as exc:
+            if expected not in str(exc):
+                raise AssertionError(f"{case.name}: expected {expected!r}, got {str(exc)!r}") from exc
+        else:
+            raise AssertionError(f"invalid artifact bundle unexpectedly passed: {case.name}")
+
+    print(
+        f"[se-good-plan-quality] validated {len(valid_files)} valid and "
+        f"{len(invalid_files)} invalid plan outputs; {len(valid_cases)} valid and "
+        f"{len(invalid_cases)} invalid topic artifact bundles"
+    )
     return 0
 
 

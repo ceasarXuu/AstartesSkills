@@ -2,7 +2,7 @@
 
 set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-echo "[se-good-plan-sanity] checking bounded-validation and evidence-reconciliation contract"
+echo "[se-good-plan-sanity] checking decision-baseline and topic-artifact contract"
 
 python3 - <<'PY' "$repo_root"
 import re
@@ -17,6 +17,8 @@ files = {
     "contract": skill_dir / "references" / "source-contract.md",
     "agent": skill_dir / "agents" / "openai.yaml",
     "exemplar": repo_root / "tests" / "se-good-plan" / "exemplars" / "full-plan-shape.md",
+    "artifact_plan": repo_root / "tests" / "se-good-plan" / "artifact-bundles" / "valid-topic" / "docs" / "releases" / "v1.2.3" / "account-locale" / "plan.md",
+    "artifact_decisions": repo_root / "tests" / "se-good-plan" / "artifact-bundles" / "valid-topic" / "docs" / "releases" / "v1.2.3" / "account-locale" / "decisions.md",
 }
 
 def fail(message):
@@ -37,13 +39,16 @@ if len(texts["skill"].splitlines()) > 380:
     fail("SKILL.md must stay concise and below 380 lines")
 
 for needle in [
-    "Plans Must Be Executable", "Use The Smallest Closed-Loop Engineering Unit",
-    "Prefer Minimum Necessary Construction", "Make Benefit And Side Effects Explicit",
-    "Use Minimum Sufficient Pre-Investment Validation", "Evidence Supersedes The Plan",
-    "cheapest credible evidence ladder", "what is intentionally not proven",
-    "Validation is not a shadow implementation", "After every material phase",
-    "Preserve old conclusions", "needs-revision", "direction-supported",
-    "Prefer Concise Structure",
+    "Maintain Two Required Topic Artifacts",
+    "Use A Product Decision Baseline",
+    "docs/releases/<confirmed-version>/<topic-slug>/",
+    "decisions.md", "plan.md", "Only user-confirmed decisions may be `active`",
+    "Must Do", "Must Not Do", "Violation Signal", "Confirmation",
+    "`plan.md` contains both `## Design` and `## Work Units`",
+    "Evidence supersedes stale technical planning",
+    "cannot silently rewrite user intent",
+    "Use Minimum Sufficient Pre-Investment Validation",
+    "Evidence Supersedes The Plan", "Prefer Concise Structure",
 ]:
     require(combined, needle, "core contract")
 
@@ -57,36 +62,52 @@ validation_header = (
     "Enough Evidence / Not Proven | Budget / Isolation | Stop / Cleanup | Status |"
 )
 reconciliation_header = (
-    "| Phase | New Evidence | Affected Assumption / Prior Conclusion | Conclusion Update | "
-    "Downstream Plan Change | Plan Validity | Next Action |"
+    "| Phase | New Evidence | Affected Assumption / Prior Conclusion | "
+    "Decision Baseline Impact | Conclusion Update | Downstream Plan Change | "
+    "Plan Validity | Next Action |"
 )
-for name in ["skill", "patterns", "contract", "exemplar"]:
+decision_header = (
+    "| ID | Confirmed Decision | Must Do | Must Not Do | Rationale | "
+    "Violation Signal | Confirmation | Status |"
+)
+for name in ["skill", "patterns", "contract", "exemplar", "artifact_plan"]:
     require(texts[name], work_header, name)
+for name in ["skill", "patterns", "contract", "exemplar"]:
     require(texts[name], validation_header, name)
 for name in ["skill", "patterns", "contract"]:
     require(texts[name], reconciliation_header, name)
+for name in ["skill", "patterns", "contract", "artifact_decisions"]:
+    require(texts[name], decision_header, name)
 
 for needle in [
-    "Minimum Sufficient Pre-Investment Validation Contract",
-    "Evidence Supersedes Plan Contract", "Phase Reconciliation Contract",
-    "Plan Revision Traceability Contract", "heavy, unbounded, production-polluting",
-    "continuing unchanged when plan validity needs revision",
+    "Required Topic Artifact Contract", "Product Decision Baseline Contract",
+    "Evidence And Decision Authority Contract",
+    "missing `decisions.md` or `plan.md`",
+    "active decision without user confirmation",
+    "full product decision baseline must not be merged into `plan.md`",
 ]:
     require(texts["contract"], needle, "source contract")
 
 for forbidden in [
     "1. Metadata\n2. Background", "Each phase must include entry criteria",
     "#### Entry Criteria Checks", "Only `landed` means complete",
+    "docs/workstreams/<topic-slug>",
 ]:
     if forbidden in texts["skill"]:
-        fail(f"oversized legacy template remains: {forbidden}")
+        fail(f"oversized or obsolete contract remains: {forbidden}")
 
 for needle in [
-    "minimum-sufficient pre-investment validation", "what remains unproven",
-    "Do not turn validation into shadow implementation", "reconcile evidence after each material phase",
-    "current verified facts outrank the old plan", "Keep the document concise",
+    "exactly two independent, cross-linked topic artifacts",
+    "Only user-confirmed decisions may be active",
+    "Verified evidence may revise the technical plan",
+    "add fixed supporting artifacts beyond the required two",
 ]:
     require(texts["agent"], needle, "agents/openai.yaml")
+
+if texts["artifact_plan"].count("# Product Decision Baseline") > 0:
+    fail("valid plan fixture merged the decision baseline")
+if "## Design" not in texts["artifact_plan"] or "## Work Units" not in texts["artifact_plan"]:
+    fail("valid plan fixture lacks Design or Work Units")
 
 print("[se-good-plan-sanity] static contract checks passed")
 PY

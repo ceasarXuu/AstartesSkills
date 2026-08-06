@@ -1,66 +1,139 @@
 # SE Good Plan Patterns
 
-Use this reference for task-specific safety additions and compact reusable
-structures. Keep output proportional to risk and uncertainty.
+Use this reference for compact reusable structures. Keep output proportional to
+risk, uncertainty, and the two required topic artifacts.
+
+## Required Topic Artifact Guidance
+
+For a formal repository plan, create or reuse:
+
+```text
+docs/releases/<confirmed-version>/<topic-slug>/
+├── decisions.md
+└── plan.md
+```
+
+Resolve the release version from explicit user or repository evidence. Do not
+guess it. Reuse the exact files throughout planning and execution.
+
+### `decisions.md`
+
+Keep the product decision baseline small:
+
+```markdown
+# Product Decision Baseline
+
+- Release Version: v1.2.3
+- Topic: account-locale
+- Plan: ./plan.md
+- Status: Active
+
+| ID | Confirmed Decision | Must Do | Must Not Do | Rationale | Violation Signal | Confirmation | Status |
+|---|---|---|---|---|---|---|---|
+| D1 | Locale remains optional | Preserve null-compatible reads | Do not require backfill before rollout | Existing accounts must stay compatible | Existing null rows fail reads | user-confirmed: request review | active |
+```
+
+Use `proposed` for an Agent interpretation that still needs confirmation.
+Never silently edit an active decision. Preserve it as `superseded` when the user
+confirms a replacement.
+
+Include decisions only when changing them would materially alter product logic,
+scope, user expectations, or priority. Do not duplicate implementation details,
+coding conventions, every risk, or the whole plan.
+
+### `plan.md`
+
+The main plan links the baseline and includes both design and execution:
+
+```markdown
+# <Topic> Engineering Plan
+
+- Release Version: v1.2.3
+- Topic Directory: docs/releases/v1.2.3/account-locale
+- Decision Baseline: ./decisions.md
+- Applicable Decisions: D1, D2
+- Mode: Plan Authoring
+
+## Design
+
+...
+
+## Work Units
+
+...
+```
+
+Summarize applicable IDs; do not copy the full decision table into `plan.md`.
+Validation, phases, and reconciliation remain in this file when triggered.
+
+## Decision Baseline Use
+
+Read `decisions.md`:
+
+- before writing or revising Design and Work Units;
+- before starting a material phase;
+- while reconciling phase evidence;
+- before accepting scope expansion, a new product behavior, or removal of an
+  existing constraint.
+
+When evidence conflicts with a technical assumption, revise the plan. When
+evidence conflicts with an active product decision, pause and request a product
+decision change. Do not let implementation difficulty, existing code, or sunk
+cost silently redefine user intent.
+
+A compact change proposal states:
+
+```markdown
+- Affected Decision: D2
+- New Evidence:
+- Proposed Replacement:
+- Benefit / Side Effects:
+- Affected Work Units:
+- User Confirmation:
+```
+
+After confirmation, retain D2 as `superseded`, add or activate its replacement,
+and revise `plan.md`.
 
 ## Task-Specific Additions
 
 ### Feature Development
 
 Separate contract, production path, integration entry, user/system validation,
-and controlled release. Validate external capability or critical UX/technical
-assumptions before building broad integration. Avoid generic extension frameworks
-until a second current consumer or variation is confirmed.
+and controlled release. Confirm product-scope decisions before building broad
+integration. Avoid generic extension frameworks until a second current consumer
+or variation is confirmed.
 
 ### Bug Fix
 
 Identify the exact faulty branch, condition, transition, query, handler, or
-configuration and the smallest correction. Existing reproduction evidence often
-makes extra pre-investment validation unnecessary. Do not use a local bug to
-justify a global framework.
+configuration and the smallest correction. Do not use a local bug to justify a
+global framework or an unconfirmed product behavior change.
 
 ### Refactor
 
-Preserve external behavior unless explicitly changing it. Separate seam,
-one module/caller migration, default switch, and cleanup. Validate only uncertain
-structural assumptions that could invalidate the refactor; do not implement the
-new architecture merely to prove it.
+Preserve external behavior unless an active product decision explicitly changes
+it. Separate seam, caller migration, default switch, and cleanup. Do not let
+structural convenience override Must Not Do boundaries.
 
-### Data Migration
+### Data Or Architecture Migration
 
-Separate schema preparation, migration job, rehearsal, batches, comparison,
-cutover, and compensation/cleanup. Before major investment, use samples or a
-bounded sandbox to validate transform feasibility, data quality assumptions, and
-reversibility. A validation spike must not perform the production migration.
-
-### Architecture Migration
-
-Validate the highest-risk compatibility, routing, dependency, or data-consistency
-assumption with the smallest isolated evidence. Then separate compatibility,
-dual-run, traffic movement, fallback, cutover, and decommissioning. Reconcile the
-plan after each traffic or dependency phase because runtime evidence may change
-the remaining sequence.
+Validate the highest-risk compatibility, routing, data-quality, or reversibility
+assumption with bounded evidence. Separate preparation, execution, cutover,
+fallback, and cleanup. Reconcile runtime evidence and decision-baseline impact
+after each material migration phase.
 
 ### Performance Optimization
 
-Start with baseline and one bottleneck hypothesis. A trace, targeted benchmark,
-or isolated experiment should establish investment confidence; do not build the
-complete optimization stack during validation. Reconcile after each optimization
-because measured attribution can make later units unnecessary.
+Start with a baseline and one bottleneck hypothesis. Validate investment
+confidence without implementing the complete optimization stack. Reconcile after
+each optimization because measured attribution can make later units unnecessary.
 
-### Security Change
+### Security Or DevOps Change
 
-Cover threat model, permissions, sensitive data, abuse cases, tests, audit
-logging, review, and emergency rollback. Use bounded validation for uncertain
-platform or policy behavior, but do not weaken production boundaries or install
-a broad policy engine merely to validate one rule.
-
-### DevOps / CI/CD
-
-Separate build graph, cache, test selection, artifact, secret/permission,
-deployment, and rollout. Validate uncertain tool or cache behavior in an isolated
-workflow or disposable branch. Reconcile after each gate change because actual
-latency, failure locality, and evidence coverage may invalidate later work.
+Cover permission, sensitive-data, audit, secret, deployment, and rollback
+boundaries that actually apply. Do not alter an active product privacy or
+operating-model decision merely because a platform default is easier.
 
 ## Minimum Necessary Construction Guidance
 
@@ -80,75 +153,46 @@ and temporary paths without removal criteria.
 ## Pre-Investment Validation Guidance
 
 Trigger validation only when failure of a critical assumption would waste
-substantial later work. Choose the lowest-cost credible method:
+substantial later work. Choose the lowest-cost credible evidence:
 
 | Evidence Level | Appropriate use |
 |---|---|
-| Static Evidence | official docs, source, type signatures, contracts, existing tests |
-| Observed Evidence | current logs, metrics, data samples, existing runtime behavior |
-| Mock Evidence | parser/protocol shape where real dependency access is unavailable |
+| Static Evidence | docs, source, contracts, existing tests |
+| Observed Evidence | current logs, metrics, data samples, runtime behavior |
+| Mock Evidence | parser/protocol shape when real access is unavailable |
 | Sandbox Evidence | isolated real request or disposable environment |
-| Prototype Evidence | minimal throwaway mechanism proof, not production integration |
-| Production Evidence | read-only or narrowly controlled observation of the formal path |
+| Prototype Evidence | minimal throwaway mechanism, not production integration |
+| Production Evidence | read-only or narrowly controlled formal-path observation |
 
-A strong validation row says both:
-
-```text
-enough: the exact observation needed to justify investment;
-not proven: correctness, scale, edge cases, hardening, or production readiness left for implementation.
-```
-
-Budget/Isolation must state:
+A validation row states:
 
 ```text
-Budget: explicit time/code/environment cap;
-Allowed: disposable artifact or read-only action;
-Forbidden: production entry/schema/default/deployment/public-abstraction changes.
+enough: observation needed to justify investment;
+not proven: correctness, scale, edge cases, hardening, or production readiness.
 ```
 
-Stop/Cleanup must state when evidence is sufficient or impossible and whether the
-artifact is deleted, retained as a test, or rewritten under production standards.
-
-Over-validation signals:
-
-- validation touches multiple production modules;
-- formal schema, default, deployment, or public API changes are required;
-- validation code becomes a production dependency;
-- full error handling, complete compatibility, production observability, or all
-  edge cases are implemented;
-- validation cost approaches the expected formal implementation;
-- no budget, stop condition, or cleanup boundary exists.
+Budget/Isolation states explicit Budget, Allowed, and Forbidden scope.
+Stop/Cleanup states when to stop and whether the artifact is deleted, retained
+as a test, or rewritten under production standards.
 
 ## Evidence Reconciliation Guidance
 
-At a material phase boundary, current evidence may confirm the plan or change it.
-Do not treat phase completion as automatic permission to continue.
+At a material phase boundary, do not treat completion as permission to continue.
+Record evidence, affected conclusions, decision-baseline impact, downstream
+changes, plan validity, and next action.
 
-Use conclusion prefixes:
+Decision Baseline Impact values:
 
-- `current:` evidence still supports the prior conclusion;
-- `qualified:` conclusion remains true only under narrower conditions;
-- `superseded:` a better conclusion replaces it;
-- `invalidated:` evidence disproves it;
-- `needs-revalidation:` evidence is insufficient or stale.
+- `aligned`: evidence and work remain inside active decisions;
+- `conflict-found`: current work or evidence conflicts with an active decision;
+- `change-proposed`: a replacement decision has been presented;
+- `re-confirmation-required`: downstream work remains paused pending the user.
 
-Plan-validity decisions:
+A conflict cannot use `continue`.
 
-| Plan Validity | Expected action |
-|---|---|
-| valid | continue, unless deliberately paused |
-| valid-with-qualifications | continue with explicit downstream qualifications or revise |
-| needs-revision | revise or pause; never continue unchanged |
-| invalidated | stop, pause, or redesign; never continue unchanged |
-
-Material evidence delta includes changed feasibility, dependency behavior,
-benefit, side effects, cost order, security/data/compatibility exposure, critical
-path, necessity of later units, or discovery of a substantially smaller path.
-Local implementation detail changes that do not affect downstream inputs do not
-require plan rewriting.
-
-Preserve old conclusions in history. Record which evidence changed them and
-which units are added, removed, split, reordered, or revalidated.
+Conclusion prefixes remain `current`, `qualified`, `superseded`, `invalidated`,
+or `needs-revalidation`. Preserve history and list units added, removed, split,
+reordered, or revalidated.
 
 ## Benefit And Side Effects Guidance
 
@@ -158,8 +202,6 @@ Every unit translates technical effect into wider project value and states:
 Complexity: <net code/concept/state/path/dependency/config delta>;
 Reach/Cost: <affected surfaces and continuing delivery/runtime/operational cost>.
 ```
-
-Side Effects are expected impacts. Uncertain failure scenarios belong in Risks.
 
 ## Compact Structures
 
@@ -177,45 +219,30 @@ Side Effects are expected impacts. Uncertain failure scenarios belong in Risks.
 |---|---|---|---|---|---|---|---|
 ```
 
-### Execution Tracking
-
-```markdown
-| Work Unit | Execution Status | Evidence | Missing Evidence | Decision |
-|---|---|---|---|---|
-```
-
 ### Phase Reconciliation
 
 ```markdown
-| Phase | New Evidence | Affected Assumption / Prior Conclusion | Conclusion Update | Downstream Plan Change | Plan Validity | Next Action |
-|---|---|---|---|---|---|---|
-```
-
-### Risks
-
-```markdown
-| Risk | Trigger Signal | Mitigation | Safe Stop / Fallback |
-|---|---|---|---|
+| Phase | New Evidence | Affected Assumption / Prior Conclusion | Decision Baseline Impact | Conclusion Update | Downstream Plan Change | Plan Validity | Next Action |
+|---|---|---|---|---|---|---|---|
 ```
 
 ## Wording Guardrails
 
 | Vague wording | Required replacement |
 |---|---|
-| validate feasibility | critical assumption, decision, evidence threshold, budget, isolation, stop |
-| build a prototype | smallest disposable mechanism and explicit production changes forbidden |
-| fully validate | investment-confidence threshold plus what remains unproven |
-| tests passed | evidence level and exact claim supported |
-| follow the plan | reconcile current evidence against assumptions and downstream validity |
-| update the plan | preserve prior conclusion, cite evidence, and list downstream changes |
+| confirmed requirement | decision ID plus user-confirmation evidence |
+| update the decisions | preserve old row, record confirmation, activate replacement |
+| follow the plan | reconcile evidence and active decisions before continuing |
+| validate feasibility | assumption, decision, threshold, budget, isolation, stop |
+| build a prototype | smallest disposable mechanism and forbidden production changes |
 | minimal impact | Complexity delta plus Reach/Cost |
-| future-proof | current need or preserved decision boundary without implementation |
+| future-proof | current need or preserved boundary without implementation |
 
 ## Anti-Patterns
 
-Reject plans that skip a material feasibility gate, turn validation into shadow
-implementation, present Mock/Prototype evidence as production evidence, validate
-without budget or cleanup, continue after invalidating evidence, silently rewrite
-prior conclusions, or mechanically follow stale downstream work. Also reject
-speculative construction, generic Benefits/Side Effects, oversized units, mixed
-states, template filler, unsupported facts, and invented commitments.
+Reject missing or merged topic artifacts, guessed version paths, inferred active
+decisions, plans without Design or Work Units, copied decision tables inside the
+plan, silent decision edits, and continued work after a decision conflict. Also
+reject shadow validation, stale-plan continuation, speculative construction,
+generic Benefits/Side Effects, oversized units, mixed states, unsupported facts,
+and invented commitments.
