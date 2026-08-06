@@ -4,13 +4,13 @@
   "display_name": "Roles Install",
   "description": "Install one shared global role text safely across supported local coding agents.",
   "release": {
-    "version": "1.0.0",
-    "published_at": "2026-08-07T07:31:47+09:00",
+    "version": "1.0.1",
+    "published_at": "2026-08-07T07:36:32+09:00",
     "publisher": "ceasarXuu",
     "changes": [
-      "Add initial roles-install workflow for Claude Code, Codex, TRAE CN, OpenCode, Pi, and Grok Build.",
-      "Require local agent detection and explicit installation-scope confirmation before any configuration write.",
-      "Preserve existing instructions with dedicated files or managed blocks, backups, structural validation, and restart handoff."
+      "Resolve Claude, Codex, OpenCode, and Pi role targets against their active profile/configuration roots instead of assuming default home paths.",
+      "Add explicit macOS, Linux, WSL, and native Windows default-path guidance while keeping TRAE CN path discovery fail-closed.",
+      "Verify Grok Build's Claude-compatible instruction source before deciding whether its target can be shared with Claude Code."
     ]
   },
   "source": {
