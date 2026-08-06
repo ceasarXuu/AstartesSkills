@@ -9,6 +9,15 @@
 - Risk: High
 - Material Uncertainty: yes
 
+## Execution Contract
+
+- `decisions.md` is user-authority protected; each product-decision change requires explicit user approval and Agent self-approval is forbidden.
+- Verified engineering evidence may revise this plan, not silently rewrite user-confirmed product intent.
+- New material product choices are deferred, provisional, or user-confirmed; they are never silently finalized.
+- After every material phase, audit only the Product Decision Delta introduced by that phase.
+- Classify each delta as `covered`, `engineering-only`, `provisional`, or `conflict`.
+- Dependent work cannot continue while a material `provisional` or `conflict` remains unresolved.
+
 ## Problem And Target
 
 Migrate a production-facing account API while preserving old-client behavior.
@@ -54,6 +63,7 @@ introduced.
 - Applicable decisions: D1, D2
 - Work units: W0
 - Phase-local evidence: reviewed caller inventory
+- Product decision delta review: required
 - Cross-unit side effects: none beyond W0 because this phase changes no runtime code, dependency, configuration, or infrastructure
 - Next-phase condition: no unknown caller can silently bypass compatibility
 
@@ -63,6 +73,7 @@ introduced.
 - Applicable decisions: D1, D2
 - Work units: W1, W2
 - Phase-local evidence: route contracts and v2 integration tests
+- Product decision delta review: required
 - Cross-unit side effects: v1 and v2 coexistence temporarily increases runtime paths, regression scope, monitoring, and maintenance until W4 removes v1
 - Next-phase condition: rollback to v1 is proven without data repair and phase evidence is reconciled before Phase 2
 
@@ -72,6 +83,7 @@ introduced.
 - Applicable decisions: D1, D2
 - Work units: W3
 - Phase-local evidence: caller-scoped metrics, traces, and failure reasons
+- Product decision delta review: required
 - Cross-unit side effects: dual-path operational burden continues and release plus on-call coordination increases for the observation window
 - Next-phase condition: selected caller group meets the observation gate and evidence is reconciled before broader movement
 
@@ -81,5 +93,6 @@ introduced.
 - Applicable decisions: D1
 - Work units: W4
 - Phase-local evidence: compatibility tests and zero-traffic report
+- Product decision delta review: required
 - Cross-unit side effects: cumulative complexity decreases; rollback temporarily depends on prior artifact retention
 - Next-phase condition: none

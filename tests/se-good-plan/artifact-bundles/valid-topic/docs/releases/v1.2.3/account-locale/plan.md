@@ -7,6 +7,15 @@
 - Mode: Plan Authoring
 - Material Uncertainty: no
 
+## Execution Contract
+
+- `decisions.md` is user-authority protected; each product-decision change requires explicit user approval and Agent self-approval is forbidden.
+- Verified engineering evidence may revise this plan, not silently rewrite user-confirmed product intent.
+- New material product choices are deferred, provisional, or user-confirmed; they are never silently finalized.
+- After every material phase, audit only the Product Decision Delta introduced by that phase.
+- Classify each delta as `covered`, `engineering-only`, `provisional`, or `conflict`.
+- Dependent work cannot continue while a material `provisional` or `conflict` remains unresolved.
+
 ## Design
 
 Add an optional locale field through the existing account schema, update endpoint,
