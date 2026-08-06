@@ -1,6 +1,6 @@
 ---
 name: se-good-plan
-description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces concise, executable, evidence-updated plans built from minimum-necessary engineering changes and small independently checkable work units.
+description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces concise, executable, evidence-updated plans with a user-confirmed product decision baseline and two required repository artifacts.
 ---
 
 # SE Good Plan
@@ -8,19 +8,21 @@ description: Use when the user asks for a software engineering plan, implementat
 ## Purpose
 
 Write or review engineering plans that are directly executable, proportionate to
-the problem, and updated by real evidence rather than followed mechanically.
-Plans must minimize unnecessary construction, use small closed-loop work units,
-explain benefit and side effects, validate high-cost directions before major
-investment, and reconsider downstream work when implementation changes the facts.
+the problem, constrained by user-confirmed product decisions, and updated by real
+evidence rather than followed mechanically.
 
-A good plan answers:
+A formal repository plan maintains two independent topic artifacts:
 
-- What exact problem, location, object, and action are involved?
-- Is this the smallest necessary construction?
-- What behavior, project benefit, complexity, reach, and continuing cost result?
-- Which critical uncertainty could invalidate later investment?
-- What is the cheapest credible evidence needed before committing?
-- After each material phase, do current facts still support the remaining plan?
+```text
+docs/releases/<confirmed-version>/<topic-slug>/
+├── decisions.md
+└── plan.md
+```
+
+`decisions.md` is the product decision baseline. `plan.md` is the main document
+containing engineering design, work units, conditional validation, phases, and
+execution-time plan updates. Other research or review artifacts are created only
+when needed.
 
 ## Use This Skill When
 
@@ -28,15 +30,84 @@ A good plan answers:
   performance, security, DevOps, CI/CD, release, or other engineering plan.
 - The user asks to split work into executable units or phases.
 - The user asks to make a plan concrete, concise, reviewable, or ready to execute.
-- The user asks whether a plan is vague, oversized, over-engineered, insufficiently
-  validated, over-validated, stale, or unsafe to continue.
+- The user asks whether a plan is vague, oversized, over-engineered,
+  insufficiently validated, stale, or drifting from confirmed product logic.
 
 Do not use this skill for pure product clarification unless requirements must be
 converted into engineering execution. Do not over-plan tiny, low-risk edits.
 
 ## Core Rules
 
-### 1. Plans Must Be Executable
+### 1. Maintain Two Required Topic Artifacts
+
+For a formal repository plan, create or reuse:
+
+```text
+docs/releases/<confirmed-version>/<topic-slug>/decisions.md
+docs/releases/<confirmed-version>/<topic-slug>/plan.md
+```
+
+Resolve `<confirmed-version>` from the user, repository release documentation, or
+an explicit project decision. Do not invent a version. If several versions remain
+plausible, block artifact creation until the target version is resolved.
+
+Use a stable lowercase topic slug. Update the same two files over the topic
+lifecycle; do not create parallel `plan-v2.md`, `final-plan.md`, or copied
+decision baselines.
+
+The files are independent and cross-linked:
+
+- `decisions.md` links `./plan.md`.
+- `plan.md` links `./decisions.md` and lists the applicable active decision IDs.
+- `plan.md` contains both `## Design` and `## Work Units`.
+- Do not merge the full product decision baseline into `plan.md`.
+
+### 2. Use A Product Decision Baseline
+
+`decisions.md` records only important product-logic decisions that were confirmed
+by the user and must constrain planning and execution over time.
+
+Use a compact shape:
+
+```markdown
+# Product Decision Baseline
+
+- Release Version:
+- Topic:
+- Plan: ./plan.md
+- Status: Active
+
+| ID | Confirmed Decision | Must Do | Must Not Do | Rationale | Violation Signal | Confirmation | Status |
+|---|---|---|---|---|---|---|---|
+| D1 | ... | ... | ... | ... | ... | user-confirmed: ... | active |
+```
+
+Decision statuses are `proposed`, `active`, or `superseded`.
+
+- Only user-confirmed decisions may be `active`.
+- Agent inference remains `proposed` and cannot constrain implementation as if
+  confirmed.
+- Record product behavior, scope boundaries, priority rules, and invariants whose
+  silent change would alter user intent.
+- Do not record ordinary implementation details, coding rules, every risk, or
+  speculative future requirements.
+- Each active decision must state what to do, what not to do, why it matters, and
+  how a violation would be detected.
+
+Read the baseline before authoring or revising `plan.md`, before starting a
+material phase, and during phase reconciliation.
+
+Verified engineering evidence may invalidate the technical plan, but it cannot
+silently rewrite user intent. When evidence conflicts with an active decision:
+
+1. pause affected downstream work;
+2. identify the conflict and affected decision IDs;
+3. propose a decision change with benefits, side effects, and plan impact;
+4. obtain user confirmation;
+5. preserve the old row as `superseded` and add or activate the replacement;
+6. revise `plan.md`.
+
+### 3. Plans Must Be Executable
 
 Every work unit states:
 
@@ -55,7 +126,7 @@ Every work unit states:
 handling”, or “complete integration” are not executable by themselves. Unknown
 locations or objects become a bounded Discovery unit.
 
-### 2. Use The Smallest Closed-Loop Engineering Unit
+### 4. Use The Smallest Closed-Loop Engineering Unit
 
 Each unit has one primary objective, change axis, action, benefit, and bounded
 side-effect profile. It must be independently inspectable, auditable, verifiable,
@@ -65,7 +136,7 @@ Split independent API, data, implementation, cache, client, deployment,
 observability, security, and cleanup work. A phase may sequence units but cannot
 hide their individual actions, evidence, states, or safe-stop boundaries.
 
-### 3. Prefer Minimum Necessary Construction
+### 5. Prefer Minimum Necessary Construction
 
 Use this order:
 
@@ -81,12 +152,9 @@ delete or simplify existing logic
 New interfaces, factories, providers, registries, configuration switches,
 states, runtime branches, caches, queues, jobs, dependencies, schemas, or
 frameworks require a current confirmed need or risk. Possible future use is not
-enough. Preserve future decision space without implementing unconfirmed features.
+enough. Temporary construction needs retirement criteria and cleanup.
 
-Temporary compatibility or migration logic needs retirement criteria and a
-cleanup unit. Benefit must justify complexity and continuing cost.
-
-### 4. Make Benefit And Side Effects Explicit
+### 6. Make Benefit And Side Effects Explicit
 
 `Resulting Behavior` explains what changes technically. `Benefit` explains why
 it matters to users, delivery, reliability, maintenance, cost, support, risk, or
@@ -100,15 +168,14 @@ is uncertain; Rollback is recovery. Every Side Effects field covers:
 - **Reach / cost:** affected modules/callers/data/tests/builds/CI/deployment/
   resources/security/operations/support/ownership/cognitive load/cleanup.
 
-`None`, `minimal impact`, `low risk`, or `N/A` are invalid. A no-material-effect
-claim must name the unchanged dimensions and why.
+`None`, `minimal impact`, `low risk`, or `N/A` are invalid.
 
-### 5. Use Minimum Sufficient Pre-Investment Validation
+### 7. Use Minimum Sufficient Pre-Investment Validation
 
 Before expensive, broad, irreversible, or dependency-sensitive implementation,
-identify any **critical assumption** whose failure would invalidate substantial
-later work. Validate only to the level needed to decide whether the direction is
-worth formal investment.
+identify any critical assumption whose failure would invalidate substantial later
+work. Validate only enough to decide whether the direction merits formal
+investment.
 
 Use the cheapest credible evidence ladder:
 
@@ -120,66 +187,54 @@ existing evidence / static inspection
   -> formal implementation only when the uncertainty cannot be isolated
 ```
 
-Validation must define:
+Validation states the assumption, unlocked decision, evidence level,
+enough-evidence threshold, intentionally unproven scope, bounded budget, allowed
+artifacts, forbidden production changes, stop condition, and cleanup/promotion.
 
-- the critical assumption and decision it unlocks;
-- what counts as enough evidence and what is intentionally not proven;
-- a bounded time/code/environment budget;
-- allowed artifacts and forbidden production changes;
-- stop condition and cleanup or promotion path;
-- evidence level: Static, Observed, Mock, Sandbox, Prototype, or Production.
+Validation is not shadow implementation. Mock, Sandbox, and Prototype evidence
+cannot be reported as production integration. If credible validation approaches
+formal implementation scope, reclassify it as an implementation unit.
 
-Validation is not a shadow implementation. It must not silently modify production
-entry points, schemas, defaults, deployment routes, long-lived configuration, or
-public abstractions. If credible validation requires near-formal implementation,
-reclassify it as an implementation unit instead of calling it validation.
+### 8. Evidence Supersedes The Plan
 
-A supported direction is not an implemented feature. Mock, Sandbox, and
-Prototype evidence cannot be reported as production integration evidence.
+The technical plan is a hypothesis based on earlier information. Verified current
+code, tests, logs, data, dependency behavior, and runtime observations outrank
+plan assumptions and preplanned order.
 
-### 6. Evidence Supersedes The Plan
+After every material phase in Execution Tracking, reconcile new evidence,
+affected assumptions and conclusions, Benefit, Side Effects, cost, risk,
+dependencies, priority, and downstream units. Do not automatically continue
+because the phase completed. Preserve old conclusions and mark them `current`,
+`qualified`, `superseded`, `invalidated`, or `needs-revalidation`.
 
-The plan is a hypothesis based on earlier information. Verified current code,
-tests, logs, data, dependency behavior, and runtime observations outrank plan
-assumptions and preplanned order.
+Evidence supersedes stale technical planning, but active product decisions remain
+authoritative until the user confirms a change.
 
-After every material phase in Execution Tracking, reconcile:
+### 9. Keep State Models Separate
 
-- new facts and evidence level;
-- assumptions or prior conclusions confirmed, qualified, superseded, invalidated,
-  or requiring revalidation;
-- change in Benefit, Side Effects, cost, risk, dependencies, or priority;
-- downstream units to continue, revise, split, remove, add, reorder, pause, or stop.
+- Plan Authoring: `planned`, `blocked-on-discovery`, `deferred`.
+- Pre-investment validation: `planned`, `direction-supported`,
+  `direction-rejected`, `inconclusive`, `budget-exhausted`.
+- Execution Tracking: `not-started`, `in-progress`, `verified`, `blocked`,
+  `failed`, `rolled-back`.
+- Plan validity: `valid`, `valid-with-qualifications`, `needs-revision`,
+  `invalidated`.
+- Product decisions: `proposed`, `active`, `superseded`.
+- Discovery/design artifacts: `planned`, `drafted`, `reviewed`, `verified`.
+- Code implementation: `planned`, `implemented`, `integrated`,
+  `runtime-verified`.
 
-Do not automatically continue because the phase completed. Preserve old
-conclusions and mark their new validity; never silently rewrite history. If
-material evidence conflicts with the plan, pause affected downstream work until
-reconciliation produces an explicit next action.
+Do not mix these models.
 
-### 7. Separate State Models
+### 10. Prefer Concise Structure
 
-`Plan Authoring` uses `planned`, `blocked-on-discovery`, and `deferred`. It cannot
-claim completed execution.
+Use the smallest document shape preserving engineering clarity. The two topic
+artifacts are mandatory for formal repository plans; additional artifacts are
+not. Add validation or reconciliation sections only when their trigger exists.
+Do not duplicate decisions, risks, tests, logs, benefits, side effects, or
+evidence merely to fill a template.
 
-Pre-investment validation uses `planned`, `direction-supported`,
-`direction-rejected`, `inconclusive`, or `budget-exhausted`. These states do not
-mean implementation is complete.
-
-`Execution Tracking` uses `not-started`, `in-progress`, `verified`, `blocked`,
-`failed`, or `rolled-back`. Plan validity is separately `valid`,
-`valid-with-qualifications`, `needs-revision`, or `invalidated`.
-
-Discovery/design artifacts use `planned`, `drafted`, `reviewed`, or `verified`.
-Code implementation uses `planned`, `implemented`, `integrated`, or
-`runtime-verified`. Do not mix these models.
-
-### 8. Prefer Concise Structure
-
-Use the smallest document shape preserving engineering clarity. Add validation
-or reconciliation sections only when their trigger exists. Do not duplicate
-risks, tests, logs, benefits, side effects, or evidence merely to fill a template.
-
-### 9. Preserve Engineering Safety
+### 11. Preserve Engineering Safety
 
 - Separate facts, assumptions, constraints, risks, and open questions.
 - Do not invent architecture, scale, schedules, staffing, deadlines, or releases.
@@ -192,99 +247,103 @@ risks, tests, logs, benefits, side effects, or evidence merely to fill a templat
 
 ## Generation Workflow
 
-### 1. Classify Scope, Risk, And Material Uncertainty
+### 1. Resolve The Topic Directory And Baseline
 
-Read `references/plan-patterns.md` for task-specific additions.
+Inspect `docs/releases/` and resolve the confirmed release version and topic slug.
+Create or reuse:
+
+```text
+docs/releases/<confirmed-version>/<topic-slug>/decisions.md
+docs/releases/<confirmed-version>/<topic-slug>/plan.md
+```
+
+Extract only user-confirmed product decisions into `decisions.md`. Mark uncertain
+interpretations `proposed`. Link both files and identify applicable active IDs in
+`plan.md`.
+
+### 2. Classify Scope, Risk, And Material Uncertainty
 
 | Depth | Use when | Typical shape |
 |---|---|---|
 | Lightweight | narrow, low-risk, easy rollback | 1-3 units |
 | Standard | several moving parts or controlled production risk | useful phases with small units |
-| Full | data, security, compatibility, cross-system, hard rollback | Standard plus only relevant safety material |
+| Full | data, security, compatibility, cross-system, hard rollback | Standard plus relevant safety material |
 
 Mark `Material Uncertainty: yes` only when a critical unknown could invalidate
-substantial later investment. Do not force validation for already evidenced,
-narrow, reversible work.
+substantial later investment.
 
-### 2. Define The Problem And Least-Construction Approach
+### 3. Write The Design In `plan.md`
 
-State current/expected behavior, gap, affected surfaces, goals, non-goals,
-assumptions, and open questions briefly. Explain what existing logic is deleted,
-changed, or reused before proposing new structures.
+State current and expected behavior, gap, affected surfaces, goals, non-goals,
+assumptions, open questions, applicable decision IDs, and the least-construction
+technical design. Explain control flow, data flow, compatibility, migration, or
+structural changes only to the level needed to support the work units.
 
-### 3. Add A Bounded Pre-Investment Validation Gate When Needed
+### 4. Add A Bounded Validation Gate When Needed
 
 ```markdown
 | ID | Critical Assumption | Decision Unlocked | Cheapest Credible Method | Enough Evidence / Not Proven | Budget / Isolation | Stop / Cleanup | Status |
 |---|---|---|---|---|---|---|---|
-| V1 | ... | ... | Sandbox Evidence: ... | enough: ...; not proven: ... | Budget: ...; Allowed: ...; Forbidden: ... | Stop: ...; Cleanup/Promotion: ... | planned |
 ```
 
-If the validation method requires full production integration, broad production
-changes, or formal hardening, shrink it or move that work into implementation.
-
-### 4. Build Work Units
+### 5. Build Work Units In `plan.md`
 
 ```markdown
 | ID | Objective | Change Axis | Change Location | Target Object | Concrete Action | Resulting Behavior | Benefit | Side Effects | Verification | Safe Stop / Rollback | Plan Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| W1 | ... | internal / API / data / cache / client / deployment / observability / cleanup / security | concrete location | named object | one action | technical effect | wider value | Complexity: ...; Reach/Cost: ... | exact evidence | ... | planned |
 ```
 
-### 5. Group Into Phases Only When Useful
+### 6. Group Into Phases Only When Useful
 
 ```markdown
 ### Phase N: <Outcome>
 
 - Entry condition:
+- Applicable decisions:
 - Work units:
 - Phase-local evidence:
 - Cross-unit side effects:
 - Next-phase condition:
 ```
 
-### 6. Reconcile Before Starting The Next Material Phase
-
-In Execution Tracking, add:
+### 7. Reconcile Before The Next Material Phase
 
 ```markdown
-| Phase | New Evidence | Affected Assumption / Prior Conclusion | Conclusion Update | Downstream Plan Change | Plan Validity | Next Action |
-|---|---|---|---|---|---|---|
-| Phase N | ... | ... | qualified: ... | revise W4; remove W5 | needs-revision | revise |
+| Phase | New Evidence | Affected Assumption / Prior Conclusion | Decision Baseline Impact | Conclusion Update | Downstream Plan Change | Plan Validity | Next Action |
+|---|---|---|---|---|---|---|---|
 ```
 
-Allowed conclusion prefixes: `current:`, `qualified:`, `superseded:`,
-`invalidated:`, `needs-revalidation:`. Allowed next actions: `continue`, `revise`,
-`pause`, or `stop`. `needs-revision` or `invalidated` cannot continue unchanged.
-
-### 7. Add Only Relevant Supporting Sections
-
-Add only applicable formal benefit validation, release/rollback, migration,
-compatibility, security, observability, risks/dependencies, alternatives,
-decisions, or open questions.
+If `Decision Baseline Impact` identifies a conflict, the next action cannot be
+`continue` until the user confirms the decision outcome and both artifacts are
+updated.
 
 ## Reviewing Existing Plans
 
 Lead with findings. Check for:
 
+- missing or misplaced `decisions.md` and `plan.md`;
+- missing cross-links, `## Design`, `## Work Units`, or applicable decision IDs;
+- active decisions that were inferred rather than user-confirmed;
+- plans or work units that violate `Must Not Do`;
+- silent edits or deletion of active decisions;
 - vague actions, speculative construction, or missing smaller alternatives;
 - missing/generic Benefits or Side Effects;
-- expensive implementation started before a critical assumption is validated;
-- validation with no evidence threshold, budget, isolation, stop, or cleanup;
-- validation that nearly implements the formal solution or pollutes production;
-- Mock/Prototype evidence presented as implementation or production evidence;
-- material phase evidence ignored while the old downstream plan continues;
-- prior conclusions silently overwritten instead of qualified or superseded;
-- mixed state models, oversized units, template bloat, or unsupported facts.
+- material uncertainty with no bounded validation;
+- validation that becomes production implementation;
+- phase evidence ignored while stale downstream work continues;
+- mixed states, oversized units, template bloat, or unsupported facts.
 
 ## Output Quality Checklist
 
+- [ ] Topic artifacts exist at `docs/releases/<confirmed-version>/<topic-slug>/`.
+- [ ] `decisions.md` and `plan.md` are independent, cross-linked, and reused.
+- [ ] Active decisions are user-confirmed and state Must Do, Must Not Do,
+      rationale, and violation signal.
+- [ ] `plan.md` contains Design, Work Units, and applicable active decision IDs.
 - [ ] Units are concrete, minimum-necessary, small, and safely stoppable.
 - [ ] Every unit has specific Benefit and Complexity plus Reach/Cost Side Effects.
 - [ ] Critical uncertainty is validated before disproportionate investment.
-- [ ] Validation proves only investment confidence, with budget and isolation.
-- [ ] Validation artifacts cannot masquerade as implementation evidence.
-- [ ] Material phases end with evidence reconciliation before downstream work.
-- [ ] Current facts outrank stale plan assumptions and order.
-- [ ] Prior conclusions remain traceable when qualified or superseded.
+- [ ] Material phases reconcile evidence and decision-baseline impact.
+- [ ] Current facts outrank stale plan details, while user intent is not silently
+      rewritten.
 - [ ] State models remain separate and structure remains concise.
