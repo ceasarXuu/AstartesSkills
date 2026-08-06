@@ -224,6 +224,43 @@
       }
     },
     {
+      "id": "roles-install",
+      "name": "Roles Install",
+      "path": "skills/roles-install",
+      "summary": "Installs one shared global role/instruction text across detected Claude Code, Codex, TRAE CN, OpenCode, Pi, and Grok Build installations with explicit scope confirmation, safe merging, backups, and restart handoff.",
+      "tags": [
+        "agent-configuration",
+        "global-rules",
+        "coding-agent",
+        "instructions",
+        "setup"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/roles-install"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-08-07T07:31:47+09:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Add initial roles-install workflow for Claude Code, Codex, TRAE CN, OpenCode, Pi, and Grok Build.",
+          "Require local agent detection and explicit installation-scope confirmation before any configuration write.",
+          "Preserve existing instructions with dedicated files or managed blocks, backups, structural validation, and restart handoff."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/roles-install/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
       "id": "se-good-plan",
       "name": "SE Good Plan",
       "path": "skills/se-good-plan",
