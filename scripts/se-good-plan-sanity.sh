@@ -2,7 +2,7 @@
 
 set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-echo "[se-good-plan-sanity] checking decision-baseline and topic-artifact contract"
+echo "[se-good-plan-sanity] checking protected product authority, bounded validation, and decision-delta controls"
 
 python3 - <<'PY' "$repo_root"
 import re
@@ -40,15 +40,19 @@ if len(texts["skill"].splitlines()) > 380:
 
 for needle in [
     "Maintain Two Required Topic Artifacts",
-    "Use A Product Decision Baseline",
-    "docs/releases/<confirmed-version>/<topic-slug>/",
-    "decisions.md", "plan.md", "Only user-confirmed decisions may be `active`",
-    "Must Do", "Must Not Do", "Violation Signal", "Confirmation",
-    "`plan.md` contains both `## Design` and `## Work Units`",
-    "Evidence supersedes stale technical planning",
-    "cannot silently rewrite user intent",
+    "Treat `decisions.md` As A Protected User-Authority Artifact",
+    "Keep Unconfirmed Product Decisions In `plan.md`",
+    "Materialize The Execution Contract In `plan.md`",
+    "PROTECTED USER-AUTHORITY ARTIFACT",
+    "Write Gate: Explicit user approval required",
+    "Agent Self-Approval: Forbidden",
+    "user-confirmed-direct:",
+    "blocked-on-user-decision",
+    "Product Decision Delta",
+    "covered", "engineering-only", "provisional", "conflict",
+    "not an unbounded rescan of the whole project",
     "Use Minimum Sufficient Pre-Investment Validation",
-    "Evidence Supersedes The Plan", "Prefer Concise Structure",
+    "Evidence Supersedes The Technical Plan",
 ]:
     require(combined, needle, "core contract")
 
@@ -56,10 +60,6 @@ work_header = (
     "| ID | Objective | Change Axis | Change Location | Target Object | "
     "Concrete Action | Resulting Behavior | Benefit | Side Effects | Verification | "
     "Safe Stop / Rollback | Plan Status |"
-)
-validation_header = (
-    "| ID | Critical Assumption | Decision Unlocked | Cheapest Credible Method | "
-    "Enough Evidence / Not Proven | Budget / Isolation | Stop / Cleanup | Status |"
 )
 reconciliation_header = (
     "| Phase | New Evidence | Affected Assumption / Prior Conclusion | "
@@ -70,48 +70,59 @@ decision_header = (
     "| ID | Confirmed Decision | Must Do | Must Not Do | Rationale | "
     "Violation Signal | Confirmation | Status |"
 )
+delta_header = (
+    "| Phase | Decision Surface | Implemented / Observed Semantics | "
+    "Baseline Coverage | Classification | Required Action |"
+)
 for name in ["skill", "patterns", "contract", "exemplar", "artifact_plan"]:
     require(texts[name], work_header, name)
-for name in ["skill", "patterns", "contract", "exemplar"]:
-    require(texts[name], validation_header, name)
 for name in ["skill", "patterns", "contract"]:
     require(texts[name], reconciliation_header, name)
+    require(texts[name], delta_header, name)
 for name in ["skill", "patterns", "contract", "artifact_decisions"]:
     require(texts[name], decision_header, name)
 
 for needle in [
-    "Required Topic Artifact Contract", "Product Decision Baseline Contract",
-    "Evidence And Decision Authority Contract",
-    "missing `decisions.md` or `plan.md`",
-    "active decision without user confirmation",
-    "full product decision baseline must not be merged into `plan.md`",
+    "Protected Product Decision Baseline Contract",
+    "Unconfirmed Product Decision Contract",
+    "Plan Execution Contract",
+    "Product Decision Delta Contract",
+    "baseline row not backed by direct user confirmation",
+    "material phase with no Product Decision Delta audit",
 ]:
     require(texts["contract"], needle, "source contract")
 
 for forbidden in [
-    "1. Metadata\n2. Background", "Each phase must include entry criteria",
-    "#### Entry Criteria Checks", "Only `landed` means complete",
+    "Product decisions: `proposed`",
+    "Decision statuses are `proposed`",
+    "Agent inference remains `proposed`",
     "docs/workstreams/<topic-slug>",
 ]:
-    if forbidden in texts["skill"]:
-        fail(f"oversized or obsolete contract remains: {forbidden}")
+    if forbidden in texts["skill"] or forbidden in texts["contract"]:
+        fail(f"obsolete decision-authority contract remains: {forbidden}")
 
 for needle in [
-    "exactly two independent, cross-linked topic artifacts",
-    "Only user-confirmed decisions may be active",
-    "Verified evidence may revise the technical plan",
-    "add fixed supporting artifacts beyond the required two",
+    "protected user-authority product baseline",
+    "Agent self-approval is forbidden",
+    "user silence are not approval",
+    "Product Decision Delta",
+    "provisional", "conflict",
+    "no fixed artifacts beyond the required two",
 ]:
     require(texts["agent"], needle, "agents/openai.yaml")
 
-if texts["artifact_plan"].count("# Product Decision Baseline") > 0:
-    fail("valid plan fixture merged the decision baseline")
+for name in ["artifact_plan", "exemplar"]:
+    require(texts[name], "## Execution Contract", name)
 if "## Design" not in texts["artifact_plan"] or "## Work Units" not in texts["artifact_plan"]:
     fail("valid plan fixture lacks Design or Work Units")
+if texts["artifact_plan"].count("# Product Decision Baseline") > 0:
+    fail("valid plan fixture merged the decision baseline")
 
 print("[se-good-plan-sanity] static contract checks passed")
 PY
 
 python3 -m py_compile "$repo_root/scripts/se-good-plan-quality-sanity.py"
+python3 -m py_compile "$repo_root/scripts/se-good-plan-decision-sanity.py"
 python3 "$repo_root/scripts/se-good-plan-quality-sanity.py" "$repo_root"
+python3 "$repo_root/scripts/se-good-plan-decision-sanity.py" "$repo_root"
 echo "[se-good-plan-sanity] se-good-plan sanity passed"
