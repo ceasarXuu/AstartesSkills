@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "market": "openai-compatible",
+  "display_name": "Roles Install",
+  "description": "Install one shared global role text safely across supported local coding agents.",
+  "release": {
+    "version": "1.0.0",
+    "published_at": "2026-08-07T07:31:47+09:00",
+    "publisher": "ceasarXuu",
+    "changes": [
+      "Add initial roles-install workflow for Claude Code, Codex, TRAE CN, OpenCode, Pi, and Grok Build.",
+      "Require local agent detection and explicit installation-scope confirmation before any configuration write.",
+      "Preserve existing instructions with dedicated files or managed blocks, backups, structural validation, and restart handoff."
+    ]
+  },
+  "source": {
+    "type": "github",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+    "path": "skills/roles-install"
+  }
+}
