@@ -11,6 +11,6 @@
 
 ## Phase Reconciliation
 
-| Phase | New Evidence | Affected Assumption / Prior Conclusion | Conclusion Update | Downstream Plan Change | Plan Validity | Next Action |
-|---|---|---|---|---|---|---|
-| Phase 2 | Production Evidence: average request cost is twice the planning estimate | Prior conclusion that v2 cost would stay within the existing account API envelope | Replace the old conclusion with the new cost estimate | revise W4 to compare route alternatives before further rollout | needs-revision | revise |
+| Phase | New Evidence | Affected Assumption / Prior Conclusion | Decision Baseline Impact | Conclusion Update | Downstream Plan Change | Plan Validity | Next Action |
+|---|---|---|---|---|---|---|---|
+| Phase 2 | Production Evidence: average request cost is twice the planning estimate | Prior conclusion that v2 cost would stay within the existing account API envelope | aligned | Replace the old conclusion with the new cost estimate | revise W4 to compare route alternatives before further rollout | needs-revision | revise |
