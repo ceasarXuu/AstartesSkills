@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rules Install"
+  short_description: "Install shared global rules across local coding agents."
+  default_prompt: "Use $rules-install to collect my global coding-agent roles, detect supported agents installed on this machine, show and confirm the effective install scope, then install the rules safely and report restart requirements."
