@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "market": "openai-compatible",
+  "display_name": "Rules Install",
+  "description": "Install one shared global rule text safely across supported local coding agents.",
+  "release": {
+    "version": "1.0.2",
+    "published_at": "2026-08-07T23:28:37+08:00",
+    "publisher": "ceasarXuu",
+    "changes": [
+      "Rename the skill id and package path from roles-install to rules-install.",
+      "Rename dedicated rule files, managed markers, backup suffixes, display metadata, and default prompt references to rules-install.",
+      "Remove the mistaken roles-install package after registry migration so only one installable entry remains."
+    ]
+  },
+  "source": {
+    "type": "github",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+    "path": "skills/rules-install"
+  }
+}
