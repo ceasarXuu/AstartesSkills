@@ -224,9 +224,9 @@
       }
     },
     {
-      "id": "roles-install",
-      "name": "Roles Install",
-      "path": "skills/roles-install",
+      "id": "rules-install",
+      "name": "Rules Install",
+      "path": "skills/rules-install",
       "summary": "Installs one shared global role/instruction text across detected Claude Code, Codex, TRAE CN, OpenCode, Pi, and Grok Build installations with explicit scope confirmation, safe merging, backups, and restart handoff.",
       "tags": [
         "agent-configuration",
@@ -239,16 +239,16 @@
       "source": {
         "type": "github",
         "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
-        "path": "skills/roles-install"
+        "path": "skills/rules-install"
       },
       "release": {
-        "version": "1.0.1",
-        "published_at": "2026-08-07T07:36:32+09:00",
+        "version": "1.0.2",
+        "published_at": "2026-08-07T23:28:37+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Resolve Claude, Codex, OpenCode, and Pi role targets against their active profile/configuration roots instead of assuming default home paths.",
-          "Add explicit macOS, Linux, WSL, and native Windows default-path guidance while keeping TRAE CN path discovery fail-closed.",
-          "Verify Grok Build's Claude-compatible instruction source before deciding whether its target can be shared with Claude Code."
+          "Rename the skill id and package path from roles-install to rules-install.",
+          "Rename dedicated rule files, managed markers, backup suffixes, display metadata, and default prompt references to rules-install.",
+          "Remove the mistaken roles-install package after registry migration so only one installable entry remains."
         ]
       },
       "markets": {
@@ -256,7 +256,7 @@
           "install_method": "copy"
         },
         "openai-compatible": {
-          "manifest": "skills/roles-install/markets/openai-compatible.json"
+          "manifest": "skills/rules-install/markets/openai-compatible.json"
         }
       }
     },
