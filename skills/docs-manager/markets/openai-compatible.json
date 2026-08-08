@@ -2,7 +2,7 @@
   "version": 1,
   "market": "openai-compatible",
   "display_name": "Docs Manager",
-  "description": "Designs, reorganizes, audits, and maintains repository documentation systems with versioned PRDs, technical designs, engineering plans, link management, archive policy, and validation tooling.",
+  "description": "Audits, organizes, migrates, and maintains repository documentation governance: source-of-truth ownership, links and indexes, archive lifecycle, stale references, and documentation drift, while preserving specialized PRD and engineering-plan contracts instead of imposing a fixed layout.",
   "release": {
     "version": "1.0.0",
     "published_at": "2026-06-16T05:54:01+08:00",
