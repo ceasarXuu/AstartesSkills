@@ -1,68 +1,57 @@
 ---
 name: se-good-plan
-description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces concise, executable, evidence-updated plans with a protected user-confirmed product decision baseline and two required repository artifacts.
+description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces concise executable plans that reuse canonical PRD product authority when available and fall back to a protected local decision baseline only when needed.
 ---
 
 # SE Good Plan
 
 ## Purpose
 
-Write or review engineering plans that are directly executable, proportionate to
-the problem, constrained by user-confirmed product intent, and updated by real
-evidence rather than followed mechanically.
+Write or review engineering plans that are directly executable, proportionate to the problem, constrained by user-confirmed product intent, and updated by real evidence rather than followed mechanically.
 
-A formal repository plan maintains exactly two required topic artifacts:
+## Product Authority First
+
+A formal plan must have exactly one effective **Product Authority Source** for material product decisions.
+
+Use this precedence:
+
+1. an existing canonical PRD whose `Confirmed Product Decisions` section contains directly user-confirmed active decisions;
+2. otherwise a fallback `decisions.md` created for this engineering topic.
+
+Do not copy confirmed PRD decisions into `decisions.md`. If a qualifying PRD already governs the same scope, reference its stable `PD` IDs directly from the plan.
+
+An existing PRD without protected directly confirmed decision rows is product context, not hard authority. Prefer getting the relevant decisions confirmed in that PRD. Use fallback `decisions.md` only when no suitable canonical product-authority section is available.
+
+## Formal Plan Artifacts
+
+A formal repository plan uses:
 
 ```text
 docs/releases/<confirmed-version>/<topic-slug>/
-├── decisions.md
 └── plan.md
 ```
 
-`decisions.md` is a protected user-authority product decision baseline. `plan.md`
-is the main working document containing engineering design, execution controls,
-work units, conditional validation, phases, pending product decisions, and
-execution-time updates. Other research or review artifacts are created only when
-needed.
-
-## Use This Skill When
-
-- The user asks for an implementation, refactor, migration, rollout, bug-fix,
-  performance, security, DevOps, CI/CD, release, or other engineering plan.
-- The user asks to split work into executable units or phases.
-- The user asks to make a plan concrete, concise, reviewable, or ready to execute.
-- The user asks whether a plan is vague, oversized, over-engineered,
-  insufficiently validated, stale, or drifting from product intent.
-
-Do not use this skill for pure product clarification unless requirements must be
-converted into engineering execution. Do not over-plan tiny, low-risk edits.
-
-## Core Rules
-
-### 1. Maintain Two Required Topic Artifacts
-
-For a formal repository plan, create or reuse:
+and one Product Authority Source:
 
 ```text
-docs/releases/<confirmed-version>/<topic-slug>/decisions.md
-docs/releases/<confirmed-version>/<topic-slug>/plan.md
+preferred: <existing-prd>#confirmed-product-decisions
+fallback:  docs/releases/<confirmed-version>/<topic-slug>/decisions.md
 ```
 
-Resolve `<confirmed-version>` from the user, repository release documentation, or
-an explicit project decision. Do not invent a version. Reuse the same files over
-the topic lifecycle; do not create `plan-v2.md`, `final-plan.md`, or copied
-decision baselines.
+Resolve the release version from the user, repository release documentation, or an explicit project decision. Do not invent it. Reuse `plan.md`; do not create `plan-v2.md`, `final-plan.md`, or parallel copies.
 
-The files are independent and cross-linked:
+`plan.md` records:
 
-- `decisions.md` links `./plan.md`.
-- `plan.md` links `./decisions.md` and lists applicable active decision IDs.
-- `plan.md` contains `## Execution Contract`, `## Design`, and `## Work Units`.
-- The full decision baseline must not be copied into `plan.md`.
+```markdown
+- Product Authority: <path-or-./decisions.md>
+- Applicable Decisions: <PD1, PD2, ... | D1, D2, ... | none>
+```
 
-### 2. Treat `decisions.md` As A Protected User-Authority Artifact
+## Fallback `decisions.md`
 
-The top of `decisions.md` must make the write boundary explicit:
+Create this file only when no qualifying canonical PRD authority exists for the scope.
+
+It remains a protected user-authority artifact:
 
 ```markdown
 # Product Decision Baseline
@@ -79,85 +68,49 @@ The top of `decisions.md` must make the write boundary explicit:
 - Release Version:
 - Topic:
 - Plan: ./plan.md
-```
 
-Use a compact decision table:
-
-```markdown
 | ID | Confirmed Decision | Must Do | Must Not Do | Rationale | Violation Signal | Confirmation | Status |
 |---|---|---|---|---|---|---|---|
 | D1 | ... | ... | ... | ... | ... | user-confirmed-direct: ... | active |
 ```
 
-Only directly user-confirmed decisions belong in this file. Allowed statuses are
-`active` and `superseded`; there is no Agent-created `proposed` state in the
-baseline. Each row preserves direct confirmation evidence.
+Only directly user-confirmed material decisions belong here. Allowed statuses are `active` and `superseded`. Replacements require explicit user approval and preserve the old row as `superseded`.
 
-An Agent must never promote its own interpretation, already-written code, tests,
-review results, another Agent's statement, or user silence into product
-authority. A replacement also requires explicit user approval; preserve the old
-row as `superseded` rather than rewriting history.
+## Material Product Decisions
 
-### 3. Keep Unconfirmed Product Decisions In `plan.md`
+A material product decision changes user-visible behavior, product rules, core domain modeling, lifecycle/state semantics, defaults or automation, user control/reversibility, persistence, permissions/visibility, compatibility, external side effects, or important limits.
 
-A **material product decision** is a choice whose alternatives materially change
-user-visible behavior, product rules, core domain modeling, lifecycle/state
-semantics, defaults or automation, user control/reversibility, persistence,
-permissions/visibility, compatibility, external side effects, or important
-limits. Purely internal equivalent implementation choices remain engineering
-decisions.
+Equivalent private implementation choices are engineering decisions.
 
-When an unconfirmed material product choice appears:
+For an unconfirmed material choice:
 
-1. **Defer** it when the choice can remain open without harming the current unit.
-2. Use a **provisional** implementation only when a temporary choice is necessary,
-   local, reversible, and prevented from becoming a broad dependency.
-3. **Ask the user before implementation** when the choice is high-impact,
-   hard-to-reverse, changes public/persistent behavior, or controls substantial
-   downstream work.
+1. **defer** it when current work can preserve the choice;
+2. use **provisional** behavior only when necessary, local, reversible, and bounded;
+3. **ask the user before implementation** when it is high-impact, hard to reverse, public/persistent, or controls substantial downstream work.
 
-Never write an unconfirmed choice into `decisions.md`. Record unresolved choices
-in `plan.md` under `## Pending Product Decisions` when they exist.
+Unconfirmed choices stay in `plan.md` under `## Pending Product Decisions`; they never become authority through implementation or Agent inference.
 
-### 4. Materialize The Execution Contract In `plan.md`
+## Execution Contract
 
-Do not rely on a long-running Agent to reread this skill. Every formal `plan.md`
-must contain a short `## Execution Contract` stating at least:
+Every formal `plan.md` must persist a short `## Execution Contract` stating at least:
 
-- `decisions.md` is user-authority protected and each change requires explicit
-  user approval; Agent self-approval is forbidden.
-- Verified engineering facts may revise `plan.md`, not silently rewrite
-  user-confirmed product intent.
-- New material product choices are deferred, provisional, or user-confirmed;
-  they are never silently finalized.
-- After every material phase, audit only the product-semantics delta introduced
-  by that phase.
-- Classify each delta as `covered`, `engineering-only`, `provisional`, or
-  `conflict`.
-- Dependent work cannot continue while a material `provisional` or `conflict`
-  remains unresolved.
+- the declared Product Authority Source is user authority for its active confirmed decisions;
+- changes to active product authority require explicit user approval; Agent self-approval is forbidden;
+- verified engineering evidence may revise `plan.md`, not silently rewrite product authority;
+- new material product choices are deferred, provisional, or user-confirmed;
+- after every material phase, audit only that phase's Product Decision Delta;
+- classify each delta as `covered`, `engineering-only`, `provisional`, or `conflict`;
+- dependent work cannot continue while a material `provisional` or `conflict` remains unresolved.
 
-### 5. Plans Must Be Executable
+## Executable Work Units
 
-Every work unit states a concrete change location, named target object, one
-explicit engineering action, resulting behavior, Benefit, Side Effects, exact
-verification, and safe-stop or rollback boundary.
+Every work unit states a concrete change location, named target object, one explicit engineering action, resulting behavior, Benefit, Side Effects, exact verification, and safe-stop or rollback boundary.
 
-Abstract statements such as “add an abstraction”, “refactor the module”,
-“optimize caching”, or “complete integration” are not executable by themselves.
-Unknown locations or objects become bounded Discovery units.
+Unknown locations or objects become bounded Discovery units rather than vague implementation steps.
 
-### 6. Use The Smallest Closed-Loop Engineering Unit
+Use the smallest closed-loop engineering unit: one primary objective, change axis, action, benefit, and bounded side-effect profile. Split independent API, data, implementation, cache, client, deployment, observability, security, and cleanup work.
 
-Each unit has one primary objective, change axis, action, benefit, and bounded
-side-effect profile. It must be independently inspectable, auditable, verifiable,
-and reversible, disableable, or safely stoppable.
-
-Split independent API, data, implementation, cache, client, deployment,
-observability, security, and cleanup work. A phase may sequence units but cannot
-hide their individual actions, evidence, states, or safe-stop boundaries.
-
-### 7. Prefer Minimum Necessary Construction
+## Minimum Necessary Construction
 
 Prefer:
 
@@ -170,103 +123,76 @@ delete/simplify
   -> new dependency or stateful infrastructure
 ```
 
-New interfaces, factories, providers, registries, switches, states, runtime
-branches, caches, queues, jobs, dependencies, schemas, or frameworks require a
-current confirmed need or risk. Possible future use is insufficient. Temporary
-construction needs retirement criteria and cleanup.
+New interfaces, factories, providers, registries, switches, states, runtime branches, caches, queues, jobs, dependencies, schemas, or frameworks require a current confirmed need or risk. Possible future use is insufficient.
 
-### 8. Make Benefit And Side Effects Explicit
+## Benefit And Side Effects
 
-`Resulting Behavior` explains what changes technically. `Benefit` explains why
-it matters to users, delivery, reliability, maintenance, cost, support, risk, or
-operations. Generic claims or copies of Resulting Behavior are invalid.
+`Resulting Behavior` explains what changes technically. `Benefit` explains why it matters. Side Effects cover expected consequences even when implementation succeeds.
 
-Side Effects are expected consequences even when implementation works; Risks are
-uncertain and Rollback is recovery. Every Side Effects field covers:
+Every Side Effects field covers:
 
-- **Complexity:** code/files/concepts/abstractions/states/branches/dependencies/
-  config/schema/runtime paths/temporary logic added or removed.
-- **Reach / cost:** affected modules/callers/data/tests/builds/CI/deployment/
-  resources/security/operations/support/ownership/cognitive load/cleanup.
+- **Complexity:** code/files/concepts/abstractions/states/branches/dependencies/config/schema/runtime paths/temporary logic added or removed;
+- **Reach / cost:** affected modules/callers/data/tests/builds/CI/deployment/resources/security/operations/support/ownership/cognitive load/cleanup.
 
-### 9. Use Minimum Sufficient Pre-Investment Validation
+## Minimum Sufficient Pre-Investment Validation
 
-Before expensive, broad, irreversible, or dependency-sensitive implementation,
-identify any critical assumption whose failure would invalidate substantial later
-work. Validate only enough to decide whether the direction merits investment.
+Before expensive, broad, irreversible, or dependency-sensitive implementation, identify any critical assumption whose failure would invalidate substantial later work. Validate only enough to decide whether the direction merits investment.
 
-Prefer existing/read-only evidence, then an isolated request/script, then a
-sandbox/disposable spike. Validation states the assumption, unlocked decision,
-evidence level, enough-evidence threshold, intentionally unproven scope, bounded
-budget, allowed artifacts, forbidden production changes, stop condition, and
-cleanup/promotion.
+Prefer existing/read-only evidence, then an isolated request or script, then a sandbox/disposable spike. Validation is not shadow implementation. Mock, Sandbox, and Prototype evidence cannot be reported as production integration.
 
-Validation is not shadow implementation. Mock, Sandbox, and Prototype evidence
-cannot be reported as production integration. If credible validation approaches
-formal implementation scope, reclassify it as implementation.
+## Evidence And Product Authority
 
-### 10. Evidence Supersedes The Technical Plan
+Verified current code, tests, logs, data, dependency behavior, and runtime observations outrank stale technical assumptions and preplanned order.
 
-Verified current code, tests, logs, data, dependency behavior, and runtime
-observations outrank stale technical assumptions and preplanned order. They do
-not outrank user authority in `decisions.md`.
+They do **not** authorize changes to the Product Authority Source. Evidence-plan conflict triggers technical reconciliation. Evidence-authority conflict triggers a pause and direct user reconfirmation.
 
-After every material phase, reconcile evidence and audit the **Product Decision
-Delta**: only product semantics introduced or changed by that phase, not an
-unbounded rescan of the whole project.
+## Product Decision Delta
 
-Classify each material delta:
+After every material phase, audit only product semantics introduced or changed by that phase.
 
-- `covered`: an active decision already governs it.
-- `engineering-only`: no material product semantics changed.
-- `provisional`: implementation temporarily chose an unconfirmed product behavior.
-- `conflict`: implementation or evidence conflicts with an active decision.
+```markdown
+| Phase | Decision Surface | Implemented / Observed Semantics | Authority Coverage | Classification | Required Action |
+|---|---|---|---|---|---|
+```
 
-A material `provisional` or `conflict` pauses dependent downstream work until the
-user confirms the product outcome. Phase completion alone never authorizes
-continuation.
+Classifications:
 
-### 11. Keep State Models Separate
+- `covered`: cite an active decision ID from the Product Authority Source;
+- `engineering-only`: no material product semantics changed;
+- `provisional`: temporary unconfirmed product behavior;
+- `conflict`: implementation or evidence conflicts with active authority.
 
-- Plan Authoring: `planned`, `blocked-on-discovery`,
-  `blocked-on-user-decision`, `deferred`.
-- Pre-investment validation: `planned`, `direction-supported`,
-  `direction-rejected`, `inconclusive`, `budget-exhausted`.
-- Execution Tracking: `not-started`, `in-progress`, `verified`, `blocked`,
-  `failed`, `rolled-back`.
-- Plan validity: `valid`, `valid-with-qualifications`, `needs-revision`,
-  `invalidated`.
-- Product decisions in `decisions.md`: `active`, `superseded`.
+A material `provisional` or `conflict` blocks dependent downstream work until the user confirms the product outcome.
+
+## Plan State Models
+
+Keep these separate:
+
+- Plan Authoring: `planned`, `blocked-on-discovery`, `blocked-on-user-decision`, `deferred`.
+- Pre-investment validation: `planned`, `direction-supported`, `direction-rejected`, `inconclusive`, `budget-exhausted`.
+- Execution Tracking: `not-started`, `in-progress`, `verified`, `blocked`, `failed`, `rolled-back`.
+- Plan validity: `valid`, `valid-with-qualifications`, `needs-revision`, `invalidated`.
+- Product decisions: `active`, `superseded`.
 - Discovery/design artifacts: `planned`, `drafted`, `reviewed`, `verified`.
-- Code implementation: `planned`, `implemented`, `integrated`,
-  `runtime-verified`.
-
-Do not mix these models.
-
-### 12. Prefer Concise Structure
-
-The two topic artifacts are mandatory for formal repository plans; additional
-artifacts are not. Add Pending Product Decisions, validation, or reconciliation
-only when triggered. Do not duplicate decisions, risks, tests, logs, benefits,
-side effects, or evidence merely to fill a template.
+- Code implementation: `planned`, `implemented`, `integrated`, `runtime-verified`.
 
 ## Generation Workflow
 
-### 1. Resolve The Topic Directory And Protected Baseline
+### 1. Resolve Product Authority And Topic
 
-Inspect `docs/releases/` and resolve the confirmed release version and topic slug.
-Create or reuse `decisions.md` and `plan.md`. Read the protected baseline before
-designing the plan. Do not write or alter decision rows unless the user directly
-approved the specific change.
+Inspect existing PRDs and release docs before creating authority artifacts.
 
-### 2. Write The Execution Contract And Design In `plan.md`
+- If a canonical PRD has protected directly confirmed decisions for this scope, use it and reference its `PD` IDs.
+- Otherwise create/reuse fallback `decisions.md` and use its `D` IDs.
+- Never maintain both as independent authority for the same decisions.
 
-Link `./decisions.md`, list applicable active IDs, write the compact Execution
-Contract, then state current/expected behavior, goals/non-goals, assumptions,
-open questions, and least-construction technical design.
+Resolve `docs/releases/<confirmed-version>/<topic-slug>/plan.md` without inventing a version.
 
-If a material product choice is unresolved, either ask before dependent design,
-or record it under:
+### 2. Write The Plan Contract And Design
+
+Record Product Authority, applicable active IDs, Execution Contract, current/expected behavior, goals/non-goals, assumptions, open questions, and least-construction technical design.
+
+If unresolved material choices exist:
 
 ```markdown
 ## Pending Product Decisions
@@ -275,7 +201,7 @@ or record it under:
 |---|---|---|---|---|---|
 ```
 
-### 3. Add Bounded Pre-Investment Validation When Needed
+### 3. Add Bounded Validation When Needed
 
 ```markdown
 | ID | Critical Assumption | Decision Unlocked | Cheapest Credible Method | Enough Evidence / Not Proven | Budget / Isolation | Stop / Cleanup | Status |
@@ -289,62 +215,27 @@ or record it under:
 |---|---|---|---|---|---|---|---|---|---|---|---|
 ```
 
-Use `blocked-on-user-decision` when a dependent material choice requires direct
-user confirmation.
-
 ### 5. Group Into Phases Only When Useful
 
-```markdown
-### Phase N: <Outcome>
+Each phase has entry conditions, applicable decisions, work units, phase-local evidence, Product Decision Delta review, cross-unit side effects, and a next-phase condition.
 
-- Entry condition:
-- Applicable decisions:
-- Work units:
-- Phase-local evidence:
-- Product decision delta review: required / not-material
-- Cross-unit side effects:
-- Next-phase condition:
-```
+### 6. Reconcile Before Continuing
 
-### 6. Reconcile And Audit Before The Next Material Phase
-
-In Execution Tracking, first record the bounded phase delta:
-
-```markdown
-## Product Decision Delta
-
-| Phase | Decision Surface | Implemented / Observed Semantics | Baseline Coverage | Classification | Required Action |
-|---|---|---|---|---|---|
-```
-
-Then reconcile:
-
-```markdown
-| Phase | New Evidence | Affected Assumption / Prior Conclusion | Decision Baseline Impact | Conclusion Update | Downstream Plan Change | Plan Validity | Next Action |
-|---|---|---|---|---|---|---|---|
-```
-
-If a material delta is `provisional` or `conflict`, or baseline impact requires
-reconfirmation, the next action cannot be `continue`.
+After a material phase, record the bounded Product Decision Delta, then reconcile new evidence against technical assumptions and product authority. A material `provisional` or `conflict` cannot proceed unchanged.
 
 ## Reviewing Existing Plans
 
-Lead with findings. Check for missing or unprotected topic artifacts,
-Agent-authored authority, missing Execution Contract, unresolved product choices
-silently embedded in design/code, missing phase decision-delta audit, continued
-work after a provisional/conflict, vague or oversized units, speculative
-construction, shadow validation, stale-plan continuation, mixed states, and
-unsupported facts.
+Lead with findings. Check for duplicated product authority, Agent-authored authority, missing Product Authority metadata, unresolved product choices embedded silently in design/code, missing phase delta audit, continued work after provisional/conflict, vague or oversized units, speculative construction, shadow validation, stale-plan continuation, mixed states, and unsupported facts.
 
 ## Output Quality Checklist
 
-- [ ] `decisions.md` is protected, user-authority only, and directly confirmed.
-- [ ] `plan.md` contains Execution Contract, Design, Work Units, and active IDs.
-- [ ] Unconfirmed material product choices stay in `plan.md`, never the baseline.
-- [ ] High-impact or hard-to-reverse product choices are confirmed before implementation.
+- [ ] Exactly one effective Product Authority Source governs material product decisions.
+- [ ] Canonical PRD authority is referenced instead of copied when available.
+- [ ] Fallback `decisions.md` exists only when canonical PRD authority is unavailable.
+- [ ] Only directly user-confirmed decisions are active authority.
+- [ ] `plan.md` contains Product Authority, applicable IDs, Execution Contract, Design, and Work Units.
+- [ ] Unconfirmed material choices stay pending, provisional, or user-blocked.
 - [ ] Units are concrete, minimum-necessary, beneficial, side-effect-aware, and stoppable.
 - [ ] Critical uncertainty is validated before disproportionate investment.
 - [ ] Every material phase performs bounded Product Decision Delta audit.
 - [ ] `provisional` / `conflict` blocks dependent continuation until user confirmation.
-- [ ] Current evidence can revise the technical plan but not self-authorize product intent.
-- [ ] Structure remains concise and only two fixed artifacts are required.
