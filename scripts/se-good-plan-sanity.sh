@@ -2,7 +2,7 @@
 
 set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-echo "[se-good-plan-sanity] checking protected product authority, bounded validation, and decision-delta controls"
+echo "[se-good-plan-sanity] checking single product authority, bounded validation, and decision-delta controls"
 
 python3 - <<'PY' "$repo_root"
 import re
@@ -34,15 +34,16 @@ def require(text, needle, context):
         fail(f"{context} missing required text: {needle}")
 
 texts = {name: read(path) for name, path in files.items()}
-combined = "\n".join(texts.values())
+combined = "\n".join([texts["skill"], texts["patterns"], texts["contract"]])
 if len(texts["skill"].splitlines()) > 380:
     fail("SKILL.md must stay concise and below 380 lines")
 
 for needle in [
-    "Maintain Two Required Topic Artifacts",
-    "Treat `decisions.md` As A Protected User-Authority Artifact",
-    "Keep Unconfirmed Product Decisions In `plan.md`",
-    "Materialize The Execution Contract In `plan.md`",
+    "Product Authority Source",
+    "canonical PRD",
+    "Confirmed Product Decisions",
+    "Do not copy confirmed PRD decisions into `decisions.md`",
+    "fallback `decisions.md`",
     "PROTECTED USER-AUTHORITY ARTIFACT",
     "Write Gate: Explicit user approval required",
     "Agent Self-Approval: Forbidden",
@@ -50,9 +51,8 @@ for needle in [
     "blocked-on-user-decision",
     "Product Decision Delta",
     "covered", "engineering-only", "provisional", "conflict",
-    "not an unbounded rescan of the whole project",
-    "Use Minimum Sufficient Pre-Investment Validation",
-    "Evidence Supersedes The Technical Plan",
+    "Minimum Sufficient Pre-Investment Validation",
+    "Evidence And Product Authority",
 ]:
     require(combined, needle, "core contract")
 
@@ -61,62 +61,35 @@ work_header = (
     "Concrete Action | Resulting Behavior | Benefit | Side Effects | Verification | "
     "Safe Stop / Rollback | Plan Status |"
 )
-reconciliation_header = (
-    "| Phase | New Evidence | Affected Assumption / Prior Conclusion | "
-    "Decision Baseline Impact | Conclusion Update | Downstream Plan Change | "
-    "Plan Validity | Next Action |"
-)
 decision_header = (
     "| ID | Confirmed Decision | Must Do | Must Not Do | Rationale | "
     "Violation Signal | Confirmation | Status |"
 )
-delta_header = (
-    "| Phase | Decision Surface | Implemented / Observed Semantics | "
-    "Baseline Coverage | Classification | Required Action |"
-)
-for name in ["skill", "patterns", "contract", "exemplar", "artifact_plan"]:
+for name in ["skill", "patterns", "exemplar", "artifact_plan"]:
     require(texts[name], work_header, name)
-for name in ["skill", "patterns", "contract"]:
-    require(texts[name], reconciliation_header, name)
-    require(texts[name], delta_header, name)
 for name in ["skill", "patterns", "contract", "artifact_decisions"]:
     require(texts[name], decision_header, name)
 
-for needle in [
-    "Protected Product Decision Baseline Contract",
-    "Unconfirmed Product Decision Contract",
-    "Plan Execution Contract",
-    "Product Decision Delta Contract",
-    "baseline row not backed by direct user confirmation",
-    "material phase with no Product Decision Delta audit",
-]:
-    require(texts["contract"], needle, "source contract")
-
 for forbidden in [
-    "Product decisions: `proposed`",
-    "Decision statuses are `proposed`",
-    "Agent inference remains `proposed`",
-    "docs/workstreams/<topic-slug>",
+    "Maintain Two Required Topic Artifacts",
+    "A formal repository plan maintains exactly two required topic artifacts",
+    "exactly two independent, cross-linked topic artifacts",
 ]:
-    if forbidden in texts["skill"] or forbidden in texts["contract"]:
-        fail(f"obsolete decision-authority contract remains: {forbidden}")
+    if forbidden in combined or forbidden in texts["agent"]:
+        fail(f"obsolete duplicated-authority contract remains: {forbidden}")
 
 for needle in [
-    "protected user-authority product baseline",
-    "Agent self-approval is forbidden",
-    "user silence are not approval",
+    "one protected product authority source",
+    "prefer an existing canonical PRD",
+    "Never copy canonical PRD decisions into fallback authority",
     "Product Decision Delta",
-    "provisional", "conflict",
-    "no fixed artifacts beyond the required two",
 ]:
     require(texts["agent"], needle, "agents/openai.yaml")
 
 for name in ["artifact_plan", "exemplar"]:
     require(texts[name], "## Execution Contract", name)
 if "## Design" not in texts["artifact_plan"] or "## Work Units" not in texts["artifact_plan"]:
-    fail("valid plan fixture lacks Design or Work Units")
-if texts["artifact_plan"].count("# Product Decision Baseline") > 0:
-    fail("valid plan fixture merged the decision baseline")
+    fail("valid fallback plan fixture lacks Design or Work Units")
 
 print("[se-good-plan-sanity] static contract checks passed")
 PY
