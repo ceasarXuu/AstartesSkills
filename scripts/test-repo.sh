@@ -52,7 +52,7 @@ fi
 
 if [[ "$skill_id" == "docs-manager" ]]; then
   log "checking docs-manager adaptive governance contract"
-  "$repo_root/scripts/docs-manager-sanity.sh"
+  bash "$repo_root/scripts/docs-manager-sanity.sh"
 fi
 
 if [[ "$skill_id" == "bug-killer" ]]; then
