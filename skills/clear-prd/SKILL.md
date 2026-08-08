@@ -1,194 +1,131 @@
 ---
 name: clear-prd
-description: Use when a user brings a new product, feature, app, website, internal tool, automation, workflow, or other product requirement that needs multi-round clarification before implementation. The skill keeps the conversation focused on product logic, user experience, interaction design, rules, edge cases, and acceptance criteria, then writes a Draft or Ready PRD.
+description: Use when a product, feature, app, website, internal tool, automation, or workflow needs product-logic clarification before implementation. Guides focused multi-round questions and writes a Draft or Ready PRD whose directly confirmed material product decisions can serve as canonical downstream product authority.
 ---
 
 # Clear PRD
 
 ## Purpose
 
-Use this skill to turn an unclear request into a reviewed product-requirements
-document before technical design or implementation begins.
+Turn an unclear product request into a reviewed product-requirements document before technical design or implementation.
 
-The agent should guide the user through multi-round clarification. Questions
-must stay centered on product logic: user goals, experience, interactions,
-workflow, rules, states, exceptions, and success criteria. Avoid drifting into
-frameworks, databases, deployment, libraries, or implementation tactics unless
-the technical choice changes a user-visible product decision.
+Keep clarification centered on user goals, experience, interactions, workflow, rules, states, exceptions, and acceptance criteria. Avoid implementation tactics unless a technical choice materially changes user-visible product behavior.
 
-Default PRD output path in an active project folder:
+## Output Location
 
-```text
-prd/YYYY-MM-DD-<short-topic>.md
-```
+Preserve the repository's existing PRD convention instead of creating a competing one.
 
-Create `prd/` when missing. If the default file already exists, write
-`prd/YYYY-MM-DD-<short-topic>-v2.md`, then increment `v3`, `v4`, and so on.
-If there is no active project folder or the user asks for inline output, return
-the PRD inline instead.
+Use this precedence:
+
+1. explicit user-requested path;
+2. an existing repository PRD location or documentation contract;
+3. fallback `prd/YYYY-MM-DD-<short-topic>.md`.
+
+For the fallback only, create `prd/` when missing. If the path already exists, append `-v2`, then `-v3`, and so on. Do not relocate or duplicate an existing PRD solely to match this fallback.
+
+If there is no active project folder or the user asks for inline output, return the PRD inline.
 
 ## Use This Skill When
 
-- The user asks to design a product, feature, app, website, internal tool,
-  automation, or workflow.
-- The request is directionally clear but lacks enough product logic to implement
-  safely.
-- Important decisions depend on earlier decisions and need layered questioning.
-- The user needs a PRD, requirements document, product spec, feature brief, or
-  product definition that may be `Draft` or `Ready for implementation`.
+- Product logic is incomplete or layered clarification is needed.
+- Important product decisions depend on earlier decisions.
+- The user needs a PRD, requirements document, product spec, feature brief, or product definition.
 
-Do not use this skill for trivial edits, direct code fixes, bug triage, pure
-technical implementation tasks, or questions that already provide a complete
-PRD and only need execution.
+Do not use it for trivial edits, direct bug fixes, pure technical implementation, or a complete PRD that only needs engineering execution.
 
-## Non-Negotiable Rules
+## Product Authority Contract
 
-- Ask before designing when product logic is underspecified.
-- Ask top-down: broad goals first, then dependent details.
-- Ask by module, not by random checklist.
-- Each clarification question must offer A/B/C-style options when a meaningful
-  tradeoff exists.
-- Every option must represent a real product direction, constraint, or
-  tradeoff, not a disguised technical implementation choice.
-- Mark the agent's recommended option and explain why in product terms.
-- Always allow the user to choose something outside the listed options.
-- Do not force premature technical design. Translate technical concerns into
-  product impact before asking.
-- Keep asking across multiple rounds until blocking product decisions are
-  resolved or explicitly marked as open risks.
-- Preserve important decisions, exceptions, unresolved items, and rationale in
-  the final PRD.
+A PRD produced or maintained by this skill is the preferred canonical product authority for its scope when the repository uses it as such.
+
+The whole PRD is not automatically user authority. Only directly confirmed **material product decisions** belong in `## Confirmed Product Decisions`.
+
+A material product decision is a choice whose alternatives materially change user-visible behavior, product rules, core domain modeling, lifecycle/state semantics, defaults or automation, user control or reversibility, persistence, permissions or visibility, compatibility, external side effects, or important limits.
+
+Rules:
+
+- Stable decision IDs use `PD1`, `PD2`, and so on.
+- Every active row requires direct user confirmation evidence.
+- Explicit approval of the specific decision or explicit approval of the reviewed PRD counts; Agent inference does not.
+- Agent inference, existing code, tests, reviews, other documents, implementation success, user silence, or a generic "continue" do not count as confirmation.
+- Allowed statuses are `active` and `superseded`.
+- Replacing an active decision requires explicit user approval; preserve the old row as `superseded`.
+- Unconfirmed choices stay under `Open Questions And Risks`; never promote them into the confirmed table.
+- Downstream engineering artifacts should reference these decision IDs instead of copying the decisions into another authority document.
+
+Use this protected section:
+
+```markdown
+## Confirmed Product Decisions
+
+> PROTECTED USER-AUTHORITY SECTION
+> Rows in this section MUST NOT be created, modified, deleted, reinterpreted,
+> or superseded without explicit user approval for that specific decision change.
+> Agent self-approval is forbidden.
+
+| ID | Confirmed Decision | Must Do | Must Not Do | Rationale | Violation Signal | Confirmation | Status |
+|---|---|---|---|---|---|---|---|
+| PD1 | ... | ... | ... | ... | ... | user-confirmed-direct: ... | active |
+```
+
+Do not fill this table with minor wording choices or ordinary engineering details. It is a compact execution authority layer, not a second copy of the PRD body.
 
 ## Clarification Workflow
 
 ### 1. Frame The Request
 
-Restate the request as a product intent:
+Restate:
 
-- target user or operator
-- problem or job to be solved
-- desired outcome
-- likely product surface
-- obvious unknowns
+- target user or operator;
+- problem or job to solve;
+- desired outcome;
+- likely product surface;
+- obvious unknowns.
 
-If the initial request is too broad, start with scope, user, and success
-questions only. Do not ask detailed flow, rules, or acceptance questions until
-the upstream direction is stable.
+Start broad when the request is vague. Do not ask downstream detail before upstream choices are stable.
 
-### 2. Use A Top-Down Module Tree
+### 2. Move Top-Down
 
-Move through these modules in order. Skip modules that are irrelevant, but do
-not jump into lower-level details before their parent decisions are settled.
+Use these modules as needed:
 
 1. Product goal and success definition
-2. Users, roles, and real usage context
+2. Users, roles, and usage context
 3. Scope, non-goals, and launch slice
 4. Core scenarios and user journey
 5. Interaction model and information structure
-6. Rules, permissions, state lifecycle, and constraints
+6. Rules, permissions, lifecycle, and constraints
 7. Edge cases, empty states, errors, and recovery
-8. Content, data meaning, and user-facing terminology
-9. Acceptance criteria, review checklist, and open risks
+8. Content, data meaning, and terminology
+9. Acceptance criteria and open risks
 
 ### 3. Ask In Structured Rounds
 
-Each round should contain a small set of questions that share the same module
-or dependency layer. Prefer 3-6 questions per round only after the goal and
-scope are stable.
+Group questions by dependency layer. Prefer 3-6 questions only after goal and scope are stable; otherwise ask 1-2 highest-leverage questions.
 
-Use low-friction pacing:
+When a meaningful tradeoff exists, offer product-level A/B/C options, mark the recommended option with a short product reason, and allow a custom answer. Avoid disguising React/Vue, database, protocol, deployment, or library choices as product questions.
 
-- For vague initial briefs, mobile-style replies, or low-confidence users, ask
-  only 1-2 highest-leverage questions.
-- If the user answers partially, pause expansion and resolve the unanswered
-  blocker before adding new modules.
-- If the user asks for speed, reduce the next round to the smallest decision
-  set that unlocks progress.
+Partial answers are acceptable. Treat skipped or uncertain answers as open questions, not consent to the recommendation.
 
-Use this question format:
+### 4. Track Decisions Between Rounds
 
-```markdown
-1. <module>: <question>
-A. <direction or tradeoff> - <impact>
-B. <direction or tradeoff> - <impact>
-C. <direction or tradeoff> - <impact>
-Recommended: <A/B/C> - <product reason>
-Other: You can answer with a custom direction.
-```
+After each response:
 
-Tell the user they can answer compactly, for example:
+1. extract directly confirmed decisions;
+2. extract exceptions and constraints;
+3. keep unanswered or contradictory items open;
+4. identify what is now unlocked;
+5. ask the next dependent round.
 
-```text
-1B, 2 custom: admins can bypass this only for urgent cases, 3 unsure
-```
+When a custom answer mixes a decision and exception, restate the interpretation before relying on it.
 
-Partial answers are acceptable. Treat skipped or uncertain answers as open
-questions, not as consent to the recommended option.
+### 5. Decide Completion State
 
-Good options describe product choices:
+A PRD may be `Ready for implementation` only when blocking product decisions are resolved and acceptance criteria are sufficient to judge implementation behavior.
 
-- first-use simplicity vs expert control
-- strict workflow vs flexible workflow
-- user-visible transparency vs minimal interruption
-- manual confirmation vs automatic action
-- narrow launch scope vs broader complete flow
-- forgiving rules vs strict enforcement
-
-Bad options are implementation choices unless the user experience depends on
-them:
-
-- React vs Vue
-- Postgres vs SQLite
-- REST vs GraphQL
-- serverless vs container
-- which package or library to install
-
-### 4. Track Dependencies Between Rounds
-
-After each user response:
-
-1. Extract confirmed decisions.
-2. Extract exceptions or custom constraints.
-3. List unanswered, uncertain, or contradictory items as open questions.
-4. Identify which module is now unlocked.
-5. Ask the next dependent round, downshifting to 1-2 questions when ambiguity
-   remains high.
-
-Do not ask detailed questions whose answers depend on an unresolved earlier
-choice. Example: do not ask notification copy before deciding which events
-should notify users.
-
-When a custom answer mixes options and exceptions, restate it before relying on
-it:
-
-```text
-Decision I heard: <confirmed part>.
-Exception: <custom condition>.
-Still open: <what must be confirmed before the next module>.
-```
-
-### 5. Decide When Clarification Is Complete
-
-Clarification is complete when the agent can write a PRD that answers:
-
-- who the product is for
-- what problem it solves
-- what is in scope and out of scope
-- what the primary user journey is
-- what users see, choose, create, edit, confirm, or recover from
-- what rules and states govern the experience
-- what happens in important empty, error, and edge states
-- how the user and agent will know the implementation is correct
-- what the requester needs to review or confirm before implementation starts
-
-If high-impact decisions remain open, write the PRD as `Status: Draft` and list
-the unresolved decisions under `Open Questions`. Do not pretend the PRD is
-implementation-ready.
+If material decisions remain open, use `Status: Draft` and list them explicitly. Do not treat Draft status as authority for unresolved choices.
 
 ## PRD Document Contract
 
-Write the PRD in Markdown. Use this structure unless the user requests a
-different shape:
+Use this shape unless the repository already has a compatible PRD structure or the user asks for another format:
 
 ```markdown
 # PRD: <product or feature name>
@@ -198,6 +135,7 @@ different shape:
 - Updated: <YYYY-MM-DD>
 - Owner / requester: <name or unknown>
 - Source request: <one-sentence summary>
+- Product Authority: Confirmed Product Decisions section
 
 ## Requester Review Summary
 
@@ -207,69 +145,50 @@ different shape:
 - Status reason:
 
 ## 1. Background And Product Intent
-
 ## 2. Goals And Success Criteria
-
 ## 3. Users And Usage Context
-
 ## 4. Scope
-
 ### In Scope
-
 ### Out Of Scope
-
 ## 5. Core User Journey
-
 ## 6. Interaction And Information Design
-
 ## 7. Product Rules And State Logic
-
 ## 8. Edge Cases, Errors, And Recovery
-
 ## 9. Content And Terminology
-
 ## 10. Acceptance Criteria
-
 ## 11. Review Checklist And Sign-off Questions
+## Confirmed Product Decisions
 
-- <question the requester should verify before implementation>
+> PROTECTED USER-AUTHORITY SECTION
+> ...
 
-## 12. Clarification Decision Log
+| ID | Confirmed Decision | Must Do | Must Not Do | Rationale | Violation Signal | Confirmation | Status |
+|---|---|---|---|---|---|---|---|
 
-| Topic | Decision | Rationale | Source Round |
-|---|---|---|---|
-
-## 13. Open Questions And Risks
-
-## 14. Implementation Notes
+## 12. Open Questions And Risks
+## 13. Implementation Notes
 ```
 
-Keep `Implementation Notes` limited to product-driven constraints, such as
-privacy requirements, auditability, latency expectations, offline expectations,
-integration boundaries visible to users, or regulatory constraints. Do not turn
-the PRD into a technical design document.
+Keep `Implementation Notes` limited to product-driven constraints such as privacy, auditability, latency expectations, offline expectations, integration boundaries visible to users, or regulation. Do not turn the PRD into a technical design.
 
 ## Acceptance Criteria Style
 
-Write acceptance criteria from user-visible behavior:
+Prefer user-observable criteria:
 
 - Given <context>, when <action>, then <observable result>.
-- Include important empty, invalid, permission, cancellation, retry, and
-  recovery states.
-- Include review criteria for usability, ease of use, and ease of
-  understanding.
+- Cover important empty, invalid, permission, cancellation, retry, and recovery states.
+- Include usability and understandability where relevant.
 
 ## Supporting Reference
 
-When validating or calibrating handling for partial replies, custom choices, or
-overloaded users, use `references/interaction-fixtures.md`.
+Use `references/interaction-fixtures.md` when calibrating partial replies, custom choices, or overloaded users.
 
 ## Final Response
 
-When the PRD is produced, tell the user:
+When the PRD is produced, state:
 
-- where the PRD was written, or that it is inline
-- whether it is `Draft` or `Ready for implementation`
-- which product decisions remain open, if any
-- which exact items the requester should review or sign off
-- the next recommended step
+- where it was written or that it is inline;
+- whether it is Draft or Ready;
+- which product decisions remain open;
+- which exact items need requester sign-off;
+- the next recommended step.
