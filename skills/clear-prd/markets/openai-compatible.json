@@ -4,13 +4,13 @@
   "display_name": "Clear PRD",
   "description": "Clarifies product requirements through focused multi-round questions and writes a Draft or Ready PRD whose protected, directly user-confirmed material decisions can serve as canonical downstream product authority.",
   "release": {
-    "version": "1.0.0",
-    "published_at": "2026-06-02T05:20:31+08:00",
+    "version": "1.1.0",
+    "published_at": "2026-08-09T07:07:00+09:00",
     "publisher": "ceasarXuu",
     "changes": [
-      "Publish the initial clear-prd skill for product-first requirements clarification and Draft or Ready PRD generation.",
-      "Add low-friction pacing, partial-answer handling, requester review summary, and sign-off checklist requirements.",
-      "Add an interaction fixture for partial and custom-answer behavior."
+      "Preserve an existing repository PRD location before using the fallback prd/ path.",
+      "Add a protected directly user-confirmed material product decision section with stable PD IDs.",
+      "Make downstream engineering workflows reference canonical PRD decision IDs instead of copying product authority."
     ]
   },
   "source": {
