@@ -1,4 +1,4 @@
 version: 1
 display_name: Clear PRD
-short_description: Clarify product requirements through guided multi-round PRD questioning.
-default_prompt: Use $clear-prd to clarify this product request through multi-round product-logic questions, then write a Draft or Ready PRD based on unresolved decisions.
+short_description: Clarify product requirements and establish canonical product authority.
+default_prompt: Use $clear-prd to clarify this product request through focused multi-round product-logic questions, preserve the repository's existing PRD location when present, and write a Draft or Ready PRD. Record only directly user-confirmed material product decisions in the protected Confirmed Product Decisions section with stable PD IDs; Agent inference and user silence are not approval. Downstream engineering plans should reference those IDs instead of copying product authority into another document.
