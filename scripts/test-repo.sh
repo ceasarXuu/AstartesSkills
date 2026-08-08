@@ -46,8 +46,13 @@ if [[ "$skill_id" == "subagent-vs-review" ]]; then
 fi
 
 if [[ "$skill_id" == "clear-prd" ]]; then
-  log "checking clear-prd clarification contract"
+  log "checking clear-prd clarification and product-authority contract"
   "$repo_root/scripts/clear-prd-sanity.sh"
+fi
+
+if [[ "$skill_id" == "docs-manager" ]]; then
+  log "checking docs-manager adaptive governance contract"
+  "$repo_root/scripts/docs-manager-sanity.sh"
 fi
 
 if [[ "$skill_id" == "bug-killer" ]]; then
@@ -56,7 +61,7 @@ if [[ "$skill_id" == "bug-killer" ]]; then
 fi
 
 if [[ "$skill_id" == "se-good-plan" ]]; then
-  log "checking se-good-plan engineering plan contract"
+  log "checking se-good-plan engineering plan and product-authority contract"
   "$repo_root/scripts/se-good-plan-sanity.sh"
 fi
 
