@@ -96,6 +96,8 @@ PY
 
 python3 -m py_compile "$repo_root/scripts/se-good-plan-quality-sanity.py"
 python3 -m py_compile "$repo_root/scripts/se-good-plan-decision-sanity.py"
+python3 -m py_compile "$repo_root/scripts/se-good-plan-product-authority-sanity.py"
 python3 "$repo_root/scripts/se-good-plan-quality-sanity.py" "$repo_root"
 python3 "$repo_root/scripts/se-good-plan-decision-sanity.py" "$repo_root"
+python3 "$repo_root/scripts/se-good-plan-product-authority-sanity.py"
 echo "[se-good-plan-sanity] se-good-plan sanity passed"
