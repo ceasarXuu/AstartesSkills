@@ -4,12 +4,13 @@
   "display_name": "Docs Manager",
   "description": "Audits, organizes, migrates, and maintains repository documentation governance: source-of-truth ownership, links and indexes, archive lifecycle, stale references, and documentation drift, while preserving specialized PRD and engineering-plan contracts instead of imposing a fixed layout.",
   "release": {
-    "version": "1.0.0",
-    "published_at": "2026-06-16T05:54:01+08:00",
+    "version": "1.1.0",
+    "published_at": "2026-08-09T07:07:00+09:00",
     "publisher": "ceasarXuu",
     "changes": [
-      "Import the docs-manager skill from the global skill directory into AstartesSkills as a managed installable skill.",
-      "Package version document templates and the docs governance validation script with OpenAI-compatible marketplace metadata."
+      "Replace the fixed version-trio default with repository-adaptive documentation authority precedence.",
+      "Move PRD and engineering-plan semantics back to specialized artifact-owner workflows.",
+      "Make generic validation detect broken links and stale release references while retaining version-trio as an explicit opt-in profile."
     ]
   },
   "source": {
