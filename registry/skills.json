@@ -44,12 +44,12 @@
       "id": "clear-prd",
       "name": "Clear PRD",
       "path": "skills/clear-prd",
-      "summary": "Clarifies product requirements through guided multi-round questions focused on product logic, user experience, interaction design, rules, edge cases, and acceptance criteria, then writes a Draft or Ready PRD.",
+      "summary": "Clarifies product requirements through focused multi-round questions and writes a Draft or Ready PRD whose protected directly user-confirmed material decisions can serve as canonical downstream product authority.",
       "tags": [
         "prd",
         "requirements",
         "product-design",
-        "ux",
+        "product-authority",
         "clarification"
       ],
       "installable": true,
@@ -81,12 +81,12 @@
       "id": "docs-manager",
       "name": "Docs Manager",
       "path": "skills/docs-manager",
-      "summary": "Designs, reorganizes, audits, and maintains repository documentation systems with versioned PRDs, technical designs, engineering plans, link management, archive policy, and validation tooling.",
+      "summary": "Audits, organizes, migrates, and maintains repository documentation governance: source-of-truth ownership, links and indexes, archive lifecycle, stale references, and documentation drift while preserving specialized artifact contracts.",
       "tags": [
         "documentation",
         "docs-governance",
-        "prd",
-        "technical-design",
+        "source-of-truth",
+        "archive",
         "validation"
       ],
       "installable": true,
@@ -264,12 +264,12 @@
       "id": "se-good-plan",
       "name": "SE Good Plan",
       "path": "skills/se-good-plan",
-      "summary": "Writes and reviews phased, executable, independently verifiable, reviewable, rollback-aware software engineering plans with strict phase gates, plan-to-code completeness, benefit validation, and chain-state logging evidence for implementation, refactor, migration, rollout, bug-fix, performance, security, and DevOps work.",
+      "summary": "Writes and reviews concise executable engineering plans that reuse canonical PRD product authority when available, fall back to a protected local decision baseline only when needed, and enforce evidence-driven work units and phase decision audits.",
       "tags": [
         "software-engineering",
         "planning",
         "implementation-plan",
-        "review",
+        "product-authority",
         "rollout"
       ],
       "installable": true,
