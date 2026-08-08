@@ -4,14 +4,13 @@
   "display_name": "SE Good Plan",
   "description": "Writes and reviews concise executable engineering plans that reuse canonical PRD product authority when available, fall back to a protected local decision baseline only when needed, and enforce evidence-driven work units, phase decision audits, and rollback-aware execution.",
   "release": {
-    "version": "1.4.0",
-    "published_at": "2026-06-29T18:12:21+08:00",
+    "version": "1.5.0",
+    "published_at": "2026-08-09T07:07:00+09:00",
     "publisher": "ceasarXuu",
     "changes": [
-      "Require every Standard and Full plan phase to be independently verifiable before the next phase starts.",
-      "Forbid inverted phase dependencies where a later phase is needed to close an earlier phase.",
-      "Require each phase gate to record completion status, residual risk, user approval status, and a proceed or pause decision.",
-      "Add strict phase-gate fixtures, exemplar coverage, and sanity checks."
+      "Use an existing canonical PRD's directly confirmed product decisions as the preferred Product Authority Source.",
+      "Create fallback decisions.md only when suitable canonical PRD authority is unavailable, preventing duplicate product sources of truth.",
+      "Keep phase Product Decision Delta audits and engineering evidence gates while making authority-source selection explicit in plan.md."
     ]
   },
   "source": {
