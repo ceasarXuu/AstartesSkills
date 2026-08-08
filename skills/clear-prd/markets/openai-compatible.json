@@ -2,7 +2,7 @@
   "version": 1,
   "market": "openai-compatible",
   "display_name": "Clear PRD",
-  "description": "Clarifies product requirements through guided multi-round questions focused on product logic, user experience, interaction design, rules, edge cases, and acceptance criteria, then writes a Draft or Ready PRD.",
+  "description": "Clarifies product requirements through focused multi-round questions and writes a Draft or Ready PRD whose protected, directly user-confirmed material decisions can serve as canonical downstream product authority.",
   "release": {
     "version": "1.0.0",
     "published_at": "2026-06-02T05:20:31+08:00",
