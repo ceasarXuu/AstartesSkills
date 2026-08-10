@@ -33,7 +33,10 @@ An ordinary PRD without protected directly confirmed rows is context, not hard a
 - Engineering evidence may revise this plan, not silently rewrite product authority.
 - Unconfirmed material choices are deferred, provisional, or user-confirmed.
 - Audit the Product Decision Delta after every material phase.
-- `provisional` or `conflict` blocks dependent continuation until resolved.
+- Before every material phase, rebase remaining work against actual completed implementation and evidence.
+- Do not start a Phase while its Pre-Phase Plan Rebase Gate is `pending` or `blocked-on-plan-approval`.
+- A material Plan Delta requires explicit user approval before the approved revision is executed.
+- `provisional` or `conflict` product decisions block dependent continuation until resolved.
 
 ## Design
 
@@ -120,6 +123,79 @@ Classifications:
 - `provisional`: temporary unconfirmed behavior;
 - `conflict`: behavior conflicts with active authority.
 
+## Pre-Phase Plan Rebase Gate
+
+Every material Phase contains its own persisted gate so execution does not depend on rereading the skill.
+
+Initial authoring shape:
+
+```markdown
+### Phase 2: Roll Out New Path
+
+#### Pre-Phase Plan Rebase Gate
+
+- Rebase scope: completed implementation + remaining plan
+- Material plan delta: pending
+- Plan delta record: pending
+- User approval: pending-if-material
+- Gate status: pending
+
+- Entry condition: ...
+- Applicable decisions: PD1, PD2
+- Work units: W4, W5
+- Phase-local evidence: ...
+- Product decision delta review: required
+- Cross-unit side effects: ...
+- Next-phase condition: ...
+```
+
+Before execution, inspect completed code, configuration, schemas, documentation, tests, dependency behavior, and verified runtime evidence that can affect remaining work. Compare them with remaining Design, Work Units, Phase assumptions, dependencies, verification, sequencing, Benefit, Side Effects, cost, and risk.
+
+No material change:
+
+```markdown
+- Material plan delta: none
+- Plan delta record: not-required
+- User approval: not-required
+- Gate status: ready
+```
+
+Material change awaiting approval:
+
+```markdown
+- Material plan delta: material
+- Plan delta record: R2
+- User approval: required-pending
+- Gate status: blocked-on-plan-approval
+```
+
+After direct approval and application of the approved revision:
+
+```markdown
+- Material plan delta: material
+- Plan delta record: R2
+- User approval: user-approved-plan-direct: <specific approval>
+- Gate status: ready
+```
+
+A material Plan Delta includes a changed design direction, scope, module/data/API boundary, product behavior, material Work Unit set, dependency/order, verification strategy, release/rollback, Benefit, Side Effects, cost, or risk. Local private implementation details that do not change downstream plan inputs are non-material.
+
+## Plan Delta History
+
+Record only when a material Plan Delta exists:
+
+```markdown
+## Plan Delta History
+
+| ID | Before Phase | Previous Plan | Current Fact | Proposed Change | Impact | User Approval | Status |
+|---|---|---|---|---|---|---|---|
+| R2 | Phase 2 | W4 adds a routing adapter before rollout | Phase 1 proved the existing router exposes the required selector | Remove W4 and retarget W5 to the existing router | Less code; W5 verification target changes | user-approved-plan-direct: approve R2 | approved-applied |
+```
+
+Record the proposal before asking for approval. While approval is pending, keep the gate `blocked-on-plan-approval` and do not execute the Phase. After approval, update the canonical Design/Work Units/Phases, preserve this history row, then mark the gate `ready`.
+
+If the implementation conflicts with active Product Authority, resolve the product-decision conflict first. Do not use Plan Rebase to reinterpret product intent.
+
 ## Authority Change Proposal
 
 ```markdown
@@ -148,6 +224,8 @@ Only after direct user confirmation may the active authority row change.
 |---|---|---|---|---|---|---|---|
 ```
 
+Phase Reconciliation closes the completed phase. The next material Phase still runs its own Pre-Phase Plan Rebase Gate against the latest actual state and all remaining work.
+
 ## Minimum Necessary Construction
 
 Ask in order:
@@ -169,5 +247,7 @@ Reject speculative frameworks, unmeasured infrastructure, incidental refactors, 
 | user did not object | pending; silence is not approval |
 | current code already does this | observed implementation, not product authority |
 | copy PRD decisions into baseline | reference canonical PRD decision IDs |
-| follow the plan | reconcile evidence, authority, and phase delta first |
+| follow the plan | reconcile completed evidence, then rebase remaining work before the next Phase |
+| plan still looks fine | cite current implementation evidence and the remaining-plan comparison |
+| update the plan | record the Plan Delta, obtain required approval, then apply the approved revision |
 | validate feasibility | assumption, threshold, budget, isolation, stop |

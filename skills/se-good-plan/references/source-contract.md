@@ -92,8 +92,10 @@ Every formal `plan.md` contains a short `## Execution Contract` that survives lo
 - engineering evidence may revise the technical plan, not product authority;
 - unconfirmed material choices are deferred, provisional, or user-confirmed;
 - every material phase performs a bounded Product Decision Delta audit;
-- delta classifications are `covered`, `engineering-only`, `provisional`, or `conflict`;
-- unresolved material `provisional` or `conflict` blocks dependent continuation.
+- before every material phase, the remaining plan is rebased against actual completed implementation and evidence;
+- a material Phase cannot start while its Pre-Phase Plan Rebase Gate is `pending` or `blocked-on-plan-approval`;
+- material Plan Delta requires a recorded proposal and explicit user approval before the approved revision is applied and dependent implementation continues;
+- unresolved material product `provisional` or `conflict` blocks dependent continuation.
 
 ## Executable Closed-Loop Unit Contract
 
@@ -137,11 +139,47 @@ A material `provisional` or `conflict` blocks dependent downstream work until th
 
 ## Phase Reconciliation Contract
 
-After every material phase in Execution Tracking and before the next phase, reconcile new evidence, affected assumptions/conclusions, product-authority impact, downstream plan changes, plan validity, and next action. Authority conflict or unresolved Product Decision Delta cannot continue unchanged.
+After every material phase in Execution Tracking, reconcile new evidence, affected assumptions/conclusions, product-authority impact, downstream plan changes, plan validity, and next action. Authority conflict or unresolved Product Decision Delta cannot continue unchanged.
+
+Phase Reconciliation describes what the completed phase changed. It does not by itself authorize the next phase to start.
+
+## Pre-Phase Plan Rebase Contract
+
+Before **every material Phase**, the Phase itself contains and runs a persisted `#### Pre-Phase Plan Rebase Gate` in `plan.md`.
+
+The gate compares the current implemented state produced by completed phases with **all remaining planned work**. Relevant evidence includes code, configuration, schemas, documentation, tests, dependency behavior, and verified runtime evidence as applicable. The comparison covers remaining Design, Work Units, Phase assumptions, dependencies, verification, sequencing, Benefit, Side Effects, cost, and risk.
+
+A Phase gate records:
+
+```markdown
+- Rebase scope: completed implementation + remaining plan
+- Material plan delta: pending | none | material
+- Plan delta record: pending | not-required | <delta ID>
+- User approval: pending-if-material | not-required | required-pending | user-approved-plan-direct: ...
+- Gate status: pending | ready | blocked-on-plan-approval
+```
+
+Rules:
+
+- `pending` means the latest completed implementation has not yet been compared with the remaining plan; the Phase cannot start.
+- `none` means current facts still support the remaining plan; user approval is `not-required` and the gate may become `ready`.
+- `material` means the remaining plan materially changes in design direction, scope, module/data/API boundary, product behavior, material Work Units, dependencies/order, verification strategy, release/rollback, Benefit, Side Effects, cost, or risk.
+- A material Plan Delta is first recorded as a proposal with previous plan, current fact, proposed change, and impact; the gate becomes `blocked-on-plan-approval`.
+- The Agent cannot self-approve a material Plan Delta. `ready` after a material delta requires `user-approved-plan-direct:` evidence for that specific revision.
+- After direct approval, apply the approved revision to the canonical `plan.md` and preserve the Plan Delta history before execution.
+- Local implementation-detail changes that do not alter downstream plan inputs are not material and do not require approval.
+- If current implementation conflicts with Product Authority, resolve the product-authority conflict first; do not rebase product authority to match code.
+
+A compact Plan Delta history may use:
+
+```markdown
+| ID | Before Phase | Previous Plan | Current Fact | Proposed Change | Impact | User Approval | Status |
+|---|---|---|---|---|---|---|---|
+```
 
 ## Plan Revision Traceability Contract
 
-Plan updates preserve prior conclusions and evidence history. Product-authority updates preserve prior confirmed decision history. Silent history rewriting is invalid.
+Plan updates preserve prior conclusions and evidence history. Material Plan Delta preserves the previous plan claim, current fact, approved change, and approval evidence. Product-authority updates preserve prior confirmed decision history. Silent history rewriting is invalid.
 
 ## State Separation Contract
 
@@ -149,6 +187,7 @@ Plan updates preserve prior conclusions and evidence history. Product-authority 
 - Pre-investment validation: `planned`, `direction-supported`, `direction-rejected`, `inconclusive`, `budget-exhausted`.
 - Execution Tracking: `not-started`, `in-progress`, `verified`, `blocked`, `failed`, `rolled-back`.
 - Plan validity: `valid`, `valid-with-qualifications`, `needs-revision`, `invalidated`.
+- Pre-Phase Plan Rebase Gate: `pending`, `ready`, `blocked-on-plan-approval`.
 - Product decisions: `active`, `superseded`.
 - Discovery/design artifacts: `planned`, `drafted`, `reviewed`, `verified`.
 - Code implementation: `planned`, `implemented`, `integrated`, `runtime-verified`.
@@ -166,6 +205,10 @@ Tests should reject at least:
 - a fallback baseline row without direct user confirmation;
 - a plan missing Execution Contract, Design, or Work Units;
 - a material phase with no Product Decision Delta audit;
-- continued dependent work after material `provisional` or `conflict`;
+- a multi-phase plan whose material Phase lacks a persisted Pre-Phase Plan Rebase Gate;
+- a Phase starting while its rebase gate is `pending` or `blocked-on-plan-approval`;
+- a material Plan Delta marked `ready` without direct user approval;
+- a material Plan Delta applied or executed without preserving its change/approval history;
+- continued dependent work after material product `provisional` or `conflict`;
 - vague/coupled work units, generic Benefits, incomplete Side Effects;
-- shadow validation, stale-plan continuation, or silent authority rewriting.
+- shadow validation, stale-plan continuation, or silent authority/plan rewriting.
