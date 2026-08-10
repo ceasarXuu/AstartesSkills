@@ -15,8 +15,10 @@
 - Verified engineering evidence may revise this plan, not silently rewrite user-confirmed product intent.
 - New material product choices are deferred, provisional, or user-confirmed; they are never silently finalized.
 - After every material phase, audit only the Product Decision Delta introduced by that phase.
-- Classify each delta as `covered`, `engineering-only`, `provisional`, or `conflict`.
-- Dependent work cannot continue while a material `provisional` or `conflict` remains unresolved.
+- Before every material phase, rebase remaining work against actual completed implementation and evidence.
+- Do not start a Phase while its Pre-Phase Plan Rebase Gate is `pending` or `blocked-on-plan-approval`.
+- Material Plan Delta requires explicit direct user approval before the approved revision is applied and executed.
+- Dependent work cannot continue while a material product `provisional` or `conflict` remains unresolved.
 
 ## Problem And Target
 
@@ -59,6 +61,14 @@ introduced.
 
 ### Phase 0: Bound The Migration
 
+#### Pre-Phase Plan Rebase Gate
+
+- Rebase scope: completed implementation + remaining plan
+- Material plan delta: pending
+- Plan delta record: pending
+- User approval: pending-if-material
+- Gate status: pending
+
 - Entry condition: V1 is direction-supported and repository plus route telemetry are available
 - Applicable decisions: D1, D2
 - Work units: W0
@@ -68,6 +78,14 @@ introduced.
 - Next-phase condition: no unknown caller can silently bypass compatibility
 
 ### Phase 1: Build A Reversible Path
+
+#### Pre-Phase Plan Rebase Gate
+
+- Rebase scope: completed implementation + remaining plan
+- Material plan delta: pending
+- Plan delta record: pending
+- User approval: pending-if-material
+- Gate status: pending
 
 - Entry condition: compatibility design is reviewed
 - Applicable decisions: D1, D2
@@ -79,6 +97,14 @@ introduced.
 
 ### Phase 2: Move And Observe Traffic
 
+#### Pre-Phase Plan Rebase Gate
+
+- Rebase scope: completed implementation + remaining plan
+- Material plan delta: pending
+- Plan delta record: pending
+- User approval: pending-if-material
+- Gate status: pending
+
 - Entry condition: reconciled evidence still supports v2 rollout and remains aligned with D1 and D2
 - Applicable decisions: D1, D2
 - Work units: W3
@@ -88,6 +114,14 @@ introduced.
 - Next-phase condition: selected caller group meets the observation gate and evidence is reconciled before broader movement
 
 ### Phase 3: Cleanup
+
+#### Pre-Phase Plan Rebase Gate
+
+- Rebase scope: completed implementation + remaining plan
+- Material plan delta: pending
+- Plan delta record: pending
+- User approval: pending-if-material
+- Gate status: pending
 
 - Entry condition: reconciled evidence shows all callers migrated and old route has zero traffic for the required window
 - Applicable decisions: D1
