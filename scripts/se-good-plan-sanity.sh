@@ -2,7 +2,7 @@
 
 set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-echo "[se-good-plan-sanity] checking single product authority, bounded validation, and decision-delta controls"
+echo "[se-good-plan-sanity] checking product authority, decision delta, and pre-phase plan rebase controls"
 
 python3 - <<'PY' "$repo_root"
 import re
@@ -51,6 +51,10 @@ for needle in [
     "blocked-on-user-decision",
     "Product Decision Delta",
     "covered", "engineering-only", "provisional", "conflict",
+    "Pre-Phase Plan Rebase Gate",
+    "blocked-on-plan-approval",
+    "user-approved-plan-direct:",
+    "completed implementation + remaining plan",
     "Minimum Sufficient Pre-Investment Validation",
     "Evidence And Product Authority",
 ]:
@@ -79,17 +83,24 @@ for forbidden in [
         fail(f"obsolete duplicated-authority contract remains: {forbidden}")
 
 for needle in [
-    "one protected product authority source",
+    "protected product authority",
     "prefer an existing canonical PRD",
     "Never copy canonical PRD decisions into fallback authority",
     "Product Decision Delta",
+    "Pre-Phase Plan Rebase Gate",
+    "blocked-on-plan-approval",
+    "explicit direct user approval",
 ]:
     require(texts["agent"], needle, "agents/openai.yaml")
 
 for name in ["artifact_plan", "exemplar"]:
     require(texts[name], "## Execution Contract", name)
+    require(texts[name], "Before every material phase", name)
+    require(texts[name], "Pre-Phase Plan Rebase Gate", name)
 if "## Design" not in texts["artifact_plan"] or "## Work Units" not in texts["artifact_plan"]:
     fail("valid fallback plan fixture lacks Design or Work Units")
+if "#### Pre-Phase Plan Rebase Gate" not in texts["exemplar"]:
+    fail("multi-phase exemplar lacks persisted per-Phase rebase gate")
 
 print("[se-good-plan-sanity] static contract checks passed")
 PY
@@ -97,7 +108,9 @@ PY
 python3 -m py_compile "$repo_root/scripts/se-good-plan-quality-sanity.py"
 python3 -m py_compile "$repo_root/scripts/se-good-plan-decision-sanity.py"
 python3 -m py_compile "$repo_root/scripts/se-good-plan-product-authority-sanity.py"
+python3 -m py_compile "$repo_root/scripts/se-good-plan-phase-rebase-sanity.py"
 python3 "$repo_root/scripts/se-good-plan-quality-sanity.py" "$repo_root"
 python3 "$repo_root/scripts/se-good-plan-decision-sanity.py" "$repo_root"
 python3 "$repo_root/scripts/se-good-plan-product-authority-sanity.py"
+python3 "$repo_root/scripts/se-good-plan-phase-rebase-sanity.py" "$repo_root"
 echo "[se-good-plan-sanity] se-good-plan sanity passed"
