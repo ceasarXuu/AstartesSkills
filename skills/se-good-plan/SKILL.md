@@ -1,13 +1,13 @@
 ---
 name: se-good-plan
-description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces concise executable plans that reuse canonical PRD product authority when available and fall back to a protected local decision baseline only when needed.
+description: Use when the user asks for a software engineering plan, implementation plan, refactor plan, migration plan, rollout plan, bug-fix plan, performance optimization plan, security change plan, DevOps / CI/CD plan, technical execution plan, or review of an existing engineering plan. Produces concise executable plans that reuse canonical PRD product authority when available, keep unresolved product choices outside authority, and rebase remaining work on actual implementation before each material phase.
 ---
 
 # SE Good Plan
 
 ## Purpose
 
-Write or review engineering plans that are directly executable, proportionate to the problem, constrained by user-confirmed product intent, and updated by real evidence rather than followed mechanically.
+Write or review engineering plans that are directly executable, proportionate to the problem, constrained by user-confirmed product intent, and continuously rebased on verified implementation facts rather than followed mechanically.
 
 ## Product Authority First
 
@@ -99,8 +99,10 @@ Every formal `plan.md` must persist a short `## Execution Contract` stating at l
 - verified engineering evidence may revise `plan.md`, not silently rewrite product authority;
 - new material product choices are deferred, provisional, or user-confirmed;
 - after every material phase, audit only that phase's Product Decision Delta;
-- classify each delta as `covered`, `engineering-only`, `provisional`, or `conflict`;
-- dependent work cannot continue while a material `provisional` or `conflict` remains unresolved.
+- before every material phase, rebase the remaining plan against actual completed implementation and evidence;
+- a phase must not start while its `Pre-Phase Plan Rebase Gate` is `pending` or `blocked-on-plan-approval`;
+- material plan changes require a recorded Plan Delta and explicit user approval before the approved revision is applied and dependent implementation continues;
+- unresolved material `provisional` or `conflict` product decisions also block dependent continuation.
 
 ## Executable Work Units
 
@@ -164,6 +166,39 @@ Classifications:
 
 A material `provisional` or `conflict` blocks dependent downstream work until the user confirms the product outcome.
 
+## Pre-Phase Plan Rebase
+
+Before **every material Phase**, rebase the remaining plan on the actual state produced so far. This gate lives in `plan.md`; do not rely on rereading this skill.
+
+Inspect the completed-phase outputs relevant to remaining work, including code, configuration, schemas, documentation, tests, and verified runtime evidence as applicable. Compare them against the remaining Design, Work Units, Phase assumptions, dependencies, verification, and sequencing.
+
+Classify the result:
+
+- `none`: current facts still support the remaining plan; record `User approval: not-required` and set the gate `ready`;
+- `material`: design direction, scope, module/data/API boundary, product behavior, material Work Units, dependencies/order, verification strategy, release/rollback, Benefit, Side Effects, cost, or risk materially changed.
+
+For a material Plan Delta:
+
+1. record the previous plan, current fact, proposed change, and impact in `plan.md`;
+2. set the affected Phase gate to `blocked-on-plan-approval` and do not start it;
+3. obtain explicit user approval for the specific revised plan; Agent self-approval is invalid;
+4. apply the approved revision to the canonical `plan.md`, preserving the Plan Delta history;
+5. mark `User approval: user-approved-plan-direct: ...` and the gate `ready`;
+6. execute only the rebased approved plan.
+
+Local implementation detail changes that do not alter downstream plan inputs are not material and do not require user approval.
+
+If current implementation conflicts with Product Authority, do not rebase authority to match the code. Route through the product-decision conflict flow first, then rebase the engineering plan.
+
+Use these gate states only: `pending`, `ready`, `blocked-on-plan-approval`.
+
+A compact material-delta history may use:
+
+```markdown
+| ID | Before Phase | Previous Plan | Current Fact | Proposed Change | Impact | User Approval | Status |
+|---|---|---|---|---|---|---|---|
+```
+
 ## Plan State Models
 
 Keep these separate:
@@ -172,6 +207,7 @@ Keep these separate:
 - Pre-investment validation: `planned`, `direction-supported`, `direction-rejected`, `inconclusive`, `budget-exhausted`.
 - Execution Tracking: `not-started`, `in-progress`, `verified`, `blocked`, `failed`, `rolled-back`.
 - Plan validity: `valid`, `valid-with-qualifications`, `needs-revision`, `invalidated`.
+- Pre-Phase Plan Rebase Gate: `pending`, `ready`, `blocked-on-plan-approval`.
 - Product decisions: `active`, `superseded`.
 - Discovery/design artifacts: `planned`, `drafted`, `reviewed`, `verified`.
 - Code implementation: `planned`, `implemented`, `integrated`, `runtime-verified`.
@@ -217,15 +253,27 @@ If unresolved material choices exist:
 
 ### 5. Group Into Phases Only When Useful
 
-Each phase has entry conditions, applicable decisions, work units, phase-local evidence, Product Decision Delta review, cross-unit side effects, and a next-phase condition.
+Each material phase contains its own `#### Pre-Phase Plan Rebase Gate` with:
 
-### 6. Reconcile Before Continuing
+```markdown
+- Rebase scope: completed implementation + remaining plan
+- Material plan delta: pending | none | material
+- Plan delta record: pending | not-required | <delta ID>
+- User approval: pending-if-material | not-required | required-pending | user-approved-plan-direct: ...
+- Gate status: pending | ready | blocked-on-plan-approval
+```
 
-After a material phase, record the bounded Product Decision Delta, then reconcile new evidence against technical assumptions and product authority. A material `provisional` or `conflict` cannot proceed unchanged.
+Then record entry conditions, applicable decisions, work units, phase-local evidence, Product Decision Delta review, cross-unit side effects, and next-phase condition.
+
+### 6. Reconcile And Rebase Before Continuing
+
+After a material phase, record its bounded Product Decision Delta and reconcile new evidence. Before the next material phase, run that phase's Pre-Phase Plan Rebase Gate against the **current implemented state and all remaining plan work**.
+
+A material Plan Delta requires user approval before the revision becomes executable. A material product `provisional` or `conflict` requires product confirmation first. Neither may continue unchanged.
 
 ## Reviewing Existing Plans
 
-Lead with findings. Check for duplicated product authority, Agent-authored authority, missing Product Authority metadata, unresolved product choices embedded silently in design/code, missing phase delta audit, continued work after provisional/conflict, vague or oversized units, speculative construction, shadow validation, stale-plan continuation, mixed states, and unsupported facts.
+Lead with findings. Check for duplicated product authority, Agent-authored authority, missing Product Authority metadata, unresolved product choices embedded silently in design/code, missing Product Decision Delta audit, a material Phase without a persisted Pre-Phase Plan Rebase Gate, stale remaining work not compared with actual implementation, material plan revisions without direct user approval, continued work while a rebase gate is pending/blocked, vague or oversized units, speculative construction, shadow validation, mixed states, and unsupported facts.
 
 ## Output Quality Checklist
 
@@ -238,4 +286,6 @@ Lead with findings. Check for duplicated product authority, Agent-authored autho
 - [ ] Units are concrete, minimum-necessary, beneficial, side-effect-aware, and stoppable.
 - [ ] Critical uncertainty is validated before disproportionate investment.
 - [ ] Every material phase performs bounded Product Decision Delta audit.
-- [ ] `provisional` / `conflict` blocks dependent continuation until user confirmation.
+- [ ] Every material phase persists and passes its Pre-Phase Plan Rebase Gate before execution.
+- [ ] Material Plan Delta is directly user-approved before the approved revision is executed.
+- [ ] `provisional` / `conflict` product decisions block dependent continuation until user confirmation.
