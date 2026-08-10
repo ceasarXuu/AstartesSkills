@@ -13,8 +13,10 @@
 - Verified engineering evidence may revise this plan, not silently rewrite user-confirmed product intent.
 - New material product choices are deferred, provisional, or user-confirmed; they are never silently finalized.
 - After every material phase, audit only the Product Decision Delta introduced by that phase.
-- Classify each delta as `covered`, `engineering-only`, `provisional`, or `conflict`.
-- Dependent work cannot continue while a material `provisional` or `conflict` remains unresolved.
+- Before every material phase, rebase remaining work against actual completed implementation and evidence.
+- Do not start a Phase while its Pre-Phase Plan Rebase Gate is `pending` or `blocked-on-plan-approval`.
+- Material Plan Delta requires explicit direct user approval before the approved revision is applied and executed.
+- Dependent work cannot continue while a material product `provisional` or `conflict` remains unresolved.
 
 ## Design
 
