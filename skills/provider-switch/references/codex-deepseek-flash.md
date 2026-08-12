@@ -30,7 +30,7 @@ python3 scripts/install_codex_deepseek.py --open-editor
 
 The installer downloads the official DeepSeek setup script as data, extracts its `models.json` payload without executing the script, validates the expected model entries, and writes dedicated side-load files atomically.
 
-On the first install, replace `<YOUR_DEEPSEEK_API_KEY>` in the opened config. On later updates, the installer preserves an existing non-placeholder bearer token.
+On the first install, replace `<YOUR_DEEPSEEK_API_KEY>` in the opened config. On later updates, the installer preserves an existing non-placeholder bearer token and does not open the editor.
 
 Launch with:
 

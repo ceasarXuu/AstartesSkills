@@ -1,6 +1,6 @@
 # Claude Code + DeepSeek V4 Flash
 
-Use this package to add an independent `claude-ds-flash` entry where the main model, Claude model aliases, fast model, and subagent model all use `deepseek-v4-flash`. The existing `claude-ds` Pro/Flash profile remains unchanged.
+Use this package to add an independent `claude-ds-flash` entry where the main model, Claude model aliases, fast model, and subagent model all use `deepseek-v4-flash`. The existing `claude-ds-pro` Pro/Flash profile and its legacy `claude-ds` alias remain unchanged.
 
 ## Verify before every install
 
@@ -19,7 +19,7 @@ ${HOME}/.claude/provider-switch/deepseek-flash.settings.json
 ${HOME}/.local/bin/claude-ds-flash
 ```
 
-The installer does not modify `claude-ds`, `${HOME}/.claude/settings.json`, project settings, or Claude Code's credential store.
+The installer does not modify `claude-ds-pro`, `claude-ds`, `${HOME}/.claude/settings.json`, project settings, or Claude Code's credential store.
 
 ## Install
 
@@ -70,5 +70,5 @@ For a real smoke request, obtain user authorization for possible provider cost a
 
 - Backups: `${HOME}/.claude/provider-switch-backups/<timestamp>/`.
 - Restore a changed managed file from its matching backup.
-- To stop using the profile, run `claude-ds` or ordinary `claude`.
+- To stop using the profile, run `claude-ds-pro`, its `claude-ds` compatibility alias, or ordinary `claude`.
 - To remove only this profile safely, move `deepseek-flash.settings.json` and `claude-ds-flash` to a backup directory or system trash.

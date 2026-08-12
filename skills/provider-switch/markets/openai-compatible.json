@@ -4,13 +4,13 @@
   "display_name": "Provider Switch",
   "description": "Safely manage reversible coding-agent and model-provider configurations.",
   "release": {
-    "version": "1.4.0",
-    "published_at": "2026-08-07T00:14:13+08:00",
+    "version": "1.5.0",
+    "published_at": "2026-08-13T04:41:17+08:00",
     "publisher": "ceasarXuu",
     "changes": [
-      "Set CLAUDE_CODE_AUTO_COMPACT_WINDOW=700000 in both Claude DeepSeek profiles so long sessions reserve room for auto-compaction before the 1M hard limit.",
-      "Explicitly retain CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 in both dedicated settings while leaving ordinary Claude and global settings unchanged.",
-      "Add test-first configuration coverage and document the effective scope, official semantics, recovery path, and residual context-overflow risk."
+      "Add a dedicated codex-ds-pro profile for the official deepseek-v4-pro Responses endpoint with max reasoning and sibling-key reuse.",
+      "Expose claude-ds-pro as the primary command for the official DeepSeek V4 Pro/Flash Claude Code mapping while retaining claude-ds as a compatibility alias.",
+      "Document official model identifiers, authentication boundaries, YOLO permissions, validation, and rollback for both Pro launchers."
     ]
   },
   "source": {

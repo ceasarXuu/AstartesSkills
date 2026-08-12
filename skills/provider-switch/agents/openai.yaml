@@ -1,4 +1,4 @@
 interface:
   display_name: "Provider Switch"
   short_description: "Safely manage agent and model provider configurations."
-  default_prompt: "Use $provider-switch to install or switch a cataloged Agent/Provider profile, preserve login and credential boundaries, and report dedicated YOLO permissions plus any profile-scoped context guardrails."
+  default_prompt: "Use $provider-switch to install or switch a cataloged Agent/Provider profile such as codex-ds-pro or claude-ds-pro, preserve login and credential boundaries, and report dedicated YOLO permissions plus any profile-scoped context guardrails."

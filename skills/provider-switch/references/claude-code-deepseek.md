@@ -1,6 +1,6 @@
-# Claude Code + DeepSeek
+# Claude Code + DeepSeek V4 Pro
 
-Use this package to add a temporary `claude-ds` entry while preserving Claude Code's global settings and saved claude.ai login.
+Use this package to add a temporary `claude-ds-pro` entry while preserving Claude Code's global settings and saved claude.ai login. The legacy `claude-ds` command remains an identical compatibility alias.
 
 ## Verify before every install
 
@@ -17,6 +17,7 @@ The package was initially verified with Claude Code `2.1.218`, which is therefor
 
 ```text
 ${HOME}/.claude/provider-switch/deepseek.settings.json
+${HOME}/.local/bin/claude-ds-pro
 ${HOME}/.local/bin/claude-ds
 ```
 
@@ -37,10 +38,10 @@ The installer bounds `claude --version` detection to 10 seconds. If the CLI star
 Launch with:
 
 ```bash
-claude-ds
+claude-ds-pro
 ```
 
-Additional arguments are forwarded unchanged after the wrapper's built-in `--dangerously-skip-permissions` flag. Every `claude-ds` session therefore starts in `bypassPermissions` mode, logs `mode=yolo`, and executes tool calls without permission prompts or normal safety checks. Use this dedicated command only in trusted workspaces or isolated containers/VMs. Ordinary `claude` remains unchanged. Claude Code may reject bypass mode under root/sudo or when organization managed settings disable it; the wrapper does not silently fall back.
+Additional arguments are forwarded unchanged after the wrapper's built-in `--dangerously-skip-permissions` flag. Every `claude-ds-pro` or `claude-ds` session therefore starts in `bypassPermissions` mode, logs `mode=yolo`, and executes tool calls without permission prompts or normal safety checks. Use these dedicated commands only in trusted workspaces or isolated containers/VMs. Ordinary `claude` remains unchanged. Claude Code may reject bypass mode under root/sudo or when organization managed settings disable it; the wrapper does not silently fall back.
 
 For a separate profile that uses V4 Flash for the main model and every submodel, read [claude-code-deepseek-flash.md](claude-code-deepseek-flash.md) and install `claude-ds-flash`. The two profiles coexist and do not overwrite each other's settings.
 
@@ -70,8 +71,8 @@ Run static checks without spending provider tokens:
 
 ```bash
 python3 -m json.tool "${HOME}/.claude/provider-switch/deepseek.settings.json" >/dev/null
-sh -n "${HOME}/.local/bin/claude-ds"
-rg -q -- '--dangerously-skip-permissions' "${HOME}/.local/bin/claude-ds"
+sh -n "${HOME}/.local/bin/claude-ds-pro"
+rg -q -- '--dangerously-skip-permissions' "${HOME}/.local/bin/claude-ds-pro"
 claude auth status
 ```
 

@@ -5,11 +5,14 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 skill_dir="$repo_root/skills/provider-switch"
 installer="$skill_dir/scripts/install_codex_deepseek.py"
+pro_installer="$skill_dir/scripts/install_codex_deepseek_pro.py"
 claude_installer="$skill_dir/scripts/install_claude_deepseek.py"
 claude_flash_installer="$skill_dir/scripts/install_claude_deepseek_flash.py"
 catalog="$skill_dir/assets/providers.json"
 config_asset="$skill_dir/assets/codex-deepseek-flash.config.toml"
+pro_config_asset="$skill_dir/assets/codex-deepseek-pro.config.toml"
 wrapper_asset="$skill_dir/assets/codex-ds-flash"
+pro_wrapper_asset="$skill_dir/assets/codex-ds-pro"
 claude_settings_asset="$skill_dir/assets/claude-code-deepseek.settings.json"
 claude_flash_settings_asset="$skill_dir/assets/claude-code-deepseek-flash.settings.json"
 claude_wrapper_asset="$skill_dir/assets/claude-ds"
@@ -46,6 +49,7 @@ for item in data["providers"]:
     assert (skill_dir / item["installer"]).is_file()
 assert len(ids) == len(set(ids))
 assert "codex-deepseek-flash" in ids
+assert "codex-deepseek-pro" in ids
 assert "claude-code-deepseek" in ids
 assert "claude-code-deepseek-flash" in ids
 PY
@@ -53,8 +57,14 @@ PY
 if rg -q '^(preferred_auth_method|forced_login_method)[[:space:]]*=' "$config_asset"; then
   fail "provider config must not contain global login-policy fields"
 fi
+if rg -q '^(preferred_auth_method|forced_login_method)[[:space:]]*=' "$pro_config_asset"; then
+  fail "Pro provider config must not contain global login-policy fields"
+fi
 rg -q '^requires_openai_auth[[:space:]]*=[[:space:]]*false$' "$config_asset"
+rg -q '^model[[:space:]]*=[[:space:]]*"deepseek-v4-pro"$' "$pro_config_asset"
+rg -q '^model_reasoning_effort[[:space:]]*=[[:space:]]*"max"$' "$pro_config_asset"
 rg -q '^exec codex -p deepseek-flash --dangerously-bypass-approvals-and-sandbox "\$@"$' "$wrapper_asset"
+rg -q '^exec codex -p deepseek-pro --dangerously-bypass-approvals-and-sandbox "\$@"$' "$pro_wrapper_asset"
 python3 -m json.tool "$claude_settings_asset" >/dev/null
 rg -q 'https://api.deepseek.com/anthropic' "$claude_settings_asset"
 rg -q 'deepseek-v4-pro\[1m\]' "$claude_settings_asset"
@@ -81,7 +91,7 @@ for settings_path in sys.argv[1:]:
 PY
 rg -q '^exec claude --settings "\$provider_switch_settings" --dangerously-skip-permissions "\$@"$' "$claude_wrapper_asset"
 rg -q 'mode=yolo' "$claude_wrapper_asset"
-python3 - "$installer" "$claude_installer" "$claude_flash_installer" "$skill_dir/scripts/validate_claude_mock.py" <<'PY'
+python3 - "$installer" "$pro_installer" "$claude_installer" "$claude_flash_installer" "$skill_dir/scripts/validate_claude_mock.py" <<'PY'
 import ast
 import sys
 from pathlib import Path
@@ -191,6 +201,10 @@ if rg -q 'diagnostic-provider-token' "$runtime_root/second.log"; then
 fi
 rg -q '\[provider-switch\] preserve credential=existing-provider-bearer' "$runtime_root/second.log"
 rg -q '\[provider-switch\] unchanged target=.*deepseek-flash.config.toml' "$runtime_root/second.log"
+PATH="$fake_bin:$PATH" "${install_cmd[@]}" --open-editor > "$runtime_root/existing-key-editor.log"
+if rg -q '\[provider-switch\] editor ' "$runtime_root/existing-key-editor.log"; then
+  fail "existing Codex provider key unexpectedly launched an editor"
+fi
 
 log "checking changed-file backup"
 printf '%s\n' '{"changed":true}' > "$test_home/deepseek-models.json"
@@ -231,6 +245,29 @@ if rg -q 'diagnostic-provider-token' "$runtime_root/wrapper.err"; then
   fail "wrapper logged a provider key"
 fi
 
+log "checking Codex V4 Pro profile and sibling-key import"
+pro_install_cmd=(
+  python3 "$pro_installer"
+  --codex-home "$test_home"
+  --bin-dir "$test_bin"
+  --setup-script "$fixture"
+  --codex-command "$fake_bin/codex"
+)
+"${pro_install_cmd[@]}" > "$runtime_root/pro-first.log"
+[[ -f "$test_home/deepseek-pro.config.toml" ]]
+[[ -x "$test_bin/codex-ds-pro" ]]
+rg -q 'model = "deepseek-v4-pro"' "$test_home/deepseek-pro.config.toml"
+rg -q 'model_reasoning_effort = "max"' "$test_home/deepseek-pro.config.toml"
+rg -q 'diagnostic-provider-token' "$test_home/deepseek-pro.config.toml"
+rg -q '\[provider-switch\] import credential=sibling-profile' "$runtime_root/pro-first.log"
+if rg -q 'diagnostic-provider-token' "$runtime_root/pro-first.log"; then
+  fail "Pro installer logged an imported provider key"
+fi
+PATH="$fake_bin:$PATH" CODEX_HOME="$test_home" "$test_bin/codex-ds-pro" --version 'pro argument with spaces' > "$runtime_root/pro-wrapper.out" 2> "$runtime_root/pro-wrapper.err"
+rg -q 'model=deepseek-v4-pro reasoning=max' "$runtime_root/pro-wrapper.err"
+rg -q '^deepseek-pro$' "$runtime_root/pro-wrapper.out"
+rg -q '^pro argument with spaces$' "$runtime_root/pro-wrapper.out"
+
 log "checking Claude Code first install and global-settings isolation"
 claude_home="$runtime_root/claude-home"
 claude_bin="$runtime_root/claude-bin"
@@ -248,6 +285,7 @@ claude_install_cmd=(
 claude_settings="$claude_home/provider-switch/deepseek.settings.json"
 [[ -f "$claude_settings" ]]
 [[ -x "$claude_bin/claude-ds" ]]
+[[ -x "$claude_bin/claude-ds-pro" ]]
 rg -q '<YOUR_DEEPSEEK_API_KEY>' "$claude_settings"
 if rg -q '\[provider-switch\] editor ' "$runtime_root/claude-first.log"; then
   fail "--no-open-editor unexpectedly launched an editor"
@@ -295,6 +333,7 @@ rg -q '\[provider-switch\] import credential=environment name=DEEPSEEK_API_KEY' 
 "${claude_install_cmd[@]}" > "$runtime_root/claude-second.log"
 rg -q '\[provider-switch\] preserve credential=existing-provider-token' "$runtime_root/claude-second.log"
 rg -q '\[provider-switch\] unchanged target=.*deepseek.settings.json' "$runtime_root/claude-second.log"
+rg -q '\[provider-switch\] unchanged target=.*claude-ds-pro' "$runtime_root/claude-second.log"
 if rg -q 'diagnostic-claude-token' "$runtime_root/claude-second.log"; then
   fail "Claude installer logged a preserved provider key"
 fi
@@ -386,7 +425,8 @@ fi
 rg -q '\[provider-switch\] ERROR' "$runtime_root/claude-invalid.log"
 
 log "checking Claude Code wrapper argument forwarding and redacted launch log"
-PATH="$fake_bin:$PATH" "$claude_bin/claude-ds" --version 'argument with spaces' > "$runtime_root/claude-wrapper.out" 2> "$runtime_root/claude-wrapper.err"
+PATH="$fake_bin:$PATH" "$claude_bin/claude-ds-pro" --version 'argument with spaces' > "$runtime_root/claude-wrapper.out" 2> "$runtime_root/claude-wrapper.err"
+rg -q 'model=deepseek-v4-pro\[1m\] fast_model=deepseek-v4-flash' "$runtime_root/claude-wrapper.err"
 rg -q 'auth=provider-token' "$runtime_root/claude-wrapper.err"
 rg -q '^--settings$' "$runtime_root/claude-wrapper.out"
 rg -Fqx "$claude_settings" "$runtime_root/claude-wrapper.out"

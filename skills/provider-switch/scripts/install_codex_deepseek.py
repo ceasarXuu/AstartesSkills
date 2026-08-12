@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install the Codex + DeepSeek Flash side-load without changing global auth."""
+"""Install a Codex + DeepSeek side-load without changing global auth."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ import sys
 import tempfile
 import urllib.error
 import urllib.request
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
@@ -20,14 +21,45 @@ from pathlib import Path
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 ASSETS = SKILL_ROOT / "assets"
 SETUP_URL = "https://cdn.deepseek.com/api-docs/codex-deepseek-setup.sh"
-PROFILE_NAME = "deepseek-flash"
-CONFIG_NAME = f"{PROFILE_NAME}.config.toml"
 CATALOG_NAME = "deepseek-models.json"
-WRAPPER_NAME = "codex-ds-flash"
 KEY_PLACEHOLDER = "<YOUR_DEEPSEEK_API_KEY>"
 MINIMUM_CODEX_VERSION = (0, 144, 0)
+DEFAULT_PROFILE = "codex-deepseek-flash"
 START_MARKER = "cat > \"$TMP_MODELS\" <<'CODEX_MODELS_JSON'\n"
 END_MARKER = "\nCODEX_MODELS_JSON\n"
+
+
+@dataclass(frozen=True)
+class Profile:
+    id: str
+    name: str
+    config_asset: str
+    config_name: str
+    wrapper_asset: str
+    wrapper_name: str
+    model: str
+
+
+PROFILES = {
+    "codex-deepseek-flash": Profile(
+        id="codex-deepseek-flash",
+        name="deepseek-flash",
+        config_asset="codex-deepseek-flash.config.toml",
+        config_name="deepseek-flash.config.toml",
+        wrapper_asset="codex-ds-flash",
+        wrapper_name="codex-ds-flash",
+        model="deepseek-v4-flash",
+    ),
+    "codex-deepseek-pro": Profile(
+        id="codex-deepseek-pro",
+        name="deepseek-pro",
+        config_asset="codex-deepseek-pro.config.toml",
+        config_name="deepseek-pro.config.toml",
+        wrapper_asset="codex-ds-pro",
+        wrapper_name="codex-ds-pro",
+        model="deepseek-v4-pro",
+    ),
+}
 
 
 class InstallError(RuntimeError):
@@ -38,14 +70,15 @@ def log(event: str, message: str) -> None:
     print(f"[provider-switch] {event} {message}")
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(default_profile: str) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Install a temporary Codex profile for DeepSeek V4 Flash."
+        description="Install a temporary Codex profile for DeepSeek V4."
     )
     parser.add_argument("--codex-home", type=Path)
     parser.add_argument("--bin-dir", type=Path)
     parser.add_argument("--setup-script", type=Path)
     parser.add_argument("--codex-command", default="codex")
+    parser.add_argument("--profile", choices=sorted(PROFILES), default=default_profile)
     parser.add_argument("--open-editor", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
@@ -109,9 +142,10 @@ def extract_catalog(setup_script: str) -> str:
     for slug in ("deepseek-v4-flash", "deepseek-v4-pro"):
         if slug not in by_slug:
             raise InstallError(f"Official models.json is missing {slug}")
-    flash = by_slug["deepseek-v4-flash"]
-    if flash.get("context_window") != 1048576 or flash.get("shell_type") != "shell_command":
-        raise InstallError("DeepSeek Flash metadata does not match the verified contract")
+    for slug in ("deepseek-v4-flash", "deepseek-v4-pro"):
+        model = by_slug[slug]
+        if model.get("context_window") != 1048576 or model.get("shell_type") != "shell_command":
+            raise InstallError(f"{slug} metadata does not match the verified contract")
     log("validate", "catalog=valid models=deepseek-v4-flash,deepseek-v4-pro")
     return payload
 
@@ -120,24 +154,45 @@ def toml_string(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
 
 
-def render_config(catalog_path: Path, existing: str | None) -> str:
-    template = (ASSETS / "codex-deepseek-flash.config.toml").read_text(
-        encoding="utf-8"
-    )
-    rendered = template.replace("__MODEL_CATALOG_PATH__", toml_string(str(catalog_path)))
-    if not existing:
-        return rendered
+def read_existing_key(text: str | None, log_preserve: bool = True) -> str | None:
+    if not text:
+        return None
     match = re.search(
-        r'(?m)^experimental_bearer_token\s*=\s*"([^"\n]*)"[ \t]*$', existing
+        r'(?m)^experimental_bearer_token\s*=\s*"([^"\n]*)"[ \t]*$', text
     )
     if match and match.group(1) and match.group(1) != KEY_PLACEHOLDER:
+        if log_preserve:
+            log("preserve", "credential=existing-provider-bearer")
+        return match.group(1)
+    return None
+
+
+def render_config(
+    catalog_path: Path,
+    existing: str | None,
+    sibling_configs: list[Path],
+    profile: Profile,
+) -> str:
+    template = (ASSETS / profile.config_asset).read_text(encoding="utf-8")
+    rendered = template.replace("__MODEL_CATALOG_PATH__", toml_string(str(catalog_path)))
+    credential = read_existing_key(existing)
+    if credential is None:
+        for sibling_path in sibling_configs:
+            if not sibling_path.exists():
+                continue
+            credential = read_existing_key(
+                sibling_path.read_text(encoding="utf-8"), log_preserve=False
+            )
+            if credential is not None:
+                log("import", f"credential=sibling-profile target={sibling_path}")
+                break
+    if credential is not None:
         rendered = re.sub(
             r'(?m)^experimental_bearer_token\s*=.*$',
-            match.group(0),
+            f"experimental_bearer_token = {toml_string(credential)}",
             rendered,
             count=1,
         )
-        log("preserve", "credential=existing-provider-bearer")
     return rendered
 
 
@@ -204,24 +259,30 @@ def maybe_open_editor(config_path: Path, requested: bool, dry_run: bool) -> None
         subprocess.Popen([editor, "--reuse-window", "--goto", f"{config_path}:13"])
 
 
-def main() -> int:
-    args = parse_args()
+def main(default_profile: str = DEFAULT_PROFILE) -> int:
+    args = parse_args(default_profile)
     try:
         check_codex(args.codex_command)
+        profile = PROFILES[args.profile]
         configured_home = os.environ.get("CODEX_HOME") or "~/.codex"
         codex_home = (args.codex_home or Path(configured_home)).expanduser()
         bin_dir = (args.bin_dir or Path("~/.local/bin")).expanduser()
-        config_path = codex_home / CONFIG_NAME
+        config_path = codex_home / profile.config_name
         catalog_path = codex_home / CATALOG_NAME
-        wrapper_path = bin_dir / WRAPPER_NAME
+        wrapper_path = bin_dir / profile.wrapper_name
 
         setup_script = read_setup_script(args.setup_script)
         catalog = extract_catalog(setup_script)
         existing_config = (
             config_path.read_text(encoding="utf-8") if config_path.exists() else None
         )
-        config = render_config(catalog_path, existing_config)
-        wrapper = (ASSETS / "codex-ds-flash").read_bytes()
+        sibling_configs = [
+            codex_home / sibling.config_name
+            for sibling in PROFILES.values()
+            if sibling.id != profile.id
+        ]
+        config = render_config(catalog_path, existing_config, sibling_configs, profile)
+        wrapper = (ASSETS / profile.wrapper_asset).read_bytes()
         backup = BackupStore(codex_home, args.dry_run)
 
         install_bytes(
@@ -237,7 +298,7 @@ def main() -> int:
             config.encode("utf-8"),
             0o600,
             backup,
-            "deepseek-flash.config.toml",
+            profile.config_name,
             args.dry_run,
         )
         install_bytes(
@@ -245,13 +306,17 @@ def main() -> int:
             wrapper,
             0o755,
             backup,
-            "codex-ds-flash",
+            profile.wrapper_name,
             args.dry_run,
         )
-        maybe_open_editor(config_path, args.open_editor, args.dry_run)
+        maybe_open_editor(
+            config_path,
+            args.open_editor and KEY_PLACEHOLDER in config,
+            args.dry_run,
+        )
         log(
             "complete",
-            f"command={wrapper_path} profile={PROFILE_NAME} dry_run={str(args.dry_run).lower()}",
+            f"command={wrapper_path} profile={profile.name} model={profile.model} dry_run={str(args.dry_run).lower()}",
         )
         if KEY_PLACEHOLDER in config:
             log("next", f"add-provider-key={config_path}")

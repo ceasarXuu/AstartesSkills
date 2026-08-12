@@ -31,6 +31,7 @@ class Profile:
     settings_name: str
     backup_name: str
     wrapper_name: str
+    wrapper_aliases: tuple[str, ...]
     model: str
     fast_model: str
 
@@ -41,7 +42,8 @@ PROFILES = {
         settings_asset="claude-code-deepseek.settings.json",
         settings_name="deepseek.settings.json",
         backup_name="claude-deepseek.settings.json",
-        wrapper_name="claude-ds",
+        wrapper_name="claude-ds-pro",
+        wrapper_aliases=("claude-ds",),
         model="deepseek-v4-pro[1m]",
         fast_model="deepseek-v4-flash",
     ),
@@ -51,6 +53,7 @@ PROFILES = {
         settings_name="deepseek-flash.settings.json",
         backup_name="claude-deepseek-flash.settings.json",
         wrapper_name="claude-ds-flash",
+        wrapper_aliases=(),
         model="deepseek-v4-flash",
         fast_model="deepseek-v4-flash",
     ),
@@ -289,7 +292,9 @@ def main(default_profile: str = DEFAULT_PROFILE) -> int:
         claude_home = (args.claude_home or Path("~/.claude")).expanduser()
         bin_dir = (args.bin_dir or Path("~/.local/bin")).expanduser()
         settings_path = claude_home / "provider-switch" / profile.settings_name
-        wrapper_path = bin_dir / profile.wrapper_name
+        wrapper_paths = [
+            bin_dir / name for name in (profile.wrapper_name, *profile.wrapper_aliases)
+        ]
         settings = render_settings(
             settings_path, claude_home, args.api_key_env, profile
         )
@@ -304,18 +309,19 @@ def main(default_profile: str = DEFAULT_PROFILE) -> int:
             profile.backup_name,
             args.dry_run,
         )
-        install_bytes(
-            wrapper_path,
-            wrapper,
-            0o755,
-            backup,
-            profile.wrapper_name,
-            args.dry_run,
-        )
+        for wrapper_path in wrapper_paths:
+            install_bytes(
+                wrapper_path,
+                wrapper,
+                0o755,
+                backup,
+                wrapper_path.name,
+                args.dry_run,
+            )
         needs_key = KEY_PLACEHOLDER.encode() in settings
         log(
             "complete",
-            f"command={wrapper_path} profile={profile.id} dry_run={str(args.dry_run).lower()}",
+            f"command={wrapper_paths[0]} profile={profile.id} dry_run={str(args.dry_run).lower()}",
         )
         if needs_key:
             log("next", f"add-provider-key={settings_path}")

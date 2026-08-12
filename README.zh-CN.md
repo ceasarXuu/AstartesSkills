@@ -25,7 +25,7 @@
 - `clear-prd`：面向产品需求澄清的 skill，通过多轮产品逻辑、用户体验、交互、规则与验收问题形成 Draft 或 Ready PRD
 - `docs-manager`：面向仓库文档治理的 skill，维护版本化 PRD、技术设计、工程计划、链接索引、归档策略和验证脚本
 - `frontend-refactoring`：面向老前端重构的 skill，核心是隔离新 UI、重做视图层并安全切流
-- `provider-switch`：统一维护多个 Agent 与模型 Provider 的临时配置、安装、验证、备份和回滚；当前支持 Codex + DeepSeek V4 Flash、Claude Code + DeepSeek Pro/Flash 混合模式及 Claude Code 全 Flash 模式，其中 DeepSeek 专用启动器默认使用 YOLO / bypass-permissions，并为 Claude 长会话配置 70 万 token 自动压缩计算窗口，仅适合可信工作区
+- `provider-switch`：统一维护多个 Agent 与模型 Provider 的临时配置、安装、验证、备份和回滚；当前支持 `codex-ds-pro` / `codex-ds-flash` 与 `claude-ds-pro` / `claude-ds-flash`，其中 DeepSeek 专用启动器默认使用 YOLO / bypass-permissions，并为 Claude 长会话配置 70 万 token 自动压缩计算窗口，仅适合可信工作区
 - `se-good-plan`：面向软件工程计划写作与审查的 skill，生成分阶段、可执行、可独立验证、可审查、可回滚，并带严格 phase 门禁、plan-to-code 完整性证据、收益验收和链路关键状态日志证据的软件工程计划
 - `show-my-repo`：把 repo 提炼成面向投资人、用户、路演和落地页的展示包
 - `storybook-skills-standard`：面向 Storybook 组件驱动开发、story 覆盖、mock、文档、交互测试、可访问性与视觉基线治理的 skill
