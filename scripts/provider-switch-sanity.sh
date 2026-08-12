@@ -83,7 +83,10 @@ model_fields = [
     "CLAUDE_CODE_SUBAGENT_MODEL",
 ]
 for settings_path in sys.argv[1:]:
-    env = json.loads(Path(settings_path).read_text(encoding="utf-8"))["env"]
+    settings = json.loads(Path(settings_path).read_text(encoding="utf-8"))
+    env = settings["env"]
+    assert "CLAUDE_CODE_EFFORT_LEVEL" not in env
+    assert settings["effortLevel"] == "high"
     assert env["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] == "1"
     assert env["CLAUDE_CODE_AUTO_COMPACT_WINDOW"] == "700000"
     if settings_path.endswith("-flash.settings.json"):
@@ -91,6 +94,7 @@ for settings_path in sys.argv[1:]:
 PY
 rg -q '^exec claude --settings "\$provider_switch_settings" --dangerously-skip-permissions "\$@"$' "$claude_wrapper_asset"
 rg -q 'mode=yolo' "$claude_wrapper_asset"
+rg -q 'default_effort=high effort_control=native-session' "$claude_wrapper_asset"
 python3 - "$installer" "$pro_installer" "$claude_installer" "$claude_flash_installer" "$skill_dir/scripts/validate_claude_mock.py" <<'PY'
 import ast
 import sys
@@ -99,6 +103,7 @@ from pathlib import Path
 for item in sys.argv[1:]:
     ast.parse(Path(item).read_text(encoding="utf-8"))
 PY
+python3 "$skill_dir/scripts/validate_claude_mock.py" --help | rg -q -- '--effort.*low.*high.*max'
 
 temp_parent="${TMPDIR:-/tmp}"
 runtime_root="$(mktemp -d "${temp_parent%/}/provider-switch-test.XXXXXX")"
@@ -174,6 +179,7 @@ log "checking first install"
 [[ -x "$test_bin/codex-ds-flash" ]]
 rg -q '<YOUR_DEEPSEEK_API_KEY>' "$test_home/deepseek-flash.config.toml"
 python3 - "$test_home" "$test_bin" <<'PY'
+import json
 import stat
 import sys
 from pathlib import Path
@@ -183,6 +189,12 @@ bin_dir = Path(sys.argv[2])
 assert stat.S_IMODE((home / "deepseek-flash.config.toml").stat().st_mode) == 0o600
 assert stat.S_IMODE((home / "deepseek-models.json").stat().st_mode) == 0o600
 assert stat.S_IMODE((bin_dir / "codex-ds-flash").stat().st_mode) == 0o755
+catalog = json.loads((home / "deepseek-models.json").read_text(encoding="utf-8"))
+for model in catalog["models"]:
+    assert model["default_reasoning_level"] == "high"
+    assert [level["effort"] for level in model["supported_reasoning_levels"]] == [
+        "low", "high", "max"
+    ]
 PY
 
 log "checking existing-key preservation and idempotency"
@@ -233,6 +245,15 @@ if python3 "$installer" --codex-home "$bad_home" --bin-dir "$runtime_root/bad-bi
 fi
 [[ ! -e "$bad_home/deepseek-models.json" ]] || fail "invalid payload created a partial catalog"
 rg -q '\[provider-switch\] ERROR' "$runtime_root/invalid.log"
+
+log "checking invalid reasoning-level failure atomicity"
+sed 's/{"effort": "max"}/{"effort": "medium"}/g' "$fixture" > "$runtime_root/invalid-levels-setup.sh"
+bad_levels_home="$runtime_root/bad-levels-home"
+if python3 "$installer" --codex-home "$bad_levels_home" --bin-dir "$runtime_root/bad-levels-bin" --setup-script "$runtime_root/invalid-levels-setup.sh" --codex-command "$fake_bin/codex" > "$runtime_root/invalid-levels.log" 2>&1; then
+  fail "invalid reasoning levels unexpectedly succeeded"
+fi
+[[ ! -e "$bad_levels_home/deepseek-models.json" ]] || fail "invalid reasoning levels created a partial catalog"
+rg -q '\[provider-switch\] ERROR .*reasoning levels do not match' "$runtime_root/invalid-levels.log"
 
 log "checking wrapper argument forwarding and redacted launch log"
 PATH="$fake_bin:$PATH" CODEX_HOME="$test_home" "$test_bin/codex-ds-flash" --version 'argument with spaces' > "$runtime_root/wrapper.out" 2> "$runtime_root/wrapper.err"
@@ -302,6 +323,8 @@ wrapper = Path(sys.argv[2])
 env = json.loads(settings.read_text(encoding="utf-8"))["env"]
 assert env["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] == "1"
 assert env["CLAUDE_CODE_AUTO_COMPACT_WINDOW"] == "700000"
+assert "CLAUDE_CODE_EFFORT_LEVEL" not in env
+assert json.loads(settings.read_text(encoding="utf-8"))["effortLevel"] == "high"
 assert stat.S_IMODE(settings.stat().st_mode) == 0o600
 assert stat.S_IMODE(wrapper.stat().st_mode) == 0o755
 PY
@@ -370,6 +393,8 @@ wrapper = Path(sys.argv[2])
 env = json.loads(settings.read_text(encoding="utf-8"))["env"]
 assert env["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] == "1"
 assert env["CLAUDE_CODE_AUTO_COMPACT_WINDOW"] == "700000"
+assert "CLAUDE_CODE_EFFORT_LEVEL" not in env
+assert json.loads(settings.read_text(encoding="utf-8"))["effortLevel"] == "high"
 for field in (
     "ANTHROPIC_MODEL",
     "ANTHROPIC_DEFAULT_OPUS_MODEL",

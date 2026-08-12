@@ -40,6 +40,8 @@ codex-ds-flash
 
 Additional arguments are forwarded unchanged. The wrapper enables YOLO through `--dangerously-bypass-approvals-and-sandbox`; run it only in a trusted workspace.
 
+The official model catalog registers `low`, `high`, and `max`. In Codex CLI `0.146.0`, use `/model` (singular) to select the model and reasoning level; there is no separate native `/effort` command in this version. The configured `high` value is only the launch default.
+
 ## Authentication boundary
 
 Keep these provider fields:

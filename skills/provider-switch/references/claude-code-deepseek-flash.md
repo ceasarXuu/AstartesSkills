@@ -47,12 +47,14 @@ ANTHROPIC_DEFAULT_OPUS_MODEL=deepseek-v4-flash
 ANTHROPIC_DEFAULT_SONNET_MODEL=deepseek-v4-flash
 ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-v4-flash
 CLAUDE_CODE_SUBAGENT_MODEL=deepseek-v4-flash
-CLAUDE_CODE_EFFORT_LEVEL=max
 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 CLAUDE_CODE_AUTO_COMPACT_WINDOW=700000
+effortLevel=high
 ```
 
-The last two values are profile-scoped guardrails. Nonessential update, feedback, error-reporting, and telemetry traffic is disabled, while auto-compaction calculations use an effective 700,000-token capacity so a long 1M session reserves more room before the hard limit. Claude Code caps the configured capacity at the model's actual context window. This reduces but does not eliminate context-overflow risk from oversized prompts, attachments, or tool output.
+The settings-level `effortLevel=high` is an overridable default. The profile deliberately omits the higher-precedence `CLAUDE_CODE_EFFORT_LEVEL` environment variable so `/model` and `/effort low|high|max` can change effort during the session; `/effort auto` restores `high`. Claude Code's `medium` and `xhigh` choices are accepted but DeepSeek maps both to actual `high`.
+
+The two environment guardrails are profile-scoped. Nonessential update, feedback, error-reporting, and telemetry traffic is disabled, while auto-compaction calculations use an effective 700,000-token capacity so a long 1M session reserves more room before the hard limit. Claude Code caps the configured capacity at the model's actual context window. This reduces but does not eliminate context-overflow risk from oversized prompts, attachments, or tool output.
 
 ## Validate
 
@@ -60,9 +62,12 @@ Run the loopback-only request check without using the real provider credential:
 
 ```bash
 python3 scripts/validate_claude_mock.py \
-  --settings "${HOME}/.claude/provider-switch/deepseek-flash.settings.json"
+  --settings "${HOME}/.claude/provider-switch/deepseek-flash.settings.json" \
+  --effort low
 rg -q -- '--dangerously-skip-permissions' "${HOME}/.local/bin/claude-ds-flash"
 ```
+
+Repeat with `--effort max` to verify both ends of the native session range reach `output_config.effort`.
 
 For a real smoke request, obtain user authorization for possible provider cost and remote transmission, then use a content-free prompt, disable tools, limit the turn count and budget, and confirm `claude auth status` is unchanged afterward.
 

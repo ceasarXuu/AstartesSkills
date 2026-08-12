@@ -34,6 +34,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=Path("~/.claude/provider-switch/deepseek.settings.json").expanduser(),
     )
+    parser.add_argument(
+        "--effort",
+        choices=("low", "high", "max"),
+        help="Override effort for this local request, matching Claude /effort levels.",
+    )
     return parser.parse_args()
 
 
@@ -180,6 +185,7 @@ def main() -> int:
                 args.settings, f"http://127.0.0.1:{port}/anthropic"
             )
             configured_model = str(settings["env"]["ANTHROPIC_MODEL"])
+            expected_effort = args.effort or str(settings.get("effortLevel", "high"))
             expected_model = configured_model.removesuffix("[1m]")
             Capture.response_model = expected_model
             settings_path.write_text(
@@ -197,8 +203,10 @@ def main() -> int:
                 "--max-turns",
                 "1",
                 "--no-session-persistence",
-                "Reply with exactly: MOCK_OK",
             ]
+            if args.effort:
+                command.extend(["--effort", args.effort])
+            command.append("Reply with exactly: MOCK_OK")
             result = subprocess.run(
                 command,
                 cwd=root_path,
@@ -226,6 +234,7 @@ def main() -> int:
         "extended-context": extended_context == expected_extended_context,
         "authorization": Capture.authorization_present,
         "model": request.get("model") == expected_model,
+        "effort": request.get("output_config", {}).get("effort") == expected_effort,
         "prompt": "Reply with exactly: MOCK_OK" in prompt_dump,
     }
     for name, passed in checks.items():
@@ -233,7 +242,7 @@ def main() -> int:
     if not all(checks.values()):
         log(
             "diagnostic",
-            f"request-path={Capture.path or '<missing>'} model={request.get('model', '<missing>')} anthropic-beta={Capture.anthropic_beta or '<missing>'}",
+            f"request-path={Capture.path or '<missing>'} model={request.get('model', '<missing>')} effort={request.get('output_config', {}).get('effort', '<missing>')} anthropic-beta={Capture.anthropic_beta or '<missing>'}",
         )
         sanitized_stderr = result.stderr.replace(DIAGNOSTIC_TOKEN, "<redacted>")
         if sanitized_stderr:
@@ -241,7 +250,7 @@ def main() -> int:
         return 1
     log(
         "complete",
-        f"request=local-mock network=loopback credential=diagnostic model={expected_model}",
+        f"request=local-mock network=loopback credential=diagnostic model={expected_model} effort={expected_effort}",
     )
     return 0
 

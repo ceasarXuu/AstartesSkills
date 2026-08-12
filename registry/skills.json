@@ -206,13 +206,13 @@
         "path": "skills/provider-switch"
       },
       "release": {
-        "version": "1.5.0",
-        "published_at": "2026-08-13T04:41:17+08:00",
+        "version": "1.5.1",
+        "published_at": "2026-08-13T05:02:42+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Add a dedicated codex-ds-pro profile for the official deepseek-v4-pro Responses endpoint with max reasoning and sibling-key reuse.",
-          "Expose claude-ds-pro as the primary command for the official DeepSeek V4 Pro/Flash Claude Code mapping while retaining claude-ds as a compatibility alias.",
-          "Document official model identifiers, authentication boundaries, YOLO permissions, validation, and rollback for both Pro launchers."
+          "Keep Codex low, high, and max reasoning choices available through the native /model picker for both DeepSeek V4 models.",
+          "Replace the Claude effort environment lock with an overridable settings-level high default so native /model and /effort controls work.",
+          "Document DeepSeek effort mapping, client command differences, and regression coverage for native session switching."
         ]
       },
       "markets": {

@@ -56,12 +56,14 @@ ANTHROPIC_DEFAULT_OPUS_MODEL=deepseek-v4-pro[1m]
 ANTHROPIC_DEFAULT_SONNET_MODEL=deepseek-v4-pro[1m]
 ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-v4-flash
 CLAUDE_CODE_SUBAGENT_MODEL=deepseek-v4-flash
-CLAUDE_CODE_EFFORT_LEVEL=max
 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 CLAUDE_CODE_AUTO_COMPACT_WINDOW=700000
+effortLevel=high
 ```
 
-`ANTHROPIC_AUTH_TOKEN` holds the DeepSeek API key for this process. While that provider credential is active, the session does not use the saved claude.ai subscription credential. `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` disables auto-update, feedback, error-reporting, and telemetry traffic for the provider-switched process. `CLAUDE_CODE_AUTO_COMPACT_WINDOW=700000` makes auto-compaction calculations treat the context capacity as 700,000 tokens, reserving more room before a 1M session reaches its hard limit; Claude Code caps this value at the model's actual context window. This reduces but cannot eliminate context-overflow or compaction-failure risk from oversized prompts, attachments, or tool output.
+`ANTHROPIC_AUTH_TOKEN` holds the DeepSeek API key for this process. While that provider credential is active, the session does not use the saved claude.ai subscription credential. The settings-level `effortLevel=high` is the overridable launch default. The profile deliberately omits `CLAUDE_CODE_EFFORT_LEVEL`, because that environment variable has higher precedence than native session controls and would lock `/model` and `/effort`. Use `/effort low`, `/effort high`, or `/effort max` during a session; `/effort auto` returns to the `high` default. Claude Code also accepts `medium` and `xhigh`, but DeepSeek V4 maps both to actual `high`. `/model` exposes the same effort control for supported models.
+
+`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` disables auto-update, feedback, error-reporting, and telemetry traffic for the provider-switched process. `CLAUDE_CODE_AUTO_COMPACT_WINDOW=700000` makes auto-compaction calculations treat the context capacity as 700,000 tokens, reserving more room before a 1M session reaches its hard limit; Claude Code caps this value at the model's actual context window. This reduces but cannot eliminate context-overflow or compaction-failure risk from oversized prompts, attachments, or tool output.
 
 With Claude Code `2.1.218`, the `[1m]` suffix is interpreted client-side: the Messages request sends model `deepseek-v4-pro` and includes the `context-1m` Anthropic beta capability. The bundled mock validator checks this transport behavior so a future Claude Code change is visible.
 
@@ -81,8 +83,11 @@ For a request-path regression, copy the dedicated settings to a temporary file, 
 The bundled validator performs that loopback-only check without using the real provider credential:
 
 ```bash
-python3 scripts/validate_claude_mock.py
+python3 scripts/validate_claude_mock.py --effort low
+python3 scripts/validate_claude_mock.py --effort max
 ```
+
+These loopback checks assert that Claude Code sends the selected value as `output_config.effort`, proving the native session override reaches the provider wire format.
 
 Do not send a real prompt merely to validate installation unless the user accepts possible provider cost and remote data transmission. Use a content-free prompt such as `Reply with exactly: DEEPSEEK_OK` and disable tools.
 

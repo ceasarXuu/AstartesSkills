@@ -51,6 +51,8 @@ requires_openai_auth = false
 
 The dedicated `experimental_bearer_token` authenticates DeepSeek independently. Do not add `forced_login_method` or `preferred_auth_method`; those fields can invalidate the existing ChatGPT login boundary.
 
+The official model catalog registers `low`, `high`, and `max`. In Codex CLI `0.146.0`, run `/model` (singular), select `deepseek-v4-pro`, then choose the reasoning level. Codex does not currently expose a separate `/effort` command. The profile value above is only the launch default and does not remove the session picker.
+
 ## Validate
 
 ```bash

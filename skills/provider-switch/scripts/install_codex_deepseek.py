@@ -146,6 +146,18 @@ def extract_catalog(setup_script: str) -> str:
         model = by_slug[slug]
         if model.get("context_window") != 1048576 or model.get("shell_type") != "shell_command":
             raise InstallError(f"{slug} metadata does not match the verified contract")
+        levels = model.get("supported_reasoning_levels")
+        efforts = (
+            [level.get("effort") for level in levels if isinstance(level, dict)]
+            if isinstance(levels, list)
+            else []
+        )
+        if model.get("default_reasoning_level") != "high" or efforts != [
+            "low",
+            "high",
+            "max",
+        ]:
+            raise InstallError(f"{slug} reasoning levels do not match low,high,max")
     log("validate", "catalog=valid models=deepseek-v4-flash,deepseek-v4-pro")
     return payload
 
