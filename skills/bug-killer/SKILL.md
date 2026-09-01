@@ -138,8 +138,8 @@ requests Bug Killer.
 Before creating a new `/coe` case or appending evidence, apply the public-repo
 privacy gate from `Case Artifact`.
 
-If the gate is met, inspect `/coe`. Reuse a relevant open case; otherwise create
-a new timestamped case file.
+If the activation gate is met, inspect `/coe`. Reuse a relevant open case;
+otherwise create a new timestamped case file.
 
 Normalize the user report into one `Problem P-001`. If the report includes
 multiple unrelated bugs, split them into separate case files.
