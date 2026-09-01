@@ -52,6 +52,8 @@ repeats, resists repair, or the user explicitly requests it.
   explicitly requested Bug Killer, the gate is satisfied.
 - Maintain a project-root `/coe` case file as the investigation source of
   truth whenever the task touches a repository.
+- Before creating or appending `/coe` in a public repository, resolve the CoE
+  privacy gate below. Never silently change `.gitignore` or Git tracking.
 - Case files may contain only `Problem`, `Hypothesis`, and `Evidence` nodes.
 - Root-cause candidates are hypotheses, not repair plans.
 - Repair design is forbidden until the candidate root cause passes the
@@ -76,6 +78,28 @@ Create or update one Markdown file under the project root:
 ```text
 /coe/YYYY-MM-DD-HH-mm-<short-bug-title>.md
 ```
+
+Before creating a new case or appending evidence, determine repository visibility
+from the hosting provider when available. Do not assume a local checkout is
+private.
+
+For a public repository:
+
+- check whether root `/coe/` is ignored and whether any `/coe` files are already
+  tracked,
+- if `/coe/` is not ignored, ask the user whether to add `/coe/` to the project's
+  `.gitignore` so case files stay local; do not edit `.gitignore` without user
+  confirmation,
+- if any `/coe` files are already tracked, explain that `.gitignore` does not
+  stop tracked files from being committed and ask whether to remove them from
+  the Git index while preserving local copies; do not untrack them without user
+  confirmation,
+- resolve this privacy choice before writing new diagnostic evidence. If the
+  user explicitly chooses to keep CoE tracked, minimize unnecessary sensitive
+  debug detail and continue with that choice.
+
+If repository visibility cannot be determined, ask whether the repository is
+public before persisting a new CoE case.
 
 If no repository is available, keep the same logical structure in the response
 and create the file once a writable project exists.
@@ -110,6 +134,9 @@ evidence or update the related hypothesis conclusion.
 Check the activation gate. If it is not met, explain why this heavy process is
 not justified and use a lightweight debug path unless the user explicitly
 requests Bug Killer.
+
+Before creating a new `/coe` case or appending evidence, apply the public-repo
+privacy gate from `Case Artifact`.
 
 If the gate is met, inspect `/coe`. Reuse a relevant open case; otherwise create
 a new timestamped case file.
@@ -319,6 +346,8 @@ While using this skill:
 - Treating logs as evidence when no prediction was defined before reading them.
 - Treating external agents, subagents, or reviewer agreement as proof.
 - Combining diagnostic instrumentation and repair in one unclear patch.
+- Publishing new `/coe` evidence from a public repository before resolving its
+  privacy choice, or assuming `.gitignore` protects CoE files already tracked.
 - Adding silent fallback behavior that masks the symptom.
 - Marking the problem fixed because code changed rather than because
   fix-validation evidence exists.

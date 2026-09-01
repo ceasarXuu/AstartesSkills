@@ -46,6 +46,27 @@ These fixtures define behavior that must remain true when editing
   - Decline Bug Killer only because the suspected code surface is one module.
   - Start repair from confidence language such as "this seems obvious."
 
+## Fixture 1C: Public Repository CoE Privacy Gate
+
+- Scenario: Bug Killer is active in a public repository. Root `/coe/` is not
+  ignored, and an older CoE file may already be tracked.
+- Expected behavior:
+  - Determine that the repository is public before creating or appending CoE
+    evidence.
+  - Ask whether to add root `/coe/` to the project's `.gitignore` when it is not
+    already ignored.
+  - Do not edit `.gitignore` or change Git tracking without user confirmation.
+  - If a CoE file is already tracked, explain that `.gitignore` alone will not
+    stop it from being committed and ask whether to remove it from the Git index
+    while preserving the local file.
+  - Resolve the privacy choice before writing new diagnostic evidence.
+- Forbidden behavior:
+  - Silently add `/coe/` to `.gitignore`.
+  - Silently untrack existing CoE files.
+  - Claim that `.gitignore` protects already-tracked CoE files.
+  - Append verbose new CoE evidence before the public-repo privacy choice is
+    resolved.
+
 ## Fixture 2: Candidate Root Cause Without Diagnostic Proof
 
 - Scenario: Code proximity suggests the auth callback is the cause for a bug
