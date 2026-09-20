@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -12,9 +13,10 @@ from pathlib import Path
 from typing import Any, Callable
 
 
-PROVIDERS = ("command-code", "opencode", "pi", "deepseek-harness")
+PROVIDERS = ("command-code", "claude-code", "opencode", "pi", "deepseek-harness")
 EXECUTABLES = {
     "command-code": ("command-code", "cmdc"),
+    "claude-code": ("claude",),
     "opencode": ("opencode",),
     "pi": ("pi",),
     "deepseek-harness": ("dsh",),
@@ -25,6 +27,13 @@ READ_ONLY_PREFIX = (
     "state. Inspect the requested material and return evidence-backed findings only.\n\n"
 )
 STDERR_LIMIT = 4000
+
+
+def provider_environment(provider: str) -> dict[str, str]:
+    environment = os.environ.copy()
+    if provider == "claude-code":
+        environment["DISABLE_AUTOUPDATER"] = "1"
+    return environment
 
 
 def emit(payload: dict[str, Any], exit_code: int) -> int:
@@ -61,6 +70,7 @@ def check_provider(provider: str) -> dict[str, Any]:
             text=True,
             capture_output=True,
             timeout=3,
+            env=provider_environment(provider),
         )
         version_text = (completed.stdout or completed.stderr).strip().splitlines()
         result["version"] = version_text[0][:200] if version_text else None
@@ -88,6 +98,21 @@ def build_command(
         ]
         if session_id:
             command[3:3] = ["--resume", session_id]
+        return command
+    if provider == "claude-code":
+        command = [
+            executable,
+            "-p",
+            "--output-format",
+            "json",
+            "--permission-mode",
+            "plan",
+            "--tools",
+            "Read,Glob,Grep",
+        ]
+        if session_id:
+            command.extend(["--resume", session_id])
+        command.append(safe_prompt)
         return command
     if provider == "opencode":
         command = [
@@ -117,7 +142,7 @@ def build_command(
             command.extend(["--session", session_id])
         command.append(safe_prompt)
         return command
-    raise ValueError(f"provider '{provider}' cannot be executed in v0.1")
+    raise ValueError(f"provider '{provider}' cannot be executed in v0.2")
 
 
 def parse_json_lines(stdout: str) -> list[dict[str, Any]]:
@@ -136,6 +161,13 @@ def parse_command_code(events: list[dict[str, Any]]) -> tuple[str | None, str]:
     for event in reversed(events):
         if event.get("type") == "result":
             return event.get("sessionId"), str(event.get("finalText") or "")
+    return None, ""
+
+
+def parse_claude_code(events: list[dict[str, Any]]) -> tuple[str | None, str]:
+    for event in reversed(events):
+        if event.get("type") == "result":
+            return event.get("session_id"), str(event.get("result") or "")
     return None, ""
 
 
@@ -174,6 +206,7 @@ def parse_pi(events: list[dict[str, Any]]) -> tuple[str | None, str]:
 
 PARSERS: dict[str, Callable[[list[dict[str, Any]]], tuple[str | None, str]]] = {
     "command-code": parse_command_code,
+    "claude-code": parse_claude_code,
     "opencode": parse_opencode,
     "pi": parse_pi,
 }
@@ -195,7 +228,7 @@ def run_provider(args: argparse.Namespace) -> int:
                 "session_ref": None,
                 "summary": "",
                 "error": (
-                    "deepseek-harness execution is experimental and disabled in v0.1 "
+                    "deepseek-harness execution is experimental and disabled in v0.2 "
                     "because its minimal SDK profile exposes a danger-full-access shell"
                 ),
             },
@@ -238,6 +271,7 @@ def run_provider(args: argparse.Namespace) -> int:
             text=True,
             capture_output=True,
             timeout=args.timeout,
+            env=provider_environment(args.provider),
         )
     except subprocess.TimeoutExpired as error:
         return emit(

@@ -85,6 +85,35 @@ class DelegateAgentCliTests(unittest.TestCase):
         self.assertNotIn("--continue", argv)
         self.assertNotIn("--auto", argv)
 
+    def test_claude_code_follow_up_is_read_only_and_resumes_exact_session(self):
+        self.install_fake(
+            "claude",
+            "printf 'env=%s\\n' \"$DISABLE_AUTOUPDATER\" > \"$ARGS_LOG\"\n"
+            "printf '%s\\n' \"$@\" >> \"$ARGS_LOG\"\n"
+            "printf '%s\\n' '{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"result\":\"claude review\",\"session_id\":\"cl-9\"}'",
+        )
+
+        result = self.invoke(
+            "follow-up", "--provider", "claude-code", "--session-id", "cl-9",
+            "--cwd", self.temp_dir.name, "--prompt", "Check the edge case",
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["status"], "completed")
+        self.assertEqual(payload["summary"], "claude review")
+        self.assertEqual(payload["session_ref"], {"provider": "claude-code", "id": "cl-9"})
+        argv = self.args_log.read_text(encoding="utf-8").splitlines()
+        self.assertIn("env=1", argv)
+        self.assertIn("--resume", argv)
+        self.assertIn("cl-9", argv)
+        self.assertIn("--permission-mode", argv)
+        self.assertIn("plan", argv)
+        self.assertIn("--tools", argv)
+        self.assertIn("Read,Glob,Grep", argv)
+        self.assertNotIn("--continue", argv)
+        self.assertNotIn("--dangerously-skip-permissions", argv)
+
     def test_pi_run_limits_tools_and_reads_json_event_stream(self):
         self.install_fake(
             "pi",
@@ -129,7 +158,7 @@ class DelegateAgentCliTests(unittest.TestCase):
         self.assertIn("--session-id", result.stderr)
 
     def test_check_reports_all_provider_availability(self):
-        for executable in ("command-code", "opencode", "pi", "dsh"):
+        for executable in ("command-code", "claude", "opencode", "pi", "dsh"):
             self.install_fake(executable, "printf '%s\\n' 'fake 1.0.0'")
 
         result = self.invoke("check", "--provider", "all")
@@ -139,7 +168,7 @@ class DelegateAgentCliTests(unittest.TestCase):
         providers = {item["provider"]: item for item in payload["providers"]}
         self.assertEqual(
             set(providers),
-            {"command-code", "opencode", "pi", "deepseek-harness"},
+            {"command-code", "claude-code", "opencode", "pi", "deepseek-harness"},
         )
         self.assertTrue(all(item["available"] for item in providers.values()))
         self.assertTrue(providers["deepseek-harness"]["experimental"])

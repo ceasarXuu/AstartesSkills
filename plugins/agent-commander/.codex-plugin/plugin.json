@@ -1,6 +1,6 @@
 {
   "name": "agent-commander",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Delegate read-only coding tasks from Codex to supported local external agents and continue them by explicit session ID.",
   "author": {
     "name": "ceasarXuu",
@@ -12,6 +12,7 @@
   "keywords": [
     "delegation",
     "coding-agent",
+    "claude-code",
     "opencode",
     "command-code",
     "pi"

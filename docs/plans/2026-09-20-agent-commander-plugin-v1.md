@@ -1,4 +1,4 @@
-# PRD：AgentCommander Plugin v0.1
+# PRD：AgentCommander Plugin v0.2
 
 - Status: Draft
 - Created: 2026-09-20
@@ -10,18 +10,18 @@
 ## Requester Review Summary
 
 - Key decisions: 第一版交付形态为 Codex Plugin。
-- Important exceptions: DeepSeek Harness 的最小 SDK 默认提供高权限 shell，v0.1 不自动执行它。
-- Must-confirm before implementation: v0.1 之后是否支持写入、并发和仓库 marketplace 分发。
+- Important exceptions: DeepSeek Harness 的最小 SDK 默认提供高权限 shell，v0.2 不自动执行它。
+- Must-confirm before implementation: v0.2 之后是否支持写入、并发和仓库 marketplace 分发。
 - Status reason: 可实现安全的只读原型，但后续写入与分发规则仍需确认。
 
 ## 1. Background And Product Intent
 
-Codex 需要把边界明确的分析、审查或代码理解任务交给本机其他 coding agent，并在获得结果后使用同一会话继续追问。当前四个目标后端使用不同的 CLI、事件流和会话模型，需要一个可安装、可发现且返回结构稳定的本地协调能力。
+Codex 需要把边界明确的分析、审查或代码理解任务交给本机其他 coding agent，并在获得结果后使用同一会话继续追问。当前五个目标后端使用不同的 CLI、事件流和会话模型，需要一个可安装、可发现且返回结构稳定的本地协调能力。
 
 ## 2. Goals And Success Criteria
 
 - 以 Plugin 形式提供，不把能力绑定到单一仓库的全局指令中。
-- 检测 DeepSeek Harness、OpenCode、Command Code 和 Pi 的本机可用性。
+- 检测 DeepSeek Harness、OpenCode、Command Code、Claude Code 和 Pi 的本机可用性。
 - 对首批可执行后端提供只读任务启动与精确会话续接。
 - 将不同输出归一化为稳定 JSON，使 Codex 能复核结果。
 - 失败时明确区分后端缺失、不支持、超时、非零退出和无有效回复。
@@ -38,7 +38,7 @@ Codex 需要把边界明确的分析、审查或代码理解任务交给本机�
 - 一个可被 Codex 调用的编排 Skill。
 - 一个标准库 Python 适配器。
 - `check`、`run`、`follow-up` 三类操作。
-- Command Code、OpenCode、Pi 的只读调用。
+- Command Code、Claude Code、OpenCode、Pi 的只读调用。
 - DeepSeek Harness 的探测与 experimental 状态说明。
 - 单元测试、Plugin 校验和仓库校验。
 
@@ -65,12 +65,13 @@ Plugin 通过自然语言 Skill 被发现。适配脚本的 stdout 仅输出一�
 
 ## 7. Product Rules And State Logic
 
-- v0.1 委派固定为只读。
+- v0.2 委派固定为只读。
 - 会话续接必须使用明确 session id，禁止依赖“最近会话”。
 - 不自动切换后端；指定后端失败即返回失败。
 - 不自动附加 `--yolo`、`--auto` 或等价危险参数。
 - Command Code 调用固定附加 `--no-auto-update`。
-- DeepSeek Harness v0.1 返回 experimental/unavailable-to-run，不静默执行高权限 shell。
+- Claude Code 调用固定使用 `plan` 权限模式、`Read,Glob,Grep` 工具白名单并关闭启动时自动更新。
+- DeepSeek Harness v0.2 返回 experimental/unavailable-to-run，不静默执行高权限 shell。
 
 ## 8. Edge Cases, Errors, And Recovery
 
@@ -85,24 +86,25 @@ Plugin 通过自然语言 Skill 被发现。适配脚本的 stdout 仅输出一�
 
 - 主 Agent：Codex。
 - 从 Agent：由 Plugin 启动的外部 coding agent。
-- provider：`command-code`、`opencode`、`pi`、`deepseek-harness`。
+- provider：`command-code`、`claude-code`、`opencode`、`pi`、`deepseek-harness`。
 - session ref：由 provider 和 provider session id 组成的稳定续接标识。
 
 ## 10. Acceptance Criteria
 
-- Given 四个 CLI 均未安装，when 执行 `check`，then 返回四个 provider 的结构化不可用状态且不崩溃。
+- Given 五个 CLI 均未安装，when 执行 `check`，then 返回五个 provider 的结构化不可用状态且不崩溃。
 - Given 一个受支持的假 CLI，when 执行 `run`，then 使用只读参数启动并返回归一化文本与 session id。
 - Given 一个有效 session id，when 执行 `follow-up`，then 命令包含该精确 id，不使用最近会话选项。
-- Given DeepSeek Harness，when 请求执行，then v0.1 明确拒绝并说明 experimental 安全边界。
+- Given Claude Code，when 执行或续接只读任务，then 使用安全参数、解析 `result` JSON，并保留精确 `session_id`。
+- Given DeepSeek Harness，when 请求执行，then v0.2 明确拒绝并说明 experimental 安全边界。
 - Given 后端输出未知 JSON 事件，when 解析，then 已知最终结果仍可返回。
 - Given 完成实现，when 运行 Plugin 和仓库校验，then 全部通过。
 
 ## 11. Review Checklist And Sign-off Questions
 
-- 是否接受 v0.1 仅执行只读任务？
+- 是否接受 v0.2 仅执行只读任务？
 - 后续写任务是否一律使用隔离 worktree？
 - 是否将本 Plugin 加入仓库级 marketplace？
-- 是否需要把 DeepSeek Harness 执行能力列入 v0.2？
+- 是否需要把 DeepSeek Harness 执行能力列入 v0.3？
 
 ## Confirmed Product Decisions
 
@@ -115,6 +117,7 @@ Plugin 通过自然语言 Skill 被发现。适配脚本的 stdout 仅输出一�
 |---|---|---|---|---|---|---|---|
 | PD1 | 第一版交付为 Codex Plugin。 | 提供可被 Codex 安装和发现的 Plugin 包。 | 只交付散落的提示词或单独脚本。 | 用户明确要求尝试开发第一版 Plugin。 | 交付物没有 Plugin manifest。 | user-confirmed-direct: “尝试开发成第一版 plugin” | active |
 | PD2 | Plugin 的展示名称为 `AgentCommander`，标准包 ID 为 `agent-commander`。 | 清单、目录和内含 Skill 使用统一名称。 | 保留旧包 ID 或显示名称造成双重身份。 | 用户明确要求重命名。 | 任一活动清单仍声明旧包 ID。 | user-confirmed-direct: “改为 AgentCommander” | active |
+| PD3 | AgentCommander 支持 Claude Code 的只读委派和精确会话续接。 | 使用 Claude Code 的安全只读参数并保存其 session id。 | 使用危险权限跳过参数或“继续最近会话”。 | 用户明确要求加入 Claude Code 支持。 | provider 列表缺少 `claude-code`，或续接未使用明确 session id。 | user-confirmed-direct: “把 claude code 的支持也加入进去” | active |
 
 ## 12. Open Questions And Risks
 
