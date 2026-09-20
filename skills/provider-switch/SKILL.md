@@ -68,6 +68,7 @@ Read [references/provider-package-contract.md](references/provider-package-contr
 - `codex-deepseek-pro`: read [references/codex-deepseek-pro.md](references/codex-deepseek-pro.md), then use `scripts/install_codex_deepseek_pro.py`.
 - `claude-code-deepseek`: read [references/claude-code-deepseek.md](references/claude-code-deepseek.md), then use `scripts/install_claude_deepseek.py`.
 - `claude-code-deepseek-flash`: read [references/claude-code-deepseek-flash.md](references/claude-code-deepseek-flash.md), then use `scripts/install_claude_deepseek_flash.py`.
+- `claude-code-step`: read [references/claude-code-step.md](references/claude-code-step.md), then use `scripts/install_claude_step.py`.
 
 ## Handoff Contract
 

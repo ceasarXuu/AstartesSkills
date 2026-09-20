@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install a Claude Code + DeepSeek side-load without changing global settings."""
+"""Install a Claude Code provider side-load without changing global settings."""
 
 from __future__ import annotations
 
@@ -19,7 +19,6 @@ from pathlib import Path
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 ASSETS = SKILL_ROOT / "assets"
-KEY_PLACEHOLDER = "<YOUR_DEEPSEEK_API_KEY>"
 MINIMUM_CLAUDE_VERSION = (2, 1, 218)
 DEFAULT_PROFILE = "claude-code-deepseek"
 
@@ -32,6 +31,10 @@ class Profile:
     backup_name: str
     wrapper_name: str
     wrapper_aliases: tuple[str, ...]
+    wrapper_asset: str
+    provider: str
+    key_placeholder: str
+    api_key_env: str
     model: str
     fast_model: str
 
@@ -44,6 +47,10 @@ PROFILES = {
         backup_name="claude-deepseek.settings.json",
         wrapper_name="claude-ds-pro",
         wrapper_aliases=("claude-ds",),
+        wrapper_asset="claude-ds",
+        provider="deepseek-api",
+        key_placeholder="<YOUR_DEEPSEEK_API_KEY>",
+        api_key_env="DEEPSEEK_API_KEY",
         model="deepseek-v4-pro[1m]",
         fast_model="deepseek-v4-flash",
     ),
@@ -54,8 +61,26 @@ PROFILES = {
         backup_name="claude-deepseek-flash.settings.json",
         wrapper_name="claude-ds-flash",
         wrapper_aliases=(),
+        wrapper_asset="claude-ds",
+        provider="deepseek-api",
+        key_placeholder="<YOUR_DEEPSEEK_API_KEY>",
+        api_key_env="DEEPSEEK_API_KEY",
         model="deepseek-v4-flash",
         fast_model="deepseek-v4-flash",
+    ),
+    "claude-code-step": Profile(
+        id="claude-code-step",
+        settings_asset="claude-code-step.settings.json",
+        settings_name="step.settings.json",
+        backup_name="claude-step.settings.json",
+        wrapper_name="claude-step",
+        wrapper_aliases=(),
+        wrapper_asset="claude-step",
+        provider="stepfun-step-plan",
+        key_placeholder="<YOUR_STEPFUN_API_KEY>",
+        api_key_env="STEPFUN_API_KEY",
+        model="step-5-preview",
+        fast_model="step-5-preview",
     ),
 }
 
@@ -77,7 +102,7 @@ def parse_args(default_profile: str) -> argparse.Namespace:
     parser.add_argument("--claude-command", default="claude")
     parser.add_argument("--version-timeout", type=float, default=10.0)
     parser.add_argument("--verified-claude-version")
-    parser.add_argument("--api-key-env", default="DEEPSEEK_API_KEY")
+    parser.add_argument("--api-key-env")
     parser.add_argument("--profile", choices=sorted(PROFILES), default=default_profile)
     editor_group = parser.add_mutually_exclusive_group()
     editor_group.add_argument("--open-editor", dest="open_editor", action="store_true")
@@ -146,7 +171,10 @@ def load_template(profile: Profile) -> dict[str, object]:
     except (OSError, json.JSONDecodeError) as exc:
         raise InstallError(f"Bundled Claude settings are invalid: {exc}") from exc
     env = settings.get("env")
-    if not isinstance(env, dict) or env.get("ANTHROPIC_AUTH_TOKEN") != KEY_PLACEHOLDER:
+    if (
+        not isinstance(env, dict)
+        or env.get("ANTHROPIC_AUTH_TOKEN") != profile.key_placeholder
+    ):
         raise InstallError("Bundled Claude settings violate the credential contract")
     return settings
 
@@ -157,10 +185,10 @@ def read_existing_key(path: Path, log_preserve: bool = True) -> str | None:
     try:
         existing = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
-        raise InstallError(f"Existing Claude DeepSeek settings are invalid: {exc}") from exc
+        raise InstallError(f"Existing Claude provider settings are invalid: {exc}") from exc
     env = existing.get("env")
     value = env.get("ANTHROPIC_AUTH_TOKEN") if isinstance(env, dict) else None
-    if isinstance(value, str) and value and value != KEY_PLACEHOLDER:
+    if isinstance(value, str) and value and not value.startswith("<YOUR_"):
         if log_preserve:
             log("preserve", "credential=existing-provider-token")
         return value
@@ -177,7 +205,11 @@ def render_settings(
     if credential is None:
         for sibling in PROFILES.values():
             sibling_path = claude_home / "provider-switch" / sibling.settings_name
-            if sibling.id == profile.id or not sibling_path.exists():
+            if (
+                sibling.id == profile.id
+                or sibling.provider != profile.provider
+                or not sibling_path.exists()
+            ):
                 continue
             credential = read_existing_key(sibling_path, log_preserve=False)
             if credential is not None:
@@ -245,7 +277,7 @@ def install_bytes(
 
 
 def render_wrapper(settings_path: Path, profile: Profile) -> bytes:
-    template = (ASSETS / "claude-ds").read_text(encoding="utf-8")
+    template = (ASSETS / profile.wrapper_asset).read_text(encoding="utf-8")
     rendered = template.replace(
         "__SETTINGS_PATH__", shlex.quote(str(settings_path))
     )
@@ -296,7 +328,7 @@ def main(default_profile: str = DEFAULT_PROFILE) -> int:
             bin_dir / name for name in (profile.wrapper_name, *profile.wrapper_aliases)
         ]
         settings = render_settings(
-            settings_path, claude_home, args.api_key_env, profile
+            settings_path, claude_home, args.api_key_env or profile.api_key_env, profile
         )
         wrapper = render_wrapper(settings_path, profile)
         backup = BackupStore(claude_home, args.dry_run)
@@ -318,7 +350,7 @@ def main(default_profile: str = DEFAULT_PROFILE) -> int:
                 wrapper_path.name,
                 args.dry_run,
             )
-        needs_key = KEY_PLACEHOLDER.encode() in settings
+        needs_key = profile.key_placeholder.encode() in settings
         log(
             "complete",
             f"command={wrapper_paths[0]} profile={profile.id} dry_run={str(args.dry_run).lower()}",

@@ -206,13 +206,13 @@
         "path": "skills/provider-switch"
       },
       "release": {
-        "version": "1.5.1",
-        "published_at": "2026-08-13T05:02:42+08:00",
+        "version": "1.6.0",
+        "published_at": "2026-09-20T15:54:10+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Keep Codex low, high, and max reasoning choices available through the native /model picker for both DeepSeek V4 models.",
-          "Replace the Claude effort environment lock with an overridable settings-level high default so native /model and /effort controls work.",
-          "Document DeepSeek effort mapping, client command differences, and regression coverage for native session switching."
+          "Add an isolated claude-step launcher for Step Plan with the documented step-5-preview model and 1M context settings.",
+          "Keep Step credentials separate from DeepSeek profiles while preserving existing tokens, backups, and editor handoff behavior.",
+          "Add regression coverage and a loopback-validator path for settings that select the model at the top level."
         ]
       },
       "markets": {

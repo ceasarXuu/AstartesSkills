@@ -159,6 +159,16 @@ def load_mock_settings(source: Path, base_url: str) -> dict[str, Any]:
     return data
 
 
+def configured_model(settings: dict[str, Any]) -> str:
+    env = settings.get("env")
+    if isinstance(env, dict) and isinstance(env.get("ANTHROPIC_MODEL"), str):
+        return env["ANTHROPIC_MODEL"]
+    model = settings.get("model")
+    if isinstance(model, str):
+        return model
+    raise ValueError("settings have no configured model")
+
+
 def main() -> int:
     args = parse_args()
     resolved = shutil.which(args.claude_command) if os.sep not in args.claude_command else args.claude_command
@@ -184,9 +194,12 @@ def main() -> int:
             settings = load_mock_settings(
                 args.settings, f"http://127.0.0.1:{port}/anthropic"
             )
-            configured_model = str(settings["env"]["ANTHROPIC_MODEL"])
-            expected_effort = args.effort or str(settings.get("effortLevel", "high"))
-            expected_model = configured_model.removesuffix("[1m]")
+            selected_model = configured_model(settings)
+            configured_effort = settings.get("effortLevel")
+            expected_effort = args.effort or (
+                str(configured_effort) if configured_effort is not None else None
+            )
+            expected_model = selected_model.removesuffix("[1m]")
             Capture.response_model = expected_model
             settings_path.write_text(
                 json.dumps(settings, ensure_ascii=False, indent=2) + "\n",
@@ -225,7 +238,7 @@ def main() -> int:
     parsed_path = urlsplit(Capture.path or "")
     beta_query = parse_qs(parsed_path.query).get("beta") == ["true"]
     extended_context = "context-1m" in Capture.anthropic_beta
-    expected_extended_context = configured_model.endswith("[1m]")
+    expected_extended_context = selected_model.endswith("[1m]")
     checks = {
         "exit-zero": result.returncode == 0,
         "response": "MOCK_OK" in result.stdout,
@@ -234,7 +247,8 @@ def main() -> int:
         "extended-context": extended_context == expected_extended_context,
         "authorization": Capture.authorization_present,
         "model": request.get("model") == expected_model,
-        "effort": request.get("output_config", {}).get("effort") == expected_effort,
+        "effort": expected_effort is None
+        or request.get("output_config", {}).get("effort") == expected_effort,
         "prompt": "Reply with exactly: MOCK_OK" in prompt_dump,
     }
     for name, passed in checks.items():

@@ -8,6 +8,7 @@ installer="$skill_dir/scripts/install_codex_deepseek.py"
 pro_installer="$skill_dir/scripts/install_codex_deepseek_pro.py"
 claude_installer="$skill_dir/scripts/install_claude_deepseek.py"
 claude_flash_installer="$skill_dir/scripts/install_claude_deepseek_flash.py"
+claude_step_installer="$skill_dir/scripts/install_claude_step.py"
 catalog="$skill_dir/assets/providers.json"
 config_asset="$skill_dir/assets/codex-deepseek-flash.config.toml"
 pro_config_asset="$skill_dir/assets/codex-deepseek-pro.config.toml"
@@ -15,7 +16,9 @@ wrapper_asset="$skill_dir/assets/codex-ds-flash"
 pro_wrapper_asset="$skill_dir/assets/codex-ds-pro"
 claude_settings_asset="$skill_dir/assets/claude-code-deepseek.settings.json"
 claude_flash_settings_asset="$skill_dir/assets/claude-code-deepseek-flash.settings.json"
+claude_step_settings_asset="$skill_dir/assets/claude-code-step.settings.json"
 claude_wrapper_asset="$skill_dir/assets/claude-ds"
+claude_step_wrapper_asset="$skill_dir/assets/claude-step"
 fixture="$repo_root/tests/provider-switch/fixtures/codex-deepseek-setup.sh"
 
 log() {
@@ -52,6 +55,7 @@ assert "codex-deepseek-flash" in ids
 assert "codex-deepseek-pro" in ids
 assert "claude-code-deepseek" in ids
 assert "claude-code-deepseek-flash" in ids
+assert "claude-code-step" in ids
 PY
 
 if rg -q '^(preferred_auth_method|forced_login_method)[[:space:]]*=' "$config_asset"; then
@@ -70,6 +74,22 @@ rg -q 'https://api.deepseek.com/anthropic' "$claude_settings_asset"
 rg -q 'deepseek-v4-pro\[1m\]' "$claude_settings_asset"
 rg -q 'deepseek-v4-flash' "$claude_settings_asset"
 python3 -m json.tool "$claude_flash_settings_asset" >/dev/null
+python3 -m json.tool "$claude_step_settings_asset" >/dev/null
+python3 - "$claude_step_settings_asset" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+settings = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+env = settings["env"]
+assert env["ANTHROPIC_BASE_URL"] == "https://api.stepfun.com/step_plan"
+assert env["ANTHROPIC_AUTH_TOKEN"] == "<YOUR_STEPFUN_API_KEY>"
+assert env["ANTHROPIC_MODEL"] == "step-5-preview"
+assert settings["model"] == "step-5-preview"
+assert env["CLAUDE_CODE_MAX_CONTEXT_TOKENS"] == "1000000"
+assert env["CLAUDE_CODE_AUTO_COMPACT_WINDOW"] == "1000000"
+assert env["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] == "1"
+PY
 python3 - "$claude_settings_asset" "$claude_flash_settings_asset" <<'PY'
 import json
 import sys
@@ -95,7 +115,9 @@ PY
 rg -q '^exec claude --settings "\$provider_switch_settings" --dangerously-skip-permissions "\$@"$' "$claude_wrapper_asset"
 rg -q 'mode=yolo' "$claude_wrapper_asset"
 rg -q 'default_effort=high effort_control=native-session' "$claude_wrapper_asset"
-python3 - "$installer" "$pro_installer" "$claude_installer" "$claude_flash_installer" "$skill_dir/scripts/validate_claude_mock.py" <<'PY'
+rg -q '^exec claude --settings "\$provider_switch_settings" --dangerously-skip-permissions "\$@"$' "$claude_step_wrapper_asset"
+rg -q 'provider=stepfun-step-plan model=step-5-preview context=1000000 scope=temporary-profile mode=yolo auth=provider-token' "$claude_step_wrapper_asset"
+python3 - "$installer" "$pro_installer" "$claude_installer" "$claude_flash_installer" "$claude_step_installer" "$skill_dir/scripts/validate_claude_mock.py" <<'PY'
 import ast
 import sys
 from pathlib import Path
@@ -104,6 +126,19 @@ for item in sys.argv[1:]:
     ast.parse(Path(item).read_text(encoding="utf-8"))
 PY
 python3 "$skill_dir/scripts/validate_claude_mock.py" --help | rg -q -- '--effort.*low.*high.*max'
+python3 - "$skill_dir/scripts/validate_claude_mock.py" "$claude_step_settings_asset" <<'PY'
+import importlib.util
+import json
+import sys
+from pathlib import Path
+
+spec = importlib.util.spec_from_file_location("validate_claude_mock", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+assert spec.loader is not None
+spec.loader.exec_module(module)
+settings = json.loads(Path(sys.argv[2]).read_text(encoding="utf-8"))
+assert module.configured_model(settings) == "step-5-preview"
+PY
 
 temp_parent="${TMPDIR:-/tmp}"
 runtime_root="$(mktemp -d "${temp_parent%/}/provider-switch-test.XXXXXX")"
@@ -420,6 +455,63 @@ rg -q '^--dangerously-skip-permissions$' "$runtime_root/claude-flash-wrapper.out
 rg -q '^flash argument with spaces$' "$runtime_root/claude-flash-wrapper.out"
 if rg -q 'diagnostic-claude-token' "$runtime_root/claude-flash-wrapper.err"; then
   fail "Flash wrapper logged a provider key"
+fi
+
+log "checking Claude Code Step profile isolation and first install"
+claude_step_install_cmd=(
+  python3 "$claude_step_installer"
+  --claude-home "$claude_home"
+  --bin-dir "$claude_bin"
+  --claude-command "$fake_bin/claude"
+  --no-open-editor
+)
+"${claude_step_install_cmd[@]}" > "$runtime_root/claude-step-first.log"
+claude_step_settings="$claude_home/provider-switch/step.settings.json"
+[[ -f "$claude_step_settings" ]]
+[[ -x "$claude_bin/claude-step" ]]
+rg -q '<YOUR_STEPFUN_API_KEY>' "$claude_step_settings"
+if rg -q 'diagnostic-claude-token' "$claude_step_settings"; then
+  fail "Step profile imported a DeepSeek credential"
+fi
+python3 - "$claude_step_settings" "$claude_bin/claude-step" <<'PY'
+import json
+import stat
+import sys
+from pathlib import Path
+
+settings = Path(sys.argv[1])
+wrapper = Path(sys.argv[2])
+data = json.loads(settings.read_text(encoding="utf-8"))
+env = data["env"]
+assert data["model"] == "step-5-preview"
+assert env["ANTHROPIC_BASE_URL"] == "https://api.stepfun.com/step_plan"
+assert env["CLAUDE_CODE_MAX_CONTEXT_TOKENS"] == "1000000"
+assert env["CLAUDE_CODE_AUTO_COMPACT_WINDOW"] == "1000000"
+assert stat.S_IMODE(settings.stat().st_mode) == 0o600
+assert stat.S_IMODE(wrapper.stat().st_mode) == 0o755
+PY
+
+log "checking Claude Code Step credential preservation and idempotency"
+STEPFUN_API_KEY='diagnostic-step-token' "${claude_step_install_cmd[@]}" > "$runtime_root/claude-step-key.log"
+rg -q 'diagnostic-step-token' "$claude_step_settings"
+if rg -q 'diagnostic-step-token' "$runtime_root/claude-step-key.log"; then
+  fail "Step installer logged a provider key"
+fi
+rg -q '\[provider-switch\] import credential=environment name=STEPFUN_API_KEY' "$runtime_root/claude-step-key.log"
+"${claude_step_install_cmd[@]}" > "$runtime_root/claude-step-second.log"
+rg -q '\[provider-switch\] preserve credential=existing-provider-token' "$runtime_root/claude-step-second.log"
+rg -q '\[provider-switch\] unchanged target=.*step.settings.json' "$runtime_root/claude-step-second.log"
+rg -q '\[provider-switch\] unchanged target=.*claude-step' "$runtime_root/claude-step-second.log"
+
+log "checking Claude Code Step wrapper argument forwarding"
+PATH="$fake_bin:$PATH" "$claude_bin/claude-step" --version 'step argument with spaces' > "$runtime_root/claude-step-wrapper.out" 2> "$runtime_root/claude-step-wrapper.err"
+rg -q 'provider=stepfun-step-plan model=step-5-preview context=1000000' "$runtime_root/claude-step-wrapper.err"
+rg -q '^--settings$' "$runtime_root/claude-step-wrapper.out"
+rg -Fqx "$claude_step_settings" "$runtime_root/claude-step-wrapper.out"
+rg -q '^--dangerously-skip-permissions$' "$runtime_root/claude-step-wrapper.out"
+rg -q '^step argument with spaces$' "$runtime_root/claude-step-wrapper.out"
+if rg -q 'diagnostic-step-token' "$runtime_root/claude-step-wrapper.err"; then
+  fail "Step wrapper logged a provider key"
 fi
 
 log "checking Claude Code changed-file backup"

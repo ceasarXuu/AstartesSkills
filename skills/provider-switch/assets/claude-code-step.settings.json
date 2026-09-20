@@ -1,0 +1,15 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.stepfun.com/step_plan",
+    "ANTHROPIC_AUTH_TOKEN": "<YOUR_STEPFUN_API_KEY>",
+    "ANTHROPIC_MODEL": "step-5-preview",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "step-5-preview",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "step-5-preview",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "step-5-preview",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "step-5-preview",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "CLAUDE_CODE_MAX_CONTEXT_TOKENS": "1000000",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "1000000"
+  },
+  "model": "step-5-preview"
+}

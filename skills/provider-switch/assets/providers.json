@@ -44,6 +44,17 @@
       "minimum_agent_version": "2.1.218",
       "reference": "references/claude-code-deepseek-flash.md",
       "installer": "scripts/install_claude_deepseek_flash.py"
+    },
+    {
+      "id": "claude-code-step",
+      "agent": "claude-code",
+      "provider": "stepfun-step-plan",
+      "model": "step-5-preview",
+      "scope": "temporary-profile",
+      "command": "claude-step",
+      "minimum_agent_version": "2.1.218",
+      "reference": "references/claude-code-step.md",
+      "installer": "scripts/install_claude_step.py"
     }
   ]
 }
