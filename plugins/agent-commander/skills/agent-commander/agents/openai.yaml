@@ -1,4 +1,4 @@
 interface:
-  display_name: External Agent Orchestrator
+  display_name: AgentCommander
   short_description: Delegate read-only work to local coding agents.
   default_prompt: Check the available external coding agents, delegate a bounded read-only task to the best suitable provider, preserve its exact session ID, and independently verify its result.

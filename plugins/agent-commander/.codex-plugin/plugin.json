@@ -1,5 +1,5 @@
 {
-  "name": "external-agent-orchestrator",
+  "name": "agent-commander",
   "version": "0.1.0",
   "description": "Delegate read-only coding tasks from Codex to supported local external agents and continue them by explicit session ID.",
   "author": {
@@ -18,7 +18,7 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "External Agent Orchestrator",
+    "displayName": "AgentCommander",
     "shortDescription": "Delegate read-only work to local coding agents.",
     "longDescription": "Lets Codex detect supported local coding agents, send bounded read-only tasks, normalize their replies, and continue an exact provider session without relying on the most recent conversation.",
     "developerName": "ceasarXuu",

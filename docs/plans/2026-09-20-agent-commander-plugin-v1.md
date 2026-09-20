@@ -1,4 +1,4 @@
-# PRD：External Agent Orchestrator Plugin v0.1
+# PRD：AgentCommander Plugin v0.1
 
 - Status: Draft
 - Created: 2026-09-20
@@ -114,6 +114,7 @@ Plugin 通过自然语言 Skill 被发现。适配脚本的 stdout 仅输出一�
 | ID | Confirmed Decision | Must Do | Must Not Do | Rationale | Violation Signal | Confirmation | Status |
 |---|---|---|---|---|---|---|---|
 | PD1 | 第一版交付为 Codex Plugin。 | 提供可被 Codex 安装和发现的 Plugin 包。 | 只交付散落的提示词或单独脚本。 | 用户明确要求尝试开发第一版 Plugin。 | 交付物没有 Plugin manifest。 | user-confirmed-direct: “尝试开发成第一版 plugin” | active |
+| PD2 | Plugin 的展示名称为 `AgentCommander`，标准包 ID 为 `agent-commander`。 | 清单、目录和内含 Skill 使用统一名称。 | 保留旧包 ID 或显示名称造成双重身份。 | 用户明确要求重命名。 | 任一活动清单仍声明旧包 ID。 | user-confirmed-direct: “改为 AgentCommander” | active |
 
 ## 12. Open Questions And Risks
 

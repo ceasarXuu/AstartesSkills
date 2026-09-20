@@ -1,9 +1,9 @@
 ---
-name: external-agent-orchestrator
+name: agent-commander
 description: Delegate bounded read-only coding analysis or review from Codex to a locally installed Command Code, OpenCode, or Pi agent, preserve its explicit session ID, and continue that same external session when requested. Use when the user asks Codex to consult, call, delegate to, or follow up with one of these external agents. DeepSeek Harness is discovery-only in v0.1.
 ---
 
-# External Agent Orchestrator
+# AgentCommander
 
 Use an external coding agent as a subordinate worker while Codex remains responsible for scope, authorization, evidence review, and the final response.
 
