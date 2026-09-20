@@ -27,6 +27,17 @@ The model is simple:
 
 ## Quick Start
 
+### Install AgentCommander for Codex
+
+Register this repository as a Codex plugin marketplace, then install AgentCommander:
+
+```bash
+codex plugin marketplace add ceasarXuu/AstartesSkills --ref main
+codex plugin add agent-commander@astartes-skills
+```
+
+Restart Codex and open a new task after installation. AgentCommander lets Codex delegate bounded read-only work to supported local coding agents and continue the exact external session.
+
 ### Install with `skills` CLI
 
 List available skills in this repository:
@@ -129,6 +140,9 @@ Reference:
 
 ```text
 .
+├── .agents/plugins/                # Codex plugin marketplace catalog
+├── plugins/
+│   └── agent-commander/            # Codex-led external agent orchestration plugin
 ├── skills/                         # Standalone skills
 │   ├── _templates/                 # Reusable skill templates
 │   ├── clear-prd/                  # Product-first PRD clarification skill

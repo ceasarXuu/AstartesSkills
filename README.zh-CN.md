@@ -40,6 +40,17 @@
 
 ## 安装
 
+### 安装 AgentCommander Plugin
+
+先将本仓库注册为 Codex Plugin Marketplace，再安装 AgentCommander：
+
+```bash
+codex plugin marketplace add ceasarXuu/AstartesSkills --ref main
+codex plugin add agent-commander@astartes-skills
+```
+
+安装后请重启 Codex，并在新任务中使用。AgentCommander 让 Codex 以主 Agent 身份，把边界明确的只读任务委派给本机外部 coding agent，并继续同一个外部会话。
+
 ### 方式一：使用 `skills` CLI 安装本库
 
 ```bash
@@ -99,6 +110,8 @@ curl -fsSL https://raw.githubusercontent.com/ceasarXuu/AstartesSkills/main/scrip
 
 ```text
 .
+├── .agents/plugins/             # Codex Plugin Marketplace 目录
+├── plugins/agent-commander/     # 外部 coding agent 编排 Plugin
 ├── skills/                     # 可安装 skills
 ├── registry/                   # 仓库级目录
 ├── scripts/                    # 安装/校验/导出工具

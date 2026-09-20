@@ -1,0 +1,20 @@
+{
+  "name": "astartes-skills",
+  "interface": {
+    "displayName": "Astartes Skills"
+  },
+  "plugins": [
+    {
+      "name": "agent-commander",
+      "source": {
+        "source": "local",
+        "path": "./plugins/agent-commander"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
