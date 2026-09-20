@@ -148,6 +148,34 @@ class DelegateAgentCliTests(unittest.TestCase):
         self.assertEqual(payload["status"], "unsupported")
         self.assertIn("experimental", payload["error"])
 
+    def test_deepseek_harness_check_uses_offline_npm_cache_when_dsh_is_not_on_path(self):
+        self.install_fake(
+            "npm",
+            "printf '%s\\n' \"$@\" > \"$ARGS_LOG\"\n"
+            "printf '%s\\n' '0.1.5-rc.1'",
+        )
+
+        result = self.invoke("check", "--provider", "deepseek-harness")
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        provider = json.loads(result.stdout)["providers"][0]
+        self.assertTrue(provider["available"])
+        self.assertEqual(provider["discovery"], "npm-cache")
+        self.assertEqual(provider["version"], "0.1.5-rc.1")
+        argv = self.args_log.read_text(encoding="utf-8").splitlines()
+        self.assertEqual(
+            argv,
+            [
+                "exec",
+                "--offline",
+                "--yes=false",
+                "--package=@deepseek-ai/dsh",
+                "--",
+                "dsh",
+                "--version",
+            ],
+        )
+
     def test_follow_up_requires_explicit_session_id(self):
         result = self.invoke(
             "follow-up", "--provider", "pi", "--cwd", self.temp_dir.name,

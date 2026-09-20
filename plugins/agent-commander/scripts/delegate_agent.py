@@ -49,19 +49,47 @@ def resolve_executable(provider: str) -> str | None:
     return None
 
 
-def check_provider(provider: str) -> dict[str, Any]:
+def resolve_check_command(
+    provider: str,
+) -> tuple[list[str] | None, str | None, str | None]:
     executable = resolve_executable(provider)
+    if executable:
+        return [executable], executable, None
+    if provider == "deepseek-harness":
+        npm = shutil.which("npm")
+        if npm:
+            return (
+                [
+                    npm,
+                    "exec",
+                    "--offline",
+                    "--yes=false",
+                    "--package=@deepseek-ai/dsh",
+                    "--",
+                    "dsh",
+                ],
+                npm,
+                "npm-cache",
+            )
+    return None, None, None
+
+
+def check_provider(provider: str) -> dict[str, Any]:
+    command, executable, discovery = resolve_check_command(provider)
     result: dict[str, Any] = {
         "provider": provider,
-        "available": executable is not None,
+        "available": command is not None,
         "executable": executable,
         "experimental": provider == "deepseek-harness",
     }
-    if executable is None:
+    if discovery:
+        result["discovery"] = discovery
+        result["command"] = command
+    if command is None:
         result["candidates"] = list(EXECUTABLES[provider])
         return result
 
-    version_args = [executable, "--version"]
+    version_args = command + ["--version"]
     if provider == "command-code":
         version_args.insert(1, "--no-auto-update")
     try:
@@ -72,6 +100,11 @@ def check_provider(provider: str) -> dict[str, Any]:
             timeout=3,
             env=provider_environment(provider),
         )
+        if discovery == "npm-cache" and completed.returncode != 0:
+            result["available"] = False
+            result["version"] = None
+            result["candidates"] = list(EXECUTABLES[provider])
+            return result
         version_text = (completed.stdout or completed.stderr).strip().splitlines()
         result["version"] = version_text[0][:200] if version_text else None
     except (OSError, subprocess.TimeoutExpired):
@@ -142,7 +175,7 @@ def build_command(
             command.extend(["--session", session_id])
         command.append(safe_prompt)
         return command
-    raise ValueError(f"provider '{provider}' cannot be executed in v0.2")
+    raise ValueError(f"provider '{provider}' cannot be executed in v0.2.1")
 
 
 def parse_json_lines(stdout: str) -> list[dict[str, Any]]:
@@ -228,7 +261,7 @@ def run_provider(args: argparse.Namespace) -> int:
                 "session_ref": None,
                 "summary": "",
                 "error": (
-                    "deepseek-harness execution is experimental and disabled in v0.2 "
+                    "deepseek-harness execution is experimental and disabled in v0.2.1 "
                     "because its minimal SDK profile exposes a danger-full-access shell"
                 ),
             },

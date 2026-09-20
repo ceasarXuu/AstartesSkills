@@ -1,4 +1,4 @@
-# PRD：AgentCommander Plugin v0.2
+# PRD：AgentCommander Plugin v0.2.1
 
 - Status: Draft
 - Created: 2026-09-20
@@ -10,8 +10,8 @@
 ## Requester Review Summary
 
 - Key decisions: 第一版交付形态为 Codex Plugin。
-- Important exceptions: DeepSeek Harness 的最小 SDK 默认提供高权限 shell，v0.2 不自动执行它。
-- Must-confirm before implementation: v0.2 之后是否支持写入、并发和仓库 marketplace 分发。
+- Important exceptions: DeepSeek Harness 的最小 SDK 默认提供高权限 shell，v0.2.1 不自动执行它。
+- Must-confirm before implementation: v0.2.1 之后是否支持写入、并发和仓库 marketplace 分发。
 - Status reason: 可实现安全的只读原型，但后续写入与分发规则仍需确认。
 
 ## 1. Background And Product Intent
@@ -65,13 +65,14 @@ Plugin 通过自然语言 Skill 被发现。适配脚本的 stdout 仅输出一�
 
 ## 7. Product Rules And State Logic
 
-- v0.2 委派固定为只读。
+- v0.2.1 委派固定为只读。
 - 会话续接必须使用明确 session id，禁止依赖“最近会话”。
 - 不自动切换后端；指定后端失败即返回失败。
 - 不自动附加 `--yolo`、`--auto` 或等价危险参数。
 - Command Code 调用固定附加 `--no-auto-update`。
 - Claude Code 调用固定使用 `plan` 权限模式、`Read,Glob,Grep` 工具白名单并关闭启动时自动更新。
-- DeepSeek Harness v0.2 返回 experimental/unavailable-to-run，不静默执行高权限 shell。
+- DeepSeek Harness 探测优先使用 PATH 中的 `dsh`，否则通过 npm 离线缓存检查官方 `@deepseek-ai/dsh` 包；不得联网下载。
+- DeepSeek Harness v0.2.1 返回 experimental/unavailable-to-run，不静默执行高权限 shell。
 
 ## 8. Edge Cases, Errors, And Recovery
 
@@ -95,13 +96,14 @@ Plugin 通过自然语言 Skill 被发现。适配脚本的 stdout 仅输出一�
 - Given 一个受支持的假 CLI，when 执行 `run`，then 使用只读参数启动并返回归一化文本与 session id。
 - Given 一个有效 session id，when 执行 `follow-up`，then 命令包含该精确 id，不使用最近会话选项。
 - Given Claude Code，when 执行或续接只读任务，then 使用安全参数、解析 `result` JSON，并保留精确 `session_id`。
-- Given DeepSeek Harness，when 请求执行，then v0.2 明确拒绝并说明 experimental 安全边界。
+- Given `dsh` 不在 PATH 但官方 npm 包已缓存，when 探测 DeepSeek Harness，then 返回可用、版本和 `npm-cache` 发现方式，且不联网安装。
+- Given DeepSeek Harness，when 请求执行，then v0.2.1 明确拒绝并说明 experimental 安全边界。
 - Given 后端输出未知 JSON 事件，when 解析，then 已知最终结果仍可返回。
 - Given 完成实现，when 运行 Plugin 和仓库校验，then 全部通过。
 
 ## 11. Review Checklist And Sign-off Questions
 
-- 是否接受 v0.2 仅执行只读任务？
+- 是否接受 v0.2.1 仅执行只读任务？
 - 后续写任务是否一律使用隔离 worktree？
 - 是否将本 Plugin 加入仓库级 marketplace？
 - 是否需要把 DeepSeek Harness 执行能力列入 v0.3？
