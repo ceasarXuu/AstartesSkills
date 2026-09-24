@@ -206,8 +206,3 @@
 - 边界：70 万窗口会让 1M 会话更早为压缩预留空间，但不能消除超大提示、附件、工具输出或压缩本身失败导致的上下文错误；失败后仍应使用 `/compact`、回退消息或新建 session 恢复。
 - 验证：测试先因缺少自动压缩变量产生 `KeyError`，再更新两个资产恢复绿色；安装回归必须同时验证固定值、凭据保留、幂等更新与全局配置隔离。
 - 本机结果：Claude Code `2.1.218` 版本探测正常；两个 profile 均完成更新，API Key 摘要保持一致、全局 settings 哈希未变，新变量准确落盘。Pro 备份位于 `~/.claude/provider-switch-backups/20260807-001636-475022/`，Flash 备份位于 `~/.claude/provider-switch-backups/20260807-001636-705360/`。
-## 2026-09-24 macOS 指定窗口截图
-
-- `CGWindowListCopyWindowInfo` 可列出当前可见窗口的 ID、所属进程和边界；用 `NSRunningApplication` 将 PID 对应到 bundle ID，再用 `screencapture -l <窗口 ID>` 截取单个窗口。
-- 本机验证发现 `screencapture` 对以点开头的目标文件名报告“cannot write file”，但退出码仍为 0。临时截图文件应使用普通文件名，且必须检查文件存在、能解码及图片尺寸，不能只看退出码。
-- 同一 App 可有多个窗口，窗口标题也可能为空。实际操作先列清单并确认窗口 ID 与 bundle ID，截后查看图片内容；无法区分候选时应请求用户指出目标。
