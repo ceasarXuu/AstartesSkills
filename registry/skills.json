@@ -151,6 +151,41 @@
       }
     },
     {
+      "id": "macos-window-screenshot",
+      "name": "macOS Window Screenshot",
+      "path": "skills/macos-window-screenshot",
+      "summary": "Lists visible macOS app windows and captures one verified window by ID and bundle ID, with guidance to inspect the resulting image.",
+      "tags": [
+        "macos",
+        "screenshot",
+        "window-capture",
+        "agent-tools"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/macos-window-screenshot"
+      },
+      "release": {
+        "version": "0.1.0",
+        "published_at": "2026-09-24T22:54:52+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Add a macOS window listing and single-window capture script with app identity checks and image validation.",
+          "Guide agents to disambiguate candidate windows and visually verify the captured result."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/macos-window-screenshot/markets/openai-compatible.json"
+        }
+      }
+    },
+    {
       "id": "plan-report",
       "name": "Plan Report",
       "path": "skills/plan-report",

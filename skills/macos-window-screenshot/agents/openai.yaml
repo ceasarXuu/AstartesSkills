@@ -1,0 +1,4 @@
+version: 1
+display_name: macOS Window Screenshot
+short_description: Identify and capture one macOS app window reliably.
+default_prompt: Use $macos-window-screenshot to list windows, identify the requested app window, capture it, and verify the image.
