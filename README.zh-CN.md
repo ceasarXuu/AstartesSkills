@@ -49,7 +49,7 @@ codex plugin marketplace add ceasarXuu/AstartesSkills --ref main
 codex plugin add agent-commander@astartes-skills
 ```
 
-安装后请重启 Codex，并在新任务中使用。AgentCommander 让 Codex 以主 Agent 身份，把边界明确的只读任务委派给本机外部 coding agent，并继续同一个外部会话。
+安装后请重启 Codex，并在新任务中使用。AgentCommander 让 Codex 以主 Agent 身份，把用户授权的任务（包括实现、命令执行、提交等）委派给本机外部 coding agent，并继续同一个外部会话。
 
 ### 方式一：使用 `skills` CLI 安装本库
 

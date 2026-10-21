@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run supported local coding agents through one read-only JSON contract."""
+"""Run supported local coding agents through one JSON delegation contract."""
 
 from __future__ import annotations
 
@@ -29,6 +29,13 @@ READ_ONLY_PREFIX = (
     "You are a read-only delegated agent. Do not create, edit, delete, rename, "
     "commit, or push files. Do not run commands that change repository or external "
     "state. Inspect the requested material and return evidence-backed findings only.\n\n"
+)
+EXECUTION_PREFIX = (
+    "You are a delegated agent executing a user-authorized task. Complete the "
+    "requested work within its stated scope, including changes and commands as needed. "
+    "Follow repository instructions and existing provider permissions. Do not treat "
+    "delegation as authorization for unrelated actions. Report changes, checks, "
+    "results, and blockers accurately.\n\n"
 )
 STDERR_LIMIT = 4000
 
@@ -131,8 +138,9 @@ def build_command(
     prompt: str,
     cwd: str,
     session_id: str | None,
+    access: str = "execute",
 ) -> list[str]:
-    safe_prompt = READ_ONLY_PREFIX + prompt
+    safe_prompt = (READ_ONLY_PREFIX if access == "read-only" else EXECUTION_PREFIX) + prompt
     if provider == "command-code":
         command = [
             executable,
@@ -156,6 +164,8 @@ def build_command(
             "--tools",
             "Read,Glob,Grep",
         ]
+        if access == "execute":
+            command = command[:4]
         if session_id:
             command.extend(["--resume", session_id])
         command.append(safe_prompt)
@@ -171,6 +181,8 @@ def build_command(
             "--agent",
             "plan",
         ]
+        if access == "execute":
+            command = command[:-2]
         if session_id:
             command.extend(["--session", session_id])
         command.append(safe_prompt)
@@ -180,6 +192,8 @@ def build_command(
             executable, "--mode", "json", "--tools", "read,grep,glob",
             "--no-extensions", "--no-lsp", "--no-title", "--no-prewalk", "-p",
         ]
+        if access == "execute":
+            command = [executable, "--mode", "json", "--no-title", "-p"]
         if session_id:
             command.extend(["--resume", session_id])
         command.extend(["--", safe_prompt])
@@ -193,11 +207,13 @@ def build_command(
             "read,grep,find,ls",
             "-p",
         ]
+        if access == "execute":
+            command = [executable, "--mode", "json", "-p"]
         if session_id:
             command.extend(["--session", session_id])
         command.append(safe_prompt)
         return command
-    raise ValueError(f"provider '{provider}' cannot be executed in v0.3.0")
+    raise ValueError(f"provider '{provider}' cannot be executed in v0.4.0")
 
 
 def parse_json_lines(stdout: str) -> list[dict[str, Any]]:
@@ -337,13 +353,13 @@ def run_provider(args: argparse.Namespace) -> int:
         )
 
     command = ([executable, "--profile", "headless", "--json"] if desktop else
-               build_command(args.provider, executable, args.prompt, str(cwd), args.session_id))
+               build_command(args.provider, executable, args.prompt, str(cwd), args.session_id, args.access))
     if desktop:
         if args.session_id:
             command.extend(["--session-id", args.session_id])
-        command.extend(["--", READ_ONLY_PREFIX + args.prompt])
+        command.extend(["--", (READ_ONLY_PREFIX if args.access == "read-only" else EXECUTION_PREFIX) + args.prompt])
     try:
-        with dsh_desktop.readonly_patch() if desktop else nullcontext() as patch:
+        with dsh_desktop.delegation_patch(args.access) if desktop else nullcontext() as patch:
             if patch:
                 command[1:1] = ["--patch", patch]
             completed = subprocess.run(
@@ -397,7 +413,7 @@ def run_provider(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Delegate read-only tasks to supported local coding agents."
+        description="Delegate authorized tasks to supported local coding agents."
     )
     subparsers = parser.add_subparsers(dest="operation", required=True)
 
@@ -411,6 +427,7 @@ def build_parser() -> argparse.ArgumentParser:
         command.add_argument("--desktop-app", help="Official macOS Harness .app path")
         command.add_argument("--cwd", required=True)
         command.add_argument("--prompt", required=True)
+        command.add_argument("--access", choices=("execute", "read-only"), default="execute")
         command.add_argument("--timeout", type=positive_integer, default=300)
         if operation == "follow-up":
             command.add_argument("--session-id", required=True)

@@ -36,7 +36,7 @@ codex plugin marketplace add ceasarXuu/AstartesSkills --ref main
 codex plugin add agent-commander@astartes-skills
 ```
 
-Restart Codex and open a new task after installation. AgentCommander lets Codex delegate bounded read-only work to supported local coding agents and continue the exact external session.
+Restart Codex and open a new task after installation. AgentCommander lets Codex delegate user-authorized work, including implementation and commands, to supported local coding agents and continue the exact external session.
 
 ### Install with `skills` CLI
 

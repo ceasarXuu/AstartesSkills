@@ -1,4 +1,4 @@
-"""Official macOS Harness bundle discovery and a guarded headless overlay."""
+"""Official macOS Harness bundle discovery and a task-scoped headless overlay."""
 
 from __future__ import annotations
 
@@ -34,8 +34,8 @@ def discover(app_path: str | None = None) -> tuple[str, str] | None:
 
 
 @contextmanager
-def readonly_patch():
-    """The runner cannot mount until the monotonic read-only guard is provided."""
+def delegation_patch(access: str = "execute"):
+    """Retain provider permissions unless the task explicitly requests read-only."""
     guard = Path(__file__).with_name("dsh_readonly.mjs").resolve()
     rows = [
         {"id": "tools", "config": {"mode": "native"}},
@@ -54,8 +54,11 @@ def readonly_patch():
         {"insert": [{"id": "commander-readonly", "name": str(guard)}]},
         {"id": "headless-runner", "inject": ["headlessStartup", "commanderReadOnly"]},
     ]
+    if access == "execute":
+        rows = [row for row in rows if row.get("id") in {
+            "credentials", "authorization", "deepseek-account"}]
     with tempfile.TemporaryDirectory(prefix="agent-commander-dsh-") as directory:
-        path = Path(directory) / "readonly.patch.json"
+        path = Path(directory) / "delegation.patch.json"
         path.write_text(json.dumps(rows), encoding="utf-8")
         yield str(path)
 

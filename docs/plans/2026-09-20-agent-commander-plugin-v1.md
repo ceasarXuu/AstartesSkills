@@ -142,3 +142,13 @@ Plugin 通过自然语言 Skill 被发现。适配脚本的 stdout 仅输出一�
 - 验收：15 项 CLI 测试、Node guard 白名单与拒绝检查通过；官方 Desktop `0.2.1-rc.2` 与 OMP `18.12.5` 的真实文件读取、JSON 输出和相同会话续接均通过。
 - 限制：此次 Desktop 支持 macOS 官方 bundle；不接管 GUI 中其他 preset 的既有会话，不自动安装或登录。Windows/Linux 桌面打包布局未验证。
 - 版本/主题/Issue：v0.3.0 / OMP 与官方 Desktop 委派 / [#9](https://github.com/ceasarXuu/AstartesSkills/issues/9)。
+
+## 2026-10-22 v0.4.0 执行权限规则修订
+
+- 用户直接确认：“修改一下 skills 规则，不是只能只读，可以控制其他 agent 做任何事”。此修订取代前文 v0.2.1/v0.3.0 的固定只读边界。
+- AgentCommander 可以委派用户授权范围内的任何任务，包括实现、文件变更、命令执行、测试、提交、推送、发布和账户操作；委派不会扩张原有授权，也不重复索取已获得的授权。
+- `run` 与 `follow-up` 默认 `--access execute`，移除强制 plan 模式和只读工具白名单；纯分析任务仍可显式选择 `--access read-only`。每次调用独立选定 access。
+- 执行模式保留后端已有权限配置，不自动添加跳过权限检查的参数。续接旧只读会话可能保留该会话原有权限，应如实返回阻塞，不能将模式选择解释为已提升后端权限。
+- Desktop 执行模式仅临时恢复已有凭据消费者；只读模式继续使用执行 guard。没有修改用户 profile。
+- 验证：18 项 CLI 测试通过，覆盖执行模式、默认值和可选只读模式；本机 OMP 与官方 Desktop 均在临时目录实际写入文件并验证内容一致。
+- 版本/主题/Issue：v0.4.0 / 用户授权任务执行 / [#10](https://github.com/ceasarXuu/AstartesSkills/issues/10)。

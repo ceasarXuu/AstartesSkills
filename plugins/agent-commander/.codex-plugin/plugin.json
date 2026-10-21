@@ -1,7 +1,7 @@
 {
   "name": "agent-commander",
-  "version": "0.3.0",
-  "description": "Delegate read-only coding tasks from Codex to supported local external agents and continue them by explicit session ID.",
+  "version": "0.4.0",
+  "description": "Delegate authorized tasks from Codex to supported local external agents and continue them by explicit session ID.",
   "author": {
     "name": "ceasarXuu",
     "url": "https://github.com/ceasarXuu"
@@ -22,13 +22,14 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AgentCommander",
-    "shortDescription": "Delegate read-only work to local coding agents.",
-    "longDescription": "Lets Codex detect supported local coding agents, send bounded read-only tasks, normalize their replies, and continue an exact provider session without relying on the most recent conversation.",
+    "shortDescription": "Delegate authorized tasks to local coding agents.",
+    "longDescription": "Lets Codex detect local coding agents, delegate authorized analysis or execution tasks, normalize results, and continue exact sessions with task-appropriate access.",
     "developerName": "ceasarXuu",
     "category": "Developer Tools",
     "capabilities": [
       "Local agent discovery",
-      "Read-only delegation",
+      "Authorized task execution",
+      "Optional read-only delegation",
       "Session follow-up"
     ],
     "defaultPrompt": [

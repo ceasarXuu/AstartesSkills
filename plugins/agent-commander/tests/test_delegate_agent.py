@@ -33,6 +33,8 @@ class DelegateAgentCliTests(unittest.TestCase):
         path.chmod(path.stat().st_mode | stat.S_IXUSR)
 
     def invoke(self, *args):
+        if args[0] in {"run", "follow-up"} and "--access" not in args:
+            args = (*args, "--access", "read-only")
         return subprocess.run(
             [sys.executable, str(SCRIPT), *args],
             text=True,
@@ -40,6 +42,39 @@ class DelegateAgentCliTests(unittest.TestCase):
             env=self.env,
             timeout=10,
         )
+
+    def test_execute_mode_does_not_force_read_only_provider_options(self):
+        for provider, executable in [("claude-code", "claude"), ("opencode", "opencode"),
+                                     ("pi", "pi"), ("omp", "omp"), ("command-code", "command-code")]:
+            with self.subTest(provider=provider):
+                self.install_fake(executable, "printf '%s\\n' \"$@\" > \"$ARGS_LOG\"")
+                result = self.invoke("run", "--provider", provider, "--access", "execute",
+                                     "--cwd", self.temp_dir.name, "--prompt", "Implement the authorized change")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                argv = self.args_log.read_text().splitlines()
+                for flag in ("--tools", "--permission-mode", "--agent", "--no-lsp"):
+                    self.assertNotIn(flag, argv)
+                self.assertFalse(any("You are a read-only" in value for value in argv))
+                self.assertTrue(any("Implement the authorized change" in value for value in argv))
+
+    def test_default_access_allows_execution(self):
+        self.install_fake("pi", "printf '%s\\n' \"$@\" > \"$ARGS_LOG\"")
+        result = subprocess.run([sys.executable, str(SCRIPT), "run", "--provider", "pi",
+                                 "--cwd", self.temp_dir.name, "--prompt", "Implement"],
+                                text=True, capture_output=True, env=self.env, timeout=10)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("--tools", self.args_log.read_text().splitlines())
+
+    def test_desktop_execute_overlay_preserves_provider_permissions(self):
+        app = self.install_desktop()
+        result = self.invoke("follow-up", "--provider", "deepseek-harness", "--desktop-app", str(app),
+                             "--access", "execute", "--session-id", "dsh-exact-1",
+                             "--cwd", self.temp_dir.name, "--prompt", "Implement")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        patch = json.loads(Path(str(self.args_log) + ".patch").read_text())
+        ids = {row.get("id") for row in patch}
+        self.assertEqual(ids, {"credentials", "authorization", "deepseek-account"})
+        self.assertNotIn("read-only", self.args_log.read_text())
 
     def test_command_code_run_returns_normalized_result_and_safe_flags(self):
         self.install_fake(

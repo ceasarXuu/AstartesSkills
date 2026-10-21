@@ -216,3 +216,10 @@
 - 已有 headless profile 可能没有 `read-only` preset；覆盖时需同时声明 preset 定义与默认值。已有会话的权限可被保留，所以不能只依赖默认 sandbox：执行 guard 同样覆盖续接。
 - OMP `18.12.5` 使用 `read,grep,glob` 工具名和 `--resume <ID>`。JSON 的 `message_end` 是已提交回复，不能直接拼接中间草稿 `text_delta`。
 - 本次已真实验证两者的启动、文件读取与同会话历史续接。相关自动测试：`python3 -m unittest discover -s plugins/agent-commander/tests` 与 `node plugins/agent-commander/tests/test_dsh_policy.mjs`。
+
+## 2026-10-22 AgentCommander v0.4.0 执行模式
+
+- v0.4.0 之后默认执行用户授权任务；上面的 v0.3.0 全局 guard 说明仅适用于显式 `--access read-only`。
+- 不能只改 skill 的文字：Claude Code 的 plan/tools 参数、OpenCode 的 plan agent、Pi/OMP 的工具白名单和 Desktop 的只读 overlay 都会阻止实际执行，必须与指引同时按 access 切换。
+- 执行模式保留 provider 自身权限；旧会话保存的 sandbox/approval 状态可能继续生效。选择 execute 并不替代后端的权限配置。
+- 已在独立临时目录用本机 OMP 与官方 Harness Desktop 实际创建文件，读取文件核对内容后确认执行支持。

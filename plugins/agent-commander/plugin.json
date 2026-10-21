@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "agent-commander",
-  "version": "0.3.0",
-  "description": "Delegate read-only coding tasks from Codex to supported local external agents and continue them by explicit session ID.",
+  "version": "0.4.0",
+  "description": "Delegate authorized tasks from Codex to supported local external agents and continue them by explicit session ID.",
   "author": {
     "name": "ceasarXuu",
     "url": "https://github.com/ceasarXuu"
