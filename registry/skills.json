@@ -524,5 +524,21 @@
         }
       }
     }
+  ],
+  "plugins": [
+    {
+      "id": "agent-commander",
+      "path": "plugins/agent-commander",
+      "release": {
+        "version": "0.3.0",
+        "published_at": "2026-10-22T01:05:41+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Add Oh My Pi (omp) read-only delegation with committed JSON replies and exact session resume.",
+          "Discover official macOS DeepSeek Harness Desktop and use its bundled headless JSON CLI with exact session follow-up.",
+          "Enforce a required global read-only tool guard and reuse existing desktop credentials through a temporary overlay."
+        ]
+      }
+    }
   ]
 }

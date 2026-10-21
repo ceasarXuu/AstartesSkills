@@ -133,3 +133,12 @@ Plugin 通过自然语言 Skill 被发现。适配脚本的 stdout 仅输出一�
 - 首版使用无第三方运行依赖的 Python 标准库适配器。
 - 根目录 `plugin.json` 表达可移植 Agent Plugin 包；`.codex-plugin/plugin.json` 保持 Codex 兼容。
 - 只读限制通过后端自身安全默认、只读 agent 或工具白名单尽量强制；无法可靠限制的 DSH 首版不执行。
+
+## 2026-10-22 v0.3.0 实施补充
+
+- 来源：用户要求“新增一个 omp (ph my pi) 支持；完善对 deepseek harness desktop 的支持”，并确认“官方的，本机的 deepseek harness 2 就是官方的”。
+- 交付：新增 `omp` provider；`deepseek-harness` 可发现官方 macOS Desktop bundle，通过内置 headless CLI 启动、返回 JSON 结果并精确续接。继续保持现有只读委派边界。
+- 权限：临时覆盖配置复用已保存凭据；执行 guard 只允许 `read/read_image/glob/grep`，runner 必须等待 guard 就绪。原 profile 不修改；旧 PATH/npm-only Harness 仍仅探测。
+- 验收：15 项 CLI 测试、Node guard 白名单与拒绝检查通过；官方 Desktop `0.2.1-rc.2` 与 OMP `18.12.5` 的真实文件读取、JSON 输出和相同会话续接均通过。
+- 限制：此次 Desktop 支持 macOS 官方 bundle；不接管 GUI 中其他 preset 的既有会话，不自动安装或登录。Windows/Linux 桌面打包布局未验证。
+- 版本/主题/Issue：v0.3.0 / OMP 与官方 Desktop 委派 / [#9](https://github.com/ceasarXuu/AstartesSkills/issues/9)。

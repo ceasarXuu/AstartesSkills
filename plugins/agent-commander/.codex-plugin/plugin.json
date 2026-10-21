@@ -1,6 +1,6 @@
 {
   "name": "agent-commander",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Delegate read-only coding tasks from Codex to supported local external agents and continue them by explicit session ID.",
   "author": {
     "name": "ceasarXuu",
@@ -15,7 +15,9 @@
     "claude-code",
     "opencode",
     "command-code",
-    "pi"
+    "pi",
+    "omp",
+    "deepseek-harness"
   ],
   "skills": "./skills/",
   "interface": {

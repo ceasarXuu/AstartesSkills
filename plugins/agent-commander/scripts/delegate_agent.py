@@ -9,16 +9,20 @@ import os
 import shutil
 import subprocess
 import sys
+from contextlib import nullcontext
 from pathlib import Path
 from typing import Any, Callable
 
+import dsh_desktop
 
-PROVIDERS = ("command-code", "claude-code", "opencode", "pi", "deepseek-harness")
+
+PROVIDERS = ("command-code", "claude-code", "opencode", "pi", "omp", "deepseek-harness")
 EXECUTABLES = {
     "command-code": ("command-code", "cmdc"),
     "claude-code": ("claude",),
     "opencode": ("opencode",),
     "pi": ("pi",),
+    "omp": ("omp",),
     "deepseek-harness": ("dsh",),
 }
 READ_ONLY_PREFIX = (
@@ -50,8 +54,14 @@ def resolve_executable(provider: str) -> str | None:
 
 
 def resolve_check_command(
-    provider: str,
+    provider: str, desktop_app: str | None = None,
 ) -> tuple[list[str] | None, str | None, str | None]:
+    if provider == "deepseek-harness":
+        desktop = dsh_desktop.discover(desktop_app)
+        if desktop:
+            return [desktop[0]], desktop[0], "official-desktop"
+        if desktop_app:
+            return None, None, None
     executable = resolve_executable(provider)
     if executable:
         return [executable], executable, None
@@ -74,13 +84,13 @@ def resolve_check_command(
     return None, None, None
 
 
-def check_provider(provider: str) -> dict[str, Any]:
-    command, executable, discovery = resolve_check_command(provider)
+def check_provider(provider: str, desktop_app: str | None = None) -> dict[str, Any]:
+    command, executable, discovery = resolve_check_command(provider, desktop_app)
     result: dict[str, Any] = {
         "provider": provider,
         "available": command is not None,
         "executable": executable,
-        "experimental": provider == "deepseek-harness",
+        "experimental": provider == "deepseek-harness" and discovery != "official-desktop",
     }
     if discovery:
         result["discovery"] = discovery
@@ -89,6 +99,9 @@ def check_provider(provider: str) -> dict[str, Any]:
         result["candidates"] = list(EXECUTABLES[provider])
         return result
 
+    if discovery == "official-desktop":
+        result["version"] = dsh_desktop.discover(desktop_app)[1]
+        return result
     version_args = command + ["--version"]
     if provider == "command-code":
         version_args.insert(1, "--no-auto-update")
@@ -162,6 +175,15 @@ def build_command(
             command.extend(["--session", session_id])
         command.append(safe_prompt)
         return command
+    if provider == "omp":
+        command = [
+            executable, "--mode", "json", "--tools", "read,grep,glob",
+            "--no-extensions", "--no-lsp", "--no-title", "--no-prewalk", "-p",
+        ]
+        if session_id:
+            command.extend(["--resume", session_id])
+        command.extend(["--", safe_prompt])
+        return command
     if provider == "pi":
         command = [
             executable,
@@ -175,7 +197,7 @@ def build_command(
             command.extend(["--session", session_id])
         command.append(safe_prompt)
         return command
-    raise ValueError(f"provider '{provider}' cannot be executed in v0.2.1")
+    raise ValueError(f"provider '{provider}' cannot be executed in v0.3.0")
 
 
 def parse_json_lines(stdout: str) -> list[dict[str, Any]]:
@@ -237,11 +259,28 @@ def parse_pi(events: list[dict[str, Any]]) -> tuple[str | None, str]:
     return session_id, "".join(texts)
 
 
+def parse_omp(events: list[dict[str, Any]]) -> tuple[str | None, str]:
+    session_id: str | None = None
+    texts: list[str] = []
+    for event in events:
+        if event.get("type") == "session" and isinstance(event.get("id"), str):
+            session_id = event["id"]
+        message = event.get("message")
+        if (event.get("type") == "message_end" and isinstance(message, dict)
+                and message.get("role") == "assistant"):
+            texts = [part["text"] for part in message.get("content", [])
+                     if isinstance(part, dict) and part.get("type") == "text"
+                     and isinstance(part.get("text"), str)]
+    return session_id, "".join(texts)
+
+
 PARSERS: dict[str, Callable[[list[dict[str, Any]]], tuple[str | None, str]]] = {
     "command-code": parse_command_code,
     "claude-code": parse_claude_code,
     "opencode": parse_opencode,
     "pi": parse_pi,
+    "omp": parse_omp,
+    "deepseek-harness": dsh_desktop.parse_events,
 }
 
 
@@ -253,7 +292,8 @@ def positive_integer(raw_value: str) -> int:
 
 
 def run_provider(args: argparse.Namespace) -> int:
-    if args.provider == "deepseek-harness":
+    desktop = dsh_desktop.discover(args.desktop_app) if args.provider == "deepseek-harness" else None
+    if args.provider == "deepseek-harness" and desktop is None:
         return emit(
             {
                 "provider": args.provider,
@@ -261,14 +301,16 @@ def run_provider(args: argparse.Namespace) -> int:
                 "session_ref": None,
                 "summary": "",
                 "error": (
-                    "deepseek-harness execution is experimental and disabled in v0.2.1 "
-                    "because its minimal SDK profile exposes a danger-full-access shell"
+                    f"not an executable official macOS Harness bundle: {args.desktop_app}"
+                    if args.desktop_app else
+                    "Legacy DeepSeek Harness execution remains experimental and disabled; "
+                    "select an official macOS desktop bundle with --desktop-app"
                 ),
             },
             2,
         )
 
-    executable = resolve_executable(args.provider)
+    executable = desktop[0] if desktop else resolve_executable(args.provider)
     if executable is None:
         return emit(
             {
@@ -294,18 +336,20 @@ def run_provider(args: argparse.Namespace) -> int:
             2,
         )
 
-    command = build_command(
-        args.provider, executable, args.prompt, str(cwd), args.session_id
-    )
+    command = ([executable, "--profile", "headless", "--json"] if desktop else
+               build_command(args.provider, executable, args.prompt, str(cwd), args.session_id))
+    if desktop:
+        if args.session_id:
+            command.extend(["--session-id", args.session_id])
+        command.extend(["--", READ_ONLY_PREFIX + args.prompt])
     try:
-        completed = subprocess.run(
-            command,
-            cwd=str(cwd),
-            text=True,
-            capture_output=True,
-            timeout=args.timeout,
-            env=provider_environment(args.provider),
-        )
+        with dsh_desktop.readonly_patch() if desktop else nullcontext() as patch:
+            if patch:
+                command[1:1] = ["--patch", patch]
+            completed = subprocess.run(
+                command, cwd=str(cwd), text=True, capture_output=True,
+                timeout=args.timeout, env=provider_environment(args.provider),
+            )
     except subprocess.TimeoutExpired as error:
         return emit(
             {
@@ -358,11 +402,13 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="operation", required=True)
 
     check = subparsers.add_parser("check", help="Check provider availability")
+    check.add_argument("--desktop-app", help="Official macOS Harness .app path")
     check.add_argument("--provider", choices=("all",) + PROVIDERS, default="all")
 
     for operation in ("run", "follow-up"):
         command = subparsers.add_parser(operation)
         command.add_argument("--provider", choices=PROVIDERS, required=True)
+        command.add_argument("--desktop-app", help="Official macOS Harness .app path")
         command.add_argument("--cwd", required=True)
         command.add_argument("--prompt", required=True)
         command.add_argument("--timeout", type=positive_integer, default=300)
@@ -377,7 +423,7 @@ def main() -> int:
     args = build_parser().parse_args()
     if args.operation == "check":
         selected = PROVIDERS if args.provider == "all" else (args.provider,)
-        return emit({"providers": [check_provider(item) for item in selected]}, 0)
+        return emit({"providers": [check_provider(item, args.desktop_app) for item in selected]}, 0)
     return run_provider(args)
 
 

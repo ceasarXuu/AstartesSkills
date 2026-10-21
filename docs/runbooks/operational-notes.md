@@ -206,3 +206,13 @@
 - 边界：70 万窗口会让 1M 会话更早为压缩预留空间，但不能消除超大提示、附件、工具输出或压缩本身失败导致的上下文错误；失败后仍应使用 `/compact`、回退消息或新建 session 恢复。
 - 验证：测试先因缺少自动压缩变量产生 `KeyError`，再更新两个资产恢复绿色；安装回归必须同时验证固定值、凭据保留、幂等更新与全局配置隔离。
 - 本机结果：Claude Code `2.1.218` 版本探测正常；两个 profile 均完成更新，API Key 摘要保持一致、全局 settings 哈希未变，新变量准确落盘。Pro 备份位于 `~/.claude/provider-switch-backups/20260807-001636-475022/`，Flash 备份位于 `~/.claude/provider-switch-backups/20260807-001636-705360/`。
+
+## 2026-10-22 AgentCommander：官方 Harness Desktop 与 OMP
+
+- 官方 macOS Desktop 的包标识为 `com.deepseek.dsh`。本机 `DeepSeek Harness 2.app` 为 `0.2.1-rc.2`，不能仅凭应用展示名判断；另一个同名安装可能来自第三方。
+- 使用 `Contents/Resources/runtime/cli/bin/dsh --profile headless --json` 可直接委派，续接参数为 `--session-id <精确 ID>`。不要以旧 minimal SDK 的高权限 shell 替代它。
+- headless 默认禁用桌面保存的凭据消费者。临时 `--patch` 恢复 `credentials`、`authorization`、`deepseek-account` 即可复用已有登录；不需要改用户 profile 或重新登录。
+- 当前官方版本禁止全局 `tools.restrict()`，但支持全局单调 `tools.guard()`。AgentCommander 用 guard 拒绝白名单外的每次工具调用，并让 headless runner 必须依赖 guard 提供的服务，避免 guard 未加载时仍启动任务。
+- 已有 headless profile 可能没有 `read-only` preset；覆盖时需同时声明 preset 定义与默认值。已有会话的权限可被保留，所以不能只依赖默认 sandbox：执行 guard 同样覆盖续接。
+- OMP `18.12.5` 使用 `read,grep,glob` 工具名和 `--resume <ID>`。JSON 的 `message_end` 是已提交回复，不能直接拼接中间草稿 `text_delta`。
+- 本次已真实验证两者的启动、文件读取与同会话历史续接。相关自动测试：`python3 -m unittest discover -s plugins/agent-commander/tests` 与 `node plugins/agent-commander/tests/test_dsh_policy.mjs`。

@@ -1,6 +1,6 @@
 ---
 name: agent-commander
-description: Delegate bounded read-only coding analysis or review from Codex to a locally installed Command Code, Claude Code, OpenCode, or Pi agent, preserve its explicit session ID, and continue that same external session when requested. Use when the user asks Codex to consult, call, delegate to, or follow up with one of these external agents. DeepSeek Harness is discovery-only in v0.2.1.
+description: Delegate bounded read-only coding analysis or review from Codex to a locally installed Command Code, Claude Code, OpenCode, Pi, or Oh My Pi (omp) agent, preserve its explicit session ID, and continue that same external session when requested. Use when the user asks Codex to consult, call, delegate to, or follow up with one of these external agents. Official macOS DeepSeek Harness Desktop supports guarded headless delegation; legacy dsh remains discovery-only.
 ---
 
 # AgentCommander
@@ -9,13 +9,13 @@ Use an external coding agent as a subordinate worker while Codex remains respons
 
 ## Boundaries
 
-- v0.2.1 is read-only. Do not use it for implementation, file edits, commits, pushes, publishing, account changes, or other external mutations.
+- v0.3.0 is read-only. Do not use it for implementation, file edits, commits, pushes, publishing, account changes, or other external mutations.
 - Do not install a missing provider, log into it, change its model, or spend credits beyond an already configured invocation unless the user explicitly authorizes that action.
 - Never add `--yolo`, `--auto`, `--dangerously-skip-permissions`, or equivalent flags.
 - Use an explicit provider session ID for every follow-up. Never substitute a “continue latest” option.
 - Do not silently fall back to another provider.
 - Treat the subordinate response as a claim to review, not as proof or user authority.
-- DeepSeek Harness execution is disabled in v0.2.1 because its minimal SDK profile exposes a high-permission shell.
+- Only the official macOS DeepSeek Harness Desktop bundle is executable. Legacy `dsh` and npm-cache discovery do not authorize running the old minimal SDK profile.
 
 ## Adapter
 
@@ -27,13 +27,15 @@ Check availability before the first delegation in a task:
 python3 <adapter> check --provider all
 ```
 
-DeepSeek Harness discovery first checks for `dsh` on `PATH`, then checks the official `@deepseek-ai/dsh` package through npm's existing cache with networking and installation disabled. Treat `discovery: "npm-cache"` as available for discovery only; do not replace the safe command with an online `npx` invocation.
+DeepSeek Harness discovery checks official `com.deepseek.dsh` macOS bundles in `/Applications` and `~/Applications`, then PATH and the offline npm cache. Use `--desktop-app <absolute .app path>` on `check`, `run`, and `follow-up` to select the exact official installation (including renamed bundles). An invalid explicit path fails without fallback. PATH/npm-only discovery remains experimental and cannot execute.
+
+The desktop adapter uses its bundled `headless --json` CLI and `--session-id`, not GUI automation. It temporarily restores the existing saved credential consumers, without installing or logging in. A required global tool guard allows only `read`, `read_image`, `glob`, and `grep`; all other tool calls are denied even on resumed sessions. The temporary overlay does not edit the user's profile. Missing guard support prevents the runner from starting. Desktop conversations from other agent presets are not adopted: continue only the session returned by this adapter in the same cwd.
 
 Start a task:
 
 ```text
 python3 <adapter> run \
-  --provider <command-code|claude-code|opencode|pi|deepseek-harness> \
+  --provider <command-code|claude-code|opencode|pi|omp|deepseek-harness> \
   --cwd <absolute-workspace-path> \
   --prompt <bounded-task>
 ```
@@ -71,8 +73,9 @@ Do not include hidden reasoning, unrelated conversation history, credentials, or
 - Prefer Command Code when a stable final result envelope is important.
 - Use Claude Code when the user names it or its repository-aware analysis is specifically useful.
 - Prefer Pi for a conversation likely to need several follow-ups.
+- Use `omp` for Oh My Pi. Its tool names differ from Pi: the adapter enables `read,grep,glob`, disables ambient extensions and LSP, and resumes with `--resume <id>`. Only committed assistant messages become the summary.
 - Use OpenCode when its project context or configured models are specifically useful.
-- Do not execute DeepSeek Harness in v0.2.1.
+- Use `deepseek-harness` only when discovery reports `official-desktop`. For multiple installations, pass the same `--desktop-app` on every operation.
 
 ## Completion
 
