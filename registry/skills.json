@@ -522,6 +522,43 @@
           "manifest": "skills/dev-loop/markets/openai-compatible.json"
         }
       }
+    },
+    {
+      "id": "github-projects-issues",
+      "name": "GitHub Projects & Issues",
+      "path": "skills/github-projects-issues",
+      "summary": "Coordinates GitHub Projects and issues with repository binding, version boards, P0–P3 triage, minimal issue templates, session titles, and verified progress and closure synchronization.",
+      "tags": [
+        "github",
+        "projects",
+        "issues",
+        "triage",
+        "agent-workflow"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/github-projects-issues"
+      },
+      "release": {
+        "version": "1.0.0",
+        "published_at": "2026-10-30T07:42:28+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Add repository Project binding and milestone boards based on the verified reference Project.",
+          "Define bug and feature P0–P3 priorities and minimal issue templates.",
+          "Synchronize agent session titles, Project status, and issue closure with verified delivery."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/github-projects-issues/markets/openai-compatible.json"
+        }
+      }
     }
   ],
   "plugins": [

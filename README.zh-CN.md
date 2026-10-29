@@ -28,6 +28,7 @@
 - `provider-switch`：统一维护多个 Agent 与模型 Provider 的临时配置、安装、验证、备份和回滚；当前支持 `codex-ds-pro` / `codex-ds-flash`、`claude-ds-pro` / `claude-ds-flash` 与 Step Plan 的 `claude-step`，其中专用 Claude 启动器默认使用 YOLO / bypass-permissions，仅适合可信工作区；Step profile 使用 `step-5-preview` 和官方 1M 上下文配置
 - `se-good-plan`：面向软件工程计划写作与审查的 skill，生成分阶段、可执行、可独立验证、可审查、可回滚，并带严格 phase 门禁、plan-to-code 完整性证据、收益验收和链路关键状态日志证据的软件工程计划
 - `show-my-repo`：把 repo 提炼成面向投资人、用户、路演和落地页的展示包
+- `github-projects-issues`：管理 GitHub Projects 与 issues，统一版本看板、P0–P3 分级、最简模板、会话标题与状态闭环
 - `storybook-skills-standard`：面向 Storybook 组件驱动开发、story 覆盖、mock、文档、交互测试、可访问性与视觉基线治理的 skill
 - `summary-my-repo`：生成面向协作者的仓库理解包，覆盖架构、目录职责和核心逻辑
 - `threejs-game`：统一的 three.js 游戏全流程 skill，覆盖运行时、资产、渲染、输入与相机、交互与 UI、物理、动画、TSL/VFX、性能、存档与网络、WebXR、测试与发布

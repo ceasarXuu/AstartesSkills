@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub Projects & Issues"
+  short_description: "Coordinate GitHub boards, issue triage, and agent progress"
+  default_prompt: "Use $github-projects-issues to manage this repository's Project and issues with minimal issue content, P0–P3 priorities, and synchronized session titles and progress."
