@@ -56,7 +56,7 @@ if [[ "$skill_id" == "docs-manager" ]]; then
 fi
 
 if [[ "$skill_id" == "bug-killer" ]]; then
-  log "checking bug-killer evidence-gated debug contract"
+  log "checking bug-killer agile code-first debug contract"
   "$repo_root/scripts/bug-killer-sanity.sh"
 fi
 

@@ -124,7 +124,7 @@ Reference:
 
 | Skill | Purpose | Install |
 | --- | --- | --- |
-| `bug-killer` | Debug medium and large bugs with `/coe` case tracking, independent research paths, and a diagnostic evidence gate before repair design. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill bug-killer` |
+| `bug-killer` | Debug complex or recurring bugs with code-first reasoning, small repairs, proportionate validation, and optional `/coe` tracking. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill bug-killer` |
 | `clear-prd` | Clarify product requirements through guided multi-round questions focused on product logic, user experience, interaction design, rules, edge cases, and acceptance criteria, then write a Draft or Ready PRD. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill clear-prd` |
 | `dev-loop` | Audit, optimize, and protect software development feedback loops across builds, tests, CI gates, caches, environments, dependency structure, and coding-Agent execution. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill dev-loop` |
 | `docs-manager` | Design, reorganize, audit, and maintain repository documentation systems with versioned PRDs, technical designs, engineering plans, link management, archive policy, and validation tooling. | `npx skills add https://github.com/ceasarXuu/AstartesSkills --skill docs-manager` |
@@ -264,7 +264,7 @@ Checks currently include:
 
 Without arguments, this verifies the default `bug-killer` package.
 With a skill id, it verifies that package and runs any skill-specific checks.
-For example, `bug-killer` runs its heavy-debug activation and evidence-gate
+For example, `bug-killer` runs its code-first, agile debugging
 contract sanity check, `clear-prd` runs its clarification-contract sanity check,
 `se-good-plan` runs its engineering-plan contract sanity check.
 That check covers the checked-in source contract, trigger coverage, Standard and

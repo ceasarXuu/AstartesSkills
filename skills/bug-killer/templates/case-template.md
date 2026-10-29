@@ -59,12 +59,12 @@
   - Instrumentation status: none | diagnostic-only | permanent-observability-candidate
   - Instrumentation lifecycle:
     - <remove after diagnosis | retain as permanent observability | promote after repair | none>
-- Evidence gate: pending | satisfied | blocked
+- Evidence status: pending | supporting | conflicting | blocked
 - Related evidence:
   - E-001
 - Conclusion: unverified
-- Repair design readiness: blocked until Status is confirmed and Evidence gate is satisfied
-- Next step: <continue diagnostics, create child hypothesis, request input, or stop>
+- Repair candidate: <small code-backed change or none; hypothesis may remain unverified>
+- Next step: <focused repair, validation, diagnostics, request input, or stop>
 - Blocker:
   - none
 - Close reason:

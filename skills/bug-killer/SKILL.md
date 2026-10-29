@@ -1,356 +1,140 @@
 ---
 name: bug-killer
-description: Use when debugging medium or large bugs, regressions, flaky failures, production symptoms, repeated failed fixes, or user-explicit requests where the agent must combine persistent /coe case tracking, independent multi-path root-cause investigation, and a hard diagnostic evidence gate before repair design or implementation.
+description: Investigate complex or recurring bugs with agile code-first reasoning, small repairs, proportionate validation, and lightweight evidence tracking.
 ---
 
 # Bug Killer
 
-Bug Killer is a heavy debugging process. Use it only when a bug is large enough
-that lightweight debugging is likely to become self-deceptive or wasteful. It is
-especially important for multi-layer bugs, intermittent symptoms, production
-incidents, repeated failed fixes, unclear ownership, or any case where the first
-plausible cause may be wrong.
+Use this workflow for bugs that are complex, cross-layer, intermittent,
+repeatedly unresolved, or consequential enough to benefit from persistent
+investigation. For an obvious, local bug, use a lightweight debug loop unless
+the user explicitly requests Bug Killer.
 
-Bug Killer fuses three ideas:
+Work in short iterations: understand enough to take the next useful action,
+make a focused change, check the result, and adjust. Scale documentation,
+parallel investigation, and diagnostics to the problem; none is a ceremony
+that must be completed before useful work can proceed.
 
-1. Chain-of-evidence case files keep one durable source of truth.
-2. Multi-path investigation produces independent root-cause candidates.
-3. Candidate causes must be proven by diagnostic logs, probes, experiments,
-   tests, runtime observations, or user feedback before repair design begins.
+## Principles
 
-## Activation Gate
-
-Do not use this skill for every bug. Run a lightweight debug path instead when
-the symptom is deterministic, local to one obvious file, backed by a clear stack
-trace or failing test, and repair can be validated directly.
-
-Use Bug Killer when any of these conditions is true:
-
-- the user explicitly asks for `bug-killer`, heavy debug, evidence-gated debug,
-  `/coe`, multi-path root-cause analysis, or repair only after proof,
-- the suspected impact crosses two or more modules, services, platforms, data
-  flows, devices, accounts, or ownership boundaries,
-- at least two repair attempts, hotfixes, or user-feedback cycles have failed to
-  resolve the same symptom,
-- the bug affects production, customer-visible workflows, data correctness,
-  security, permissions, billing, deployment, release, or operational recovery,
-- the symptom is intermittent, flaky, timing-sensitive, environment-specific, or
-  cannot be reproduced locally,
-- the bug is deterministic but hidden in a deep state machine, data mutation
-  path, cache lifecycle, concurrency path, or history-dependent flow,
-- there are two or more plausible root-cause families after light orientation,
-- the likely fix could create broad regressions or requires diagnostic
-  instrumentation before it can be trusted.
-
-If the activation gate is not met, state that Bug Killer is probably too heavy,
-use a smaller debug loop, and escalate into Bug Killer only if the bug broadens,
-repeats, resists repair, or the user explicitly requests it.
-
-## Non-Negotiable Rules
-
-- Check the activation gate before creating a new `/coe` case. If the user
-  explicitly requested Bug Killer, the gate is satisfied.
-- Maintain a project-root `/coe` case file as the investigation source of
-  truth whenever the task touches a repository.
-- Before creating or appending `/coe` in a public repository, resolve the CoE
-  privacy gate below. Never silently change `.gitignore` or Git tracking.
-- Case files may contain only `Problem`, `Hypothesis`, and `Evidence` nodes.
-- Root-cause candidates are hypotheses, not repair plans.
-- Repair design is forbidden until the candidate root cause passes the
-  diagnostic evidence gate.
-- The diagnostic evidence gate requires a planned signal and actual evidence:
-  log, probe, reproduction, test, telemetry, runtime state, config fact, or
-  user-feedback loop that supports the causal mechanism.
-- If instrumentation is needed, make a diagnostic-only change first. Do not
-  mix diagnostic instrumentation with the repair.
-- Compare findings by evidence quality, not by majority vote or agent agreement.
-- If confidence is low, ask for the next diagnostic experiment instead of
-  asking to fix.
-- Ask the user to confirm before starting repair implementation unless the user
-  has already explicitly authorized repair after evidence-backed confirmation.
-- Mark the problem fixed only after fix-validation evidence shows the original
-  symptom no longer occurs.
+- Start with the report, available context, and static reasoning over the
+  relevant code paths, state transitions, inputs, and recent changes. Identify
+  concrete suspicious mechanisms and how each could produce the symptom.
+- When the code provides a credible, specific candidate and the change is
+  within the user's authorization, make the smallest focused repair and
+  validate it promptly. A hypothesis need not be confirmed before repair;
+  code proximity or intuition alone is not a sufficient mechanism.
+- Do not require reproduction before investigation or repair. When a project
+  requires code analysis before reproduction, follow that ordering. If
+  reproduction is difficult, unavailable, or unproductive, use code analysis,
+  existing logs, targeted checks, runtime evidence, or user feedback to advance.
+- Keep hypotheses and confidence honest: a plausible code path or a patch alone
+  does not prove the root cause or that the issue is fixed. Record supporting,
+  contradictory, and missing evidence, and continue investigating when a repair
+  is disproved or validation is inconclusive.
+- Respect the user's and project's permissions, test restrictions, privacy and
+  safety requirements. Avoid destructive experiments and speculative changes to
+  data, permissions, or core product behavior. Obtain required authorization
+  before the affected action; do not add a separate approval gate when repair
+  is already authorized.
+- Use independent investigation paths where useful and available, especially
+  after a failed repair or when multiple mechanisms remain plausible. Do not
+  delay a well-supported, low-risk repair just to complete parallel work.
+- Mark a problem fixed only when relevant validation supports the original
+  symptom no longer occurring. If verification is unavailable or not permitted,
+  describe the change as unverified and state the remaining risk.
 
 ## Case Artifact
 
-Create or update one Markdown file under the project root:
+For complex, ongoing, or handoff-sensitive repository investigations, reuse or
+create a project-root `/coe` case file when durable tracking adds value:
 
 ```text
 /coe/YYYY-MM-DD-HH-mm-<short-bug-title>.md
 ```
 
-Before creating a new case or appending evidence, determine repository visibility
-from the hosting provider when available. Do not assume a local checkout is
-private.
+Before creating or appending a case, determine repository visibility from the
+hosting provider when available. Do not assume a local checkout is private.
+For a public repository, check whether root `/coe/` is ignored and whether any
+case files are tracked. If `/coe/` is not ignored, ask whether to add it to
+`.gitignore`; never change `.gitignore` or Git tracking without confirmation.
+If case files are already tracked, explain that ignore rules do not protect
+tracked files and ask before untracking them while preserving local copies.
+Resolve this choice before persisting new case evidence. If the user chooses to
+keep cases tracked, minimize sensitive detail. If visibility is unknown, ask
+whether the repository is public before persisting a case. Continue independent
+code analysis while a privacy decision is pending; do not write case evidence
+until it is resolved.
 
-For a public repository:
+For a short investigation, keep only the necessary hypothesis, action, and
+validation notes in the response; do not create a case just to satisfy a ritual.
+When a case is useful, use `templates/case-template.md` proportionately and
+leave unknown or irrelevant fields brief. Case files contain only `Problem`,
+`Hypothesis`, and `Evidence` nodes. Keep existing observations; append
+corrections instead of deleting or renumbering evidence.
 
-- check whether root `/coe/` is ignored and whether any `/coe` files are already
-  tracked,
-- if `/coe/` is not ignored, ask the user whether to add `/coe/` to the project's
-  `.gitignore` so case files stay local; do not edit `.gitignore` without user
-  confirmation,
-- if any `/coe` files are already tracked, explain that `.gitignore` does not
-  stop tracked files from being committed and ask whether to remove them from
-  the Git index while preserving local copies; do not untrack them without user
-  confirmation,
-- resolve this privacy choice before writing new diagnostic evidence. If the
-  user explicitly chooses to keep CoE tracked, minimize unnecessary sensitive
-  debug detail and continue with that choice.
-
-If repository visibility cannot be determined, ask whether the repository is
-public before persisting a new CoE case.
-
-If no repository is available, keep the same logical structure in the response
-and create the file once a writable project exists.
-
-Use `templates/case-template.md` for new files. The case file is append-friendly:
-do not delete evidence or renumber IDs. If an interpretation changes, add new
-evidence or update the related hypothesis conclusion.
-
-## Node Model
-
-`Problem`
-: The single root issue being solved. It records symptoms, expected behavior,
-  actual behavior, impact, reproduction, environment, known facts, ruled-out
-  directions, fix criteria, and the current conclusion.
-
-`Hypothesis`
-: A falsifiable claim about the root cause, sub-cause, regression window,
-  environment, interaction, diagnostic path, or fix validation. Each hypothesis
-  must name its predictions and diagnostic evidence plan.
-
-`Evidence`
-: A concrete observation tied to a predeclared prediction or diagnostic-plan
-  clause. Evidence can be a command result, log line, stack trace, reproduction
-  result, failed reproduction, code path, config value, runtime state,
-  diagnostic probe output, user feedback, external reviewer finding, or
-  fix-validation result.
+- `Problem`: symptoms, expected and actual behavior, impact, trigger or known
+  reproduction path, environment, fix criteria, and current conclusion.
+- `Hypothesis`: a specific possible mechanism, its code-based rationale,
+  predictions, relevant alternatives, and the next repair or diagnostic step.
+- `Evidence`: a concrete code path, log, configuration, observation, repair
+  validation, test result, or feedback, linked to the hypothesis it affects.
 
 ## Workflow
 
-### 1. Locate Or Create The Case
+### 1. Orient And Trace Code
 
-Check the activation gate. If it is not met, explain why this heavy process is
-not justified and use a lightweight debug path unless the user explicitly
-requests Bug Killer.
+Gather the available symptom, expected behavior, environment, trigger, recent
+changes, and relevant logs or traces. Inspect the relevant code and data flow
+first; trace how an input or state transition can lead to the observed result.
+If context is insufficient, obtain logs or ask focused questions while pursuing
+independent analysis. Do not require a reproduction attempt when a candidate can
+be found by static analysis, or when a higher-priority instruction forbids it.
 
-Before creating a new `/coe` case or appending evidence, apply the public-repo
-privacy gate from `Case Artifact`.
+### 2. Choose A Candidate And Act
 
-If the activation gate is met, inspect `/coe`. Reuse a relevant open case;
-otherwise create a new timestamped case file.
+Record the strongest candidate as an unconfirmed `Hypothesis`: identify the
+specific code path, mechanism, supporting facts, assumptions, and what would
+count against it. Consider meaningful alternatives, especially after prior failed
+fixes. For a concrete code-backed candidate, choose a minimal change that
+addresses the mechanism and a proportionate way to validate it; implement and
+validate without waiting for reproduction or conclusive diagnostic proof when
+permitted. Do not claim the candidate confirmed merely because it looks plausible.
 
-Normalize the user report into one `Problem P-001`. If the report includes
-multiple unrelated bugs, split them into separate case files.
+When no candidate has a concrete mechanism, or the proposed change carries
+significant irreversible risk, continue with the smallest permitted diagnostic
+step. A reproduction, log, probe, configuration check, targeted experiment, or
+operator feedback may help distinguish candidates; choose based on usefulness,
+not a mandatory sequence. Respect any required authorization for tests and other
+actions. Avoid repeated or elaborate reproduction attempts that are not adding
+information.
 
-### 2. Intake And Light Orientation
+### 3. Validate, Learn, And Iterate
 
-Gather only enough context to avoid generic questions:
+Check the changed behavior against the original symptom and affected paths using
+the strongest practical permitted evidence: original conditions when available,
+a targeted regression check, runtime observation, or user feedback. Review the
+code and surrounding invariants when execution is unavailable, but do not claim
+that static review alone proves the symptom is gone. Record what was checked,
+the result, limits, and the evidence linked to the hypothesis.
 
-- observed symptom
-- expected behavior
-- actual behavior
-- trigger or reproduction path
-- affected environment, version, branch, account, device, or dataset
-- recent change or regression window
-- available logs, stack traces, screenshots, tests, or traces
-- impact and urgency
+If the issue persists, revise or refute the hypothesis and investigate other
+paths. Use independent code, log, runtime, or configuration evidence where it
+helps; compare evidence quality rather than agent agreement. Keep diagnostic-only
+instrumentation identifiable, and remove or retain it deliberately.
 
-If the report is thin, ask 1-3 targeted questions that separate root-cause
-families. Do not ask a long generic bug questionnaire.
-
-### 3. Build A Neutral Research Packet
-
-Before running independent paths, write a neutral packet in the current response
-or in existing case fields only. Include confirmed facts, important unknowns,
-relevant files, logs, commands, constraints, candidate hypotheses, and evidence
-standards.
-
-Do not include persuasive conclusions. The packet exists to keep each path from
-inheriting the main agent's bias.
-
-Do not add a `Research Packet`, `Plan`, `Notes`, or any other free-form heading
-to a `/coe` case file. If packet details must persist in the case, distribute
-them through allowed fields: `Problem.Known facts`, `Hypothesis.Rationale`,
-`Hypothesis.Diagnostic evidence plan`, and concrete `Evidence` nodes.
-
-### 4. Run Independent Research Paths
-
-Use at least two distinct paths for non-trivial bugs when available:
-
-- main-agent code, log, test, and reproduction investigation
-- fresh internal subagents when the runtime and task rules allow them
-- user-approved external agents when explicitly authorized
-- targeted experiments, probes, traces, or diagnostic log plans
-- user or operator feedback loops for state that only exists in the real system
-
-If subagents or external agents are unavailable, still keep path separation.
-Use at least two materially different local evidence paths, such as code-path
-trace plus reproduction, targeted test plus diagnostic log, runtime state plus
-config check, or operator feedback plus trace evidence. Do not count two shallow
-reads of the same file or log as independent paths.
-
-Each path should answer:
-
-- most likely cause and location
-- mechanism that explains the symptom
-- evidence already found
-- evidence that would refute the claim
-- alternatives considered
-- next diagnostic step if confidence is insufficient
-
-### 5. Generate Falsifiable Hypotheses
-
-Represent each candidate as a `Hypothesis` node. A useful hypothesis:
-
-- explains the observed symptom,
-- predicts what should be observed if true,
-- predicts what should not be observed if false,
-- can be tested with the smallest safe action,
-- identifies the diagnostic signal needed before repair design.
-
-Reject vague labels such as "race condition", "environment issue", or
-"frontend bug" unless they are rewritten into a specific testable mechanism.
-
-### 6. Candidate Root-Cause Evidence Gate
-
-Before proposing a repair design, choose the active candidate root cause and
-write its diagnostic evidence plan.
-
-The plan must name:
-
-- the predeclared prediction or evidence-plan clause being tested,
-- the signal to capture,
-- how it will be captured,
-- why the signal distinguishes this hypothesis from meaningful alternatives,
-- what result would support the hypothesis,
-- what result would refute or downgrade it,
-- stable event names, markers, and correlation IDs when logs, traces, telemetry,
-  or user feedback are used,
-- whether instrumentation is diagnostic-only and how it will be removed,
-  retained, or converted into permanent observability.
-
-Valid evidence-gathering methods include:
-
-- structured diagnostic logs with stable event names and relevant IDs,
-- temporary probes or assertions,
-- failing or focused tests,
-- reproduction scripts,
-- runtime state snapshots,
-- trace markers,
-- metrics or telemetry,
-- config and environment checks,
-- user-feedback prompts or operator confirmation,
-- controlled rollback or feature-flag experiments when safe.
-
-If the diagnostic evidence plan cannot be executed safely, mark the hypothesis
-`blocked` and state the unblock condition. Do not start repair design.
-
-### 7. Record Evidence Before Changing Status
-
-After each meaningful observation, add an `Evidence` node before changing a
-hypothesis status. The evidence must identify the exact falsifiable prediction
-or diagnostic evidence-plan clause it matched, supported, refuted, or left
-neutral. This prevents hindsight-fitting existing logs or user feedback into a
-cause narrative.
-
-Set a hypothesis to:
-
-- `confirmed` only when evidence supports the mechanism and separates it from
-  meaningful alternatives,
-- `refuted` when evidence contradicts a required prediction,
-- `blocked` when the next diagnostic step cannot run,
-- `closed` when the branch is intentionally abandoned or superseded.
-
-Do not treat code proximity, agent agreement, or a plausible fix idea as proof.
-
-### 8. Synthesize By Evidence Weight
-
-Compare paths by evidence quality:
-
-- direct reproduction or failing test,
-- log, trace, or runtime state tied to the symptom and to a predeclared
-  prediction,
-- code path showing how the wrong state is produced,
-- data, config, or environment fact that changes the result,
-- regression-window proof,
-- falsified alternatives.
-
-If two causes remain plausible, do not average them into a confident answer.
-Name the next diagnostic experiment that separates them.
-
-### 9. Repair Design Gate
-
-Only after a hypothesis is `confirmed`, present a repair-ready summary:
-
-```markdown
-Root cause summary:
-- Cause: <specific mechanism and location>
-- Diagnostic evidence: <2-5 evidence IDs or concrete facts>
-- Ruled out: <main alternatives and why>
-- Confidence: high | medium
-- Repair design direction: <brief approach, not a patch yet>
-- Observability impact: <logs/probes to remove, retain, or add permanently>
-- Remaining risk: <none or specific gap>
-
-Please confirm whether I should start the fix.
-```
-
-For low confidence, use this instead:
-
-```markdown
-Root cause status:
-- Current hypothesis: <specific but unconfirmed mechanism and location>
-- Evidence so far: <2-5 evidence IDs or concrete facts>
-- Missing proof: <diagnostic signal still needed>
-- Next diagnostic experiment: <smallest safe action>
-- Repair status: not ready; repair design is blocked by the evidence gate.
-
-Should I continue investigation with this diagnostic experiment?
-```
-
-### 10. Implement And Validate The Fix
-
-After repair is authorized, keep the fix tied to the confirmed hypothesis. Do
-not add silent fallbacks or special cases that hide the symptom without
-addressing the confirmed mechanism unless they are explicit product
-requirements.
-
-Run targeted smoke and regression checks. Add `Evidence` of type
-`fix-validation` showing the original symptom no longer occurs under the stated
-reproduction conditions.
-
-Set `Problem P-001` to `fixed` only when:
-
-1. a relevant hypothesis is `confirmed`,
-2. the repair is tied to that hypothesis,
-3. fix-validation evidence exists,
-4. `Resolution basis` lists the hypothesis and evidence IDs.
+Set a hypothesis to `confirmed` only when evidence supports its mechanism and
+separates meaningful alternatives; a repair may be implemented while it is still
+`unverified`. Set `Problem P-001` to `fixed` only when relevant fix-validation
+evidence supports resolution and the resolution basis identifies the hypothesis
+and evidence. Otherwise report the repair as unverified or still open, including
+what remains to be checked.
 
 ## Response Behavior
 
-While using this skill:
-
-- name the active case file,
-- name the active hypothesis,
-- state the next evidence target before running a command or changing code,
-- distinguish diagnostic-only changes from repair changes,
-- summarize new evidence, hypothesis status changes, and the next gate,
-- do not dump the full case unless asked.
-
-## Anti-Patterns
-
-- Fixing the first suspicious file before the diagnostic evidence gate.
-- Designing the repair immediately after a candidate cause appears.
-- Treating logs as evidence when no prediction was defined before reading them.
-- Treating external agents, subagents, or reviewer agreement as proof.
-- Combining diagnostic instrumentation and repair in one unclear patch.
-- Publishing new `/coe` evidence from a public repository before resolving its
-  privacy choice, or assuming `.gitignore` protects CoE files already tracked.
-- Adding silent fallback behavior that masks the symptom.
-- Marking the problem fixed because code changed rather than because
-  fix-validation evidence exists.
+State the code-backed candidate, next action, and relevant uncertainty concisely.
+After a change, explain what was changed, what validation actually ran, and any
+remaining risk. Do not claim a fix from a code change or an unrelated check.
 
 ## Fixtures
 

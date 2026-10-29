@@ -21,7 +21,7 @@
 
 当前可安装示例包括：
 
-- `bug-killer`：面向中大型 bug 的重型统一 debug 方法论，融合 `/coe` 案件账本、多路径独立调查和修复设计前的诊断证据门禁；小 bug 默认不启用
+- `bug-killer`：面向复杂或反复出现的 bug，优先推理代码、小步修复并验证；按需使用 `/coe` 记录和多路径调查
 - `clear-prd`：面向产品需求澄清的 skill，通过多轮产品逻辑、用户体验、交互、规则与验收问题形成 Draft 或 Ready PRD
 - `docs-manager`：面向仓库文档治理的 skill，维护版本化 PRD、技术设计、工程计划、链接索引、归档策略和验证脚本
 - `frontend-refactoring`：面向老前端重构的 skill，核心是隔离新 UI、重做视图层并安全切流
