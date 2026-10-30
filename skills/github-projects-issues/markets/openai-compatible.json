@@ -4,13 +4,13 @@
   "display_name": "GitHub Projects & Issues",
   "description": "Coordinates GitHub Projects and issues with repository binding, version boards, P0–P3 triage, minimal issue templates, session titles, and verified progress and closure synchronization.",
   "release": {
-    "version": "1.0.0",
-    "published_at": "2026-10-30T07:42:28+08:00",
+    "version": "1.1.0",
+    "published_at": "2026-10-30T08:56:21+08:00",
     "publisher": "ceasarXuu",
     "changes": [
-      "Add repository Project binding and milestone boards based on the verified reference Project.",
-      "Define bug and feature P0–P3 priorities and minimal issue templates.",
-      "Synchronize agent session titles, Project status, and issue closure with verified delivery."
+      "Require explicit user approval of acceptance criteria for every issue before implementation.",
+      "Add acceptance criteria to minimal templates and preserve traceable approval evidence.",
+      "Require renewed approval for material criteria changes and verify approved criteria before closure."
     ]
   },
   "source": {
