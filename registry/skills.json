@@ -542,13 +542,13 @@
         "path": "skills/github-projects-issues"
       },
       "release": {
-        "version": "1.1.0",
-        "published_at": "2026-10-30T08:56:21+08:00",
+        "version": "1.2.0",
+        "published_at": "2026-10-30T08:57:46+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Require explicit user approval of acceptance criteria for every issue before implementation.",
-          "Add acceptance criteria to minimal templates and preserve traceable approval evidence.",
-          "Require renewed approval for material criteria changes and verify approved criteria before closure."
+          "Split acceptance criteria into agent-verifiable and user-verified items with explicit evidence and pass conditions.",
+          "Require user approval of acceptance ownership and explicit user results for complex gesture or visual acceptance.",
+          "Keep issues open during user acceptance and prevent PR auto-closure from bypassing pending acceptance."
         ]
       },
       "markets": {
