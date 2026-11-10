@@ -223,3 +223,8 @@
 - 不能只改 skill 的文字：Claude Code 的 plan/tools 参数、OpenCode 的 plan agent、Pi/OMP 的工具白名单和 Desktop 的只读 overlay 都会阻止实际执行，必须与指引同时按 access 切换。
 - 执行模式保留 provider 自身权限；旧会话保存的 sandbox/approval 状态可能继续生效。选择 execute 并不替代后端的权限配置。
 - 已在独立临时目录用本机 OMP 与官方 Harness Desktop 实际创建文件，读取文件核对内容后确认执行支持。
+
+## 2026-11-11 AgentCommander：验证本机 dsh 的逐次模型配置
+
+- 本机官方 Desktop `0.2.2-rc.1` 由 `check --desktop-app` 识别为 `official-desktop`。通过 bundled CLI 的 `--dump-config` 确认临时 YAML 中的模型供应商、模型及推理档位均进入有效配置，本次未调用模型。
+- 同版本源码确认 headless 续接会采用本次调用的模型配置。将操作步骤、原目录续接要求及权限边界收录到 [DeepSeek Harness Desktop 参考](../../plugins/agent-commander/skills/agent-commander/references/deepseek-harness-desktop.md)。AgentCommander 的适配器参数没有改动。
