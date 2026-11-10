@@ -566,13 +566,11 @@
       "id": "agent-commander",
       "path": "plugins/agent-commander",
       "release": {
-        "version": "0.4.0",
-        "published_at": "2026-10-22T01:09:48+08:00",
+        "version": "0.4.1",
+        "published_at": "2026-11-11T03:32:04+08:00",
         "publisher": "ceasarXuu",
         "changes": [
-          "Allow delegation of any user-authorized task, including implementation, commands, commits and external actions.",
-          "Default to execution mode with normal provider capabilities; retain explicit --access read-only for inspection tasks.",
-          "Preserve provider permissions and exact session follow-up without expanding user authorization."
+          "Document verified macOS DeepSeek Harness Desktop discovery, model patch configuration, and exact session follow-up."
         ]
       }
     }

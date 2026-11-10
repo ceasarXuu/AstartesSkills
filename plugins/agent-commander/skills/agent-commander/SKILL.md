@@ -32,6 +32,8 @@ DeepSeek Harness discovery checks official `com.deepseek.dsh` macOS bundles in `
 
 The desktop adapter uses its bundled `headless --json` CLI and `--session-id`, not GUI automation. It temporarily restores the existing saved credential consumers, without installing or logging in. Execution mode retains the provider’s configured tools and permission policies. With `--access read-only`, a required global tool guard permits only `read`, `read_image`, `glob`, and `grep`, including on resumed sessions. The temporary overlay does not edit the user's profile. In read-only mode, missing guard support prevents the runner from starting. Desktop conversations from other agent presets are not adopted: continue only the session returned by this adapter in the same cwd.
 
+For official Desktop CLI model selection and configuration checks, read [DeepSeek Harness Desktop](references/deepseek-harness-desktop.md). AgentCommander uses its own `--provider` to select the agent and currently uses the model settings configured in Harness.
+
 Start a task:
 
 ```text
