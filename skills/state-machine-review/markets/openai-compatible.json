@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "market": "openai-compatible",
+  "display_name": "State Machine Review",
+  "description": "Reviews explicit and implicit state machines in code and business workflows, tracing illegal transitions, stalled paths, coupling, and feedback loops.",
+  "release": {
+    "version": "0.1.0",
+    "published_at": "2026-11-14T23:52:55+08:00",
+    "publisher": "ceasarXuu",
+    "changes": [
+      "Add evidence-based review of code and business state machines, including implicit states and cross-layer invariants.",
+      "Cover missing closure, deadlock, ownership bypass, blocking dependencies, avoidable serialization, and feedback storms.",
+      "Include failure traces for asynchronous delivery, recovery, and state consistency."
+    ]
+  },
+  "source": {
+    "type": "github",
+    "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+    "path": "skills/state-machine-review"
+  }
+}

@@ -559,6 +559,43 @@
           "manifest": "skills/github-projects-issues/markets/openai-compatible.json"
         }
       }
+    },
+    {
+      "id": "state-machine-review",
+      "name": "State Machine Review",
+      "path": "skills/state-machine-review",
+      "summary": "Reviews explicit and implicit state machines in code and business workflows, tracing illegal transitions, stalled paths, coupling, and feedback loops.",
+      "tags": [
+        "state-machine",
+        "code-review",
+        "business-workflow",
+        "concurrency",
+        "reliability"
+      ],
+      "installable": true,
+      "source": {
+        "type": "github",
+        "repo": "https://github.com/ceasarXuu/AstartesSkills.git",
+        "path": "skills/state-machine-review"
+      },
+      "release": {
+        "version": "0.1.0",
+        "published_at": "2026-11-14T23:52:55+08:00",
+        "publisher": "ceasarXuu",
+        "changes": [
+          "Add evidence-based review of code and business state machines, including implicit states and cross-layer invariants.",
+          "Cover missing closure, deadlock, ownership bypass, blocking dependencies, avoidable serialization, and feedback storms.",
+          "Include failure traces for asynchronous delivery, recovery, and state consistency."
+        ]
+      },
+      "markets": {
+        "github": {
+          "install_method": "copy"
+        },
+        "openai-compatible": {
+          "manifest": "skills/state-machine-review/markets/openai-compatible.json"
+        }
+      }
     }
   ],
   "plugins": [

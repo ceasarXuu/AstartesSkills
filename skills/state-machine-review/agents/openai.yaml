@@ -1,0 +1,4 @@
+interface:
+  display_name: "State Machine Review"
+  short_description: "Review code and business workflow state machines"
+  default_prompt: "Use $state-machine-review to trace this workflow across code and business rules and report reachable transition, progress, and dependency defects."
